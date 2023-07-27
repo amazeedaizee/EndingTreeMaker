@@ -192,6 +192,7 @@
             this.Controls.Add(this.LoadEndingTreeButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "EndingTreeForm";
             this.Text = "Main Ending Tree";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.EndingTreeForm_FormClosing);
