@@ -146,7 +146,6 @@
             this.MinimizeBox = false;
             this.Name = "BranchErrorDetails";
             this.RightToLeftLayout = true;
-            this.ShowIcon = false;
             this.Text = "Save Failed";
             this.Load += new System.EventHandler(this.BranchErrorDetails_Load);
             this.Click += new System.EventHandler(this.BranchErrorDetails_Click);

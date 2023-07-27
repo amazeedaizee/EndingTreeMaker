@@ -246,7 +246,7 @@ namespace NSOEndingTreeMaker
             }
         }
 
-        public List<(string, string)> ValidateEndingBranches(int index, EndingBranchData branch)
+        public List<(string, string)> ValidateFutureEndingBranches(int index, EndingBranchData branch)
         {
             List<(string branch, string errorMsg)> errorBranches = new();
             int oldLatestDay = CurrentEndingTree.EndingsList[index].EndingBranch.AllActions[CurrentEndingTree.EndingsList[index].EndingBranch.AllActions.Count - 1].TargetAction.DayIndex;

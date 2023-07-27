@@ -67,7 +67,6 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "UsedStreamWindow";
-            this.ShowIcon = false;
             this.Text = "Streamed List";
             this.Load += new System.EventHandler(this.UsedStreamWindow_Load);
             this.ResumeLayout(false);

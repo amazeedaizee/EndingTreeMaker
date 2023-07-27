@@ -434,7 +434,7 @@
             listViewItem34.Group = listViewGroup12;
             listViewItem35.Group = listViewGroup13;
             listViewItem36.Group = listViewGroup13;
-            listViewItem37.Group = listViewGroup14;
+            listViewItem37.Group = listViewGroup12;
             listViewItem38.Group = listViewGroup13;
             listViewItem39.Group = listViewGroup13;
             listViewItem40.Group = listViewGroup13;
@@ -783,7 +783,6 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "StreamIdeasWindow";
-            this.ShowIcon = false;
             this.Text = "Stream Ideas List";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.StreamIdeasWindow_FormClosing);
             this.Load += new System.EventHandler(this.StreamIdeasWindow_Load);

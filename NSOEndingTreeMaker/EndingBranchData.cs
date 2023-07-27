@@ -121,7 +121,13 @@ namespace NSOEndingTreeMaker
                 {
                     break;
                 }
-                if (i > 0) ValidatePreviousDay(EndingBranch.AllActions[i - 1], EndingBranch.AllActions[i], errorList);
+
+                if (i > 0) 
+                { 
+                    
+                    ValidatePreviousDay(EndingBranch.AllActions[i - 1], EndingBranch.AllActions[i], errorList);
+                    ValidateIgnoreDm(EndingBranch.AllActions[i - 1], EndingBranch.AllActions[i], errorList);
+                }
                 ValidateNextDay(EndingBranch.AllActions[i], EndingBranch.AllActions[i + 1], errorList);
                 LookForMissingDays(EndingBranch.AllActions[i], EndingBranch.AllActions[i + 1], errorList);
                 (bool, string, CmdType) actionValid = ValidateAction(EndingBranch.AllActions[i], EndingBranch.AllActions[i + 1]);
@@ -149,6 +155,21 @@ namespace NSOEndingTreeMaker
             return errorList;
         }
 
+        private void ValidateIgnoreDm(TargetActionData pastAction, TargetActionData presentAction, List<(string, string)> errorList)
+        {
+            var excludedCmds = new List<CmdType>() { CmdType.DarknessS2,CmdType.Darkness_1,CmdType.Darkness_2,CmdType.OdekakeOdaiba,CmdType.OdekakeZikka};
+            if (!presentAction.TargetAction.IgnoreDM) return;
+            if (pastAction.Stress >= 80 && !IsNotFixedEvents(presentAction, isTrauma.isEventing, isReallyLove.isEventing, isVideo.isEventing) && !StreamIdeaList.Exists(i => i.DayIndex == presentAction.TargetAction.DayIndex && i.DayPart == presentAction.TargetAction.DayPart && i.Idea.ToString().Contains("Angel_")))
+            {
+                errorList.Add(new($"Day {presentAction.TargetAction.DayIndex}, {NSODataManager.DayPartNames[presentAction.TargetAction.DayPart]}: {NSODataManager.CmdName(presentAction.Command)}", $"Can't ignore DM if there's no DM to ignore (Ame won't send a DM if her Stress is 80 or more at the start of a part of a day, save for any fixed or milestone events at Noon.)"));
+                return;
+            }
+            if (excludedCmds.Exists(c => c == presentAction.Command))
+            {
+                errorList.Add(new($"Day {presentAction.TargetAction.DayIndex}, {NSODataManager.DayPartNames[presentAction.TargetAction.DayPart]}: {NSODataManager.CmdName(presentAction.Command)}", $"This action event is excluded from Ignore DM."));
+                return;
+            }
+        }
         private void ValidateNextDay(TargetActionData presentAction, TargetActionData futureAction, List<(string, string)> errorList)
         {
             if (presentAction.CommandResult == null) return;
@@ -348,8 +369,12 @@ namespace NSOEndingTreeMaker
 
                 return (false, $"This stream's idea has been found after that stream has been done, which is not allowed. \n\nDay Streamed: {action.TargetAction.DayIndex} \nDay Idea was found: {idea.DayIndex}");
 
-            if (EndingBranch.AllActions.FindAll(i => i.Command == action.Command).Count > 1)
-                return (false, $"You can't do this stream more than once.");
+            if (StreamUsedList.Exists(u => u.DayIndex < action.TargetAction.DayIndex && u.UsedStream == action.Command))
+            {
+                var usedStream = StreamUsedList.Find(u => u.DayIndex < action.TargetAction.DayIndex && u.UsedStream == action.Command);
+                return (false, $"You can't do this stream more than once. \n\nStream first done on: Day {usedStream.DayIndex}");
+            }
+              
             if (breakdownThree != null && action.TargetAction.DayIndex > breakdownThree.DayIndex)
             {
                 if (action.TargetAction.DayIndex == (breakdownThree.DayIndex + 1))
