@@ -1,0 +1,157 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0EAEF51F-67BD-4D87-A8CB-6B427E5EE28C}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>NSOEndingTreeMaker</RootNamespace>
+    <AssemblyName>EndingTreeMaker</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <LangVersion>preview</LangVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>22_save0.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Libraries\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="HarmonyXInterop, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\HelloWorld\Libraries\HarmonyXInterop.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AddEndingBranch.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddEndingBranch.Designer.cs">
+      <DependentUpon>AddEndingBranch.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EditHistory.cs" />
+    <Compile Include="EndingBranchSubData.cs" />
+    <Compile Include="BranchErrorDetails.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BranchErrorDetails.Designer.cs">
+      <DependentUpon>BranchErrorDetails.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UsedStreamWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UsedStreamWindow.Designer.cs">
+      <DependentUpon>UsedStreamWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="StreamIdeasWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="StreamIdeasWindow.Designer.cs">
+      <DependentUpon>StreamIdeasWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NSOCommandManager.cs" />
+    <Compile Include="NSODataManager.cs" />
+    <Compile Include="EndingBranchData.cs" />
+    <Compile Include="EndingTreeData.cs" />
+    <Compile Include="EndingTreeForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EndingTreeForm.Designer.cs">
+      <DependentUpon>EndingTreeForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="EndingBranchEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EndingBranchEditor.Designer.cs">
+      <DependentUpon>EndingBranchEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TargetActionData.cs" />
+    <EmbeddedResource Include="AddEndingBranch.resx">
+      <DependentUpon>AddEndingBranch.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BranchErrorDetails.resx">
+      <DependentUpon>BranchErrorDetails.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EndingTreeForm.resx">
+      <DependentUpon>EndingTreeForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="EndingBranchEditor.resx">
+      <DependentUpon>EndingBranchEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="StreamIdeasWindow.resx">
+      <DependentUpon>StreamIdeasWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="UsedStreamWindow.resx">
+      <DependentUpon>UsedStreamWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="packages.config" />
+    <None Include="Properties\DataSources\EndingTreeForm.datasource" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="22_save0.ico" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
