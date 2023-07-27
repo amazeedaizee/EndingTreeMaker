@@ -41,6 +41,8 @@ Ame's Parents and Music Video action events are found in the Go Out parent categ
 
 Branches and ending trees in this program also do not take into account stat changes from random noon events \(ESPECIALLY the Mentally Healthy noon events\), or removing stressful comments. When creating branches and ending trees, its also good to take into account the possibility of these events, as your branch might end in a different ending than you expect. 
 
+With that being said, Blazing Hell (which can be achieved from a random noon event while Darkness is 60+) isn't available as one of the endings you can choose when making or editing a branch, nor the program will predict if Blazing Hell is an expected ending. This program only focuses on endings that don't rely on RNG to get. If you're aiming for a 100% endings run, you should take into account Blazing Hell when planning your branches and your ending tree.
+
 **Also this is actually the first program I wrote, so some stuff might not be completely perfect. (that's why this program is only available on Windows.) If something doesn't work as intended, I apologize in advance!**
 
 ## Other
