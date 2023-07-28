@@ -1451,13 +1451,13 @@ namespace NSOEndingTreeMaker
             if (validBranch.Count > 0)
             {
                 BranchErrorDetails errorWindow = new(validBranch, true);
-                errorWindow.ShowDialog();
+                errorWindow.Show();
                 return;
             }
             else if (branchConflicts.Count > 0)
             {
                 BranchErrorDetails errorWindow = new(branchConflicts, true);
-                errorWindow.ShowDialog();
+                errorWindow.Show();
                 return;
             }
             (int, int, EndingType) checkEnding = ExpectedEnding;

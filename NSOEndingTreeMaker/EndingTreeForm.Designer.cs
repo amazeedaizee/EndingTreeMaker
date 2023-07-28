@@ -117,7 +117,7 @@
             this.LoadEndingTreeButton.TabIndex = 1;
             this.LoadEndingTreeButton.Text = "Load Ending Tree";
             this.LoadEndingTreeButton.UseVisualStyleBackColor = true;
-            this.LoadEndingTreeButton.Click += new System.EventHandler(this.LoadEndingTreeButton_Click);
+            this.LoadEndingTreeButton.Click += new System.EventHandler(this.LoadEndingTree);
             // 
             // SaveEndingTreeButton
             // 
@@ -127,7 +127,7 @@
             this.SaveEndingTreeButton.TabIndex = 2;
             this.SaveEndingTreeButton.Text = "Save Ending Tree";
             this.SaveEndingTreeButton.UseVisualStyleBackColor = true;
-            this.SaveEndingTreeButton.Click += new System.EventHandler(this.SaveEndingTreeButton_Click);
+            this.SaveEndingTreeButton.Click += new System.EventHandler(this.SaveEndingTree);
             // 
             // ExportEndingTreeButton
             // 
@@ -137,7 +137,7 @@
             this.ExportEndingTreeButton.TabIndex = 3;
             this.ExportEndingTreeButton.Text = "Export Ending Tree As CSV";
             this.ExportEndingTreeButton.UseVisualStyleBackColor = true;
-            this.ExportEndingTreeButton.Click += new System.EventHandler(this.ExportEndingTreeButton_Click);
+            this.ExportEndingTreeButton.Click += new System.EventHandler(this.ExportEndingTreeToCSV);
             // 
             // EndingListView
             // 

@@ -528,7 +528,7 @@ namespace NSOEndingTreeMaker
         }
 
 
-        private void SaveEndingTreeButton_Click(object sender, EventArgs e)
+        private void SaveEndingTree(object sender, EventArgs e)
         {
             Stream stream;
             SaveFileDialog saveEndingTree = new SaveFileDialog();
@@ -553,7 +553,7 @@ namespace NSOEndingTreeMaker
 
         }
 
-        private void LoadEndingTreeButton_Click(object sender, EventArgs e)
+        private void LoadEndingTree(object sender, EventArgs e)
         {
             OpenFileDialog openEndingTree = new OpenFileDialog();
             openEndingTree.InitialDirectory = !string.IsNullOrEmpty(_directoryToOpen) ? _directoryToOpen : PathToGameModOrDocuments();
@@ -655,7 +655,7 @@ namespace NSOEndingTreeMaker
             CurrentEndingTree.Notes = Notes.Text;
         }
 
-        private void ExportEndingTreeButton_Click(object sender, EventArgs e)
+        private void ExportEndingTreeToCSV(object sender, EventArgs e)
         {
             SaveFileDialog saveEndingTree = new SaveFileDialog();
             saveEndingTree.InitialDirectory = !string.IsNullOrEmpty(_directoryToExport) ? _directoryToExport : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
