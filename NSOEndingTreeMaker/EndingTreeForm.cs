@@ -638,6 +638,7 @@ namespace NSOEndingTreeMaker
             if (selectedEndings.Count == 0 || selectedEndings.Count > 1)
             {
                 EditEndingBranch.Enabled = false;
+                return;
             }
             EndingBranchEditor editor = new(SelectedEnding, this);
             editor.Show();
