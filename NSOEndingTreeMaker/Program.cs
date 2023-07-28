@@ -36,7 +36,7 @@ namespace NSOEndingTreeMaker
             {
                 return Assembly.LoadFrom(gamePath + requestedAssemblyName + ".dll");
             }
-            catch (Exception ex)
+            catch
             {
                 return null;
             }

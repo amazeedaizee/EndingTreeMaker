@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Win32;
+using Newtonsoft.Json;
 using ngov3;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,26 @@ namespace NSOEndingTreeMaker
             InitializeComponent();
         }
 
+        private string InitializeValidGamePath()
+        {
+            string gamePath;
+            if (Environment.Is64BitOperatingSystem)
+            {
+                gamePath = (string)RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 1451940", false).GetValue("InstallLocation");
+            }
+            else
+            {
+                gamePath = (string)RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 1451940", false).GetValue("InstallLocation");
+            }
+            return gamePath;
+        }
+
+        private string PathToGameModOrDocuments()
+        {
+            string gameModPath = InitializeValidGamePath() + "\\BepInEx\\plugins\\EndingTreeSimulator";
+            if (!Directory.Exists(gameModPath)) return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            return gameModPath;
+        }
         private EndingTreeData MakeFirstTree()
         {
             EndingBranchData TestEndingBranch = new EndingBranchData(1, NGO.EndingType.Ending_None, new List<TargetActionData>()
@@ -511,7 +532,7 @@ namespace NSOEndingTreeMaker
         {
             Stream stream;
             SaveFileDialog saveEndingTree = new SaveFileDialog();
-            saveEndingTree.InitialDirectory = !string.IsNullOrEmpty(_directoryToOpen) ? _directoryToOpen : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            saveEndingTree.InitialDirectory = !string.IsNullOrEmpty(_directoryToOpen) ? _directoryToOpen : PathToGameModOrDocuments();
             saveEndingTree.Filter = "JSON File (*.json)|*.json";
             saveEndingTree.FilterIndex = 1;
             saveEndingTree.RestoreDirectory = true;
@@ -535,7 +556,7 @@ namespace NSOEndingTreeMaker
         private void LoadEndingTreeButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog openEndingTree = new OpenFileDialog();
-            openEndingTree.InitialDirectory = !string.IsNullOrEmpty(_directoryToOpen) ? _directoryToOpen : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            openEndingTree.InitialDirectory = !string.IsNullOrEmpty(_directoryToOpen) ? _directoryToOpen : PathToGameModOrDocuments();
             openEndingTree.Filter = "JSON File (*.json)|*.json";
             openEndingTree.FilterIndex = 1;
             openEndingTree.RestoreDirectory = true;
