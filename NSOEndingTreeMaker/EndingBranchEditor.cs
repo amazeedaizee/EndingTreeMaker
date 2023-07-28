@@ -992,7 +992,7 @@ namespace NSOEndingTreeMaker
             switch (ParentAction_Dropdown.SelectedIndex)
             {
                 case -1:
-                    if (selectedActions.Count == 0 || (selectedActions.Count > 0 && ActionListView.SelectedIndices[0] == 0)) break; 
+                    if (selectedActions.Count > 0 && ActionListView.SelectedIndices[0] == 0) break; 
                     MessageBox.Show("Parent action cannot be empty.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 case 0:
@@ -1740,6 +1740,7 @@ namespace NSOEndingTreeMaker
         }
         void CopyActions()
         {
+            if (ActionListView.SelectedIndices.Count == 0) return;
             var clonedList = CreateListCopy().ToArray();
             Clipboard.SetDataObject(clonedList);
         }

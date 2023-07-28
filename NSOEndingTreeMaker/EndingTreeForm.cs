@@ -51,7 +51,7 @@ namespace NSOEndingTreeMaker
             {
                 new(1, 2, ngov3.CmdType.None),
 
-            }, true);
+            });
 
 
             EndingTreeData data = new(new() { TestEndingBranch });
@@ -632,16 +632,15 @@ namespace NSOEndingTreeMaker
             if (SelectedEnding == null || selectedEndings.Count == 0)
             {
                 AddEndingBranch newEnding = new(this);
-                newEnding.ShowDialog();
+                newEnding.Show();
                 return;
             }
             if (selectedEndings.Count == 0 || selectedEndings.Count > 1)
             {
                 EditEndingBranch.Enabled = false;
-                return;
             }
             EndingBranchEditor editor = new(SelectedEnding, this);
-            editor.ShowDialog();
+            editor.Show();
         }
 
         private void EndingTreeForm_Leave(object sender, EventArgs e)
