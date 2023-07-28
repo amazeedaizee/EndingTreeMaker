@@ -979,12 +979,12 @@ namespace NSOEndingTreeMaker
         {
             CmdType command = CmdType.None;
             var selectedActions = ActionListView.SelectedIndices;
-            if (DayPart_Dropdown.SelectedIndex == -1 && selectedActions.Count == 0 || (selectedActions.Count == 1 && ActionListView.SelectedIndices[0] != 0))
+            if (DayPart_Dropdown.SelectedIndex == -1 && (selectedActions.Count == 0 || (selectedActions.Count == 1 && ActionListView.SelectedIndices[0] != 0)))
             {
                 MessageBox.Show("Time of Day cannot be empty.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if (ParentAction_Dropdown.SelectedIndex > 0 && Action_Dropdown.SelectedIndex == -1 && selectedActions.Count == 0 || (selectedActions.Count > 0 && ActionListView.SelectedIndices[0] != 0))
+            if (ParentAction_Dropdown.SelectedIndex > 0 && Action_Dropdown.SelectedIndex == -1 && (selectedActions.Count == 0 || (selectedActions.Count > 0 && ActionListView.SelectedIndices[0] != 0)))
             {
                 MessageBox.Show("Action cannot be empty.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
