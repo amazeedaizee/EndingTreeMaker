@@ -1082,7 +1082,7 @@ namespace NSOEndingTreeMaker
                 int index = ActionList.IndexOf(SelectedAction);
                 if (!(moveSelected.TargetAction.DayIndex == actionToUndo.TargetAction.DayIndex && moveSelected.TargetAction.DayPart == actionToUndo.TargetAction.DayPart && moveSelected.Command == actionToUndo.Command && moveSelected.TargetAction.IgnoreDM == actionToUndo.TargetAction.IgnoreDM))
                 {
-                    EditHistory.undoActions.Add(new() { new(EditType.Edit, index, actionToUndo) });
+                    EditHistory.undoActions.Add(new() { new(EditType.Edit, index, actionToUndo, moveSelected) });
                     EditHistory.redoActions.Clear();
                 }
                 ActionListView.Items.RemoveAt(index);
@@ -1110,7 +1110,7 @@ namespace NSOEndingTreeMaker
                         continue;
                     }
                     var newAction = new TargetActionData(selectedDatas[i].TargetAction.DayIndex, selectedDatas[i].TargetAction.DayPart, command, IgnoreDMCheck.Checked);
-                    var undoObj = new ActionHistoryObj(EditType.Edit, selectedIndexes[i], ActionList[selectedIndexes[i]]);
+                    var undoObj = new ActionHistoryObj(EditType.Edit, selectedIndexes[i], ActionList[selectedIndexes[i]], newAction);
                     if (!(newAction.TargetAction.DayIndex == selectedDatas[i].TargetAction.DayIndex && newAction.TargetAction.DayPart == selectedDatas[i].TargetAction.DayPart && newAction.Command == selectedDatas[i].Command && newAction.TargetAction.IgnoreDM == selectedDatas[i].TargetAction.IgnoreDM))
                     {
                         listForUndoHistory.Add(undoObj);
@@ -1173,7 +1173,7 @@ namespace NSOEndingTreeMaker
                     MainForm.ResetStartingDayData(UnsavedEndingBranchData, index - 1);
                     if (ActionList[0].TargetAction.DayIndex != newAction.TargetAction.DayIndex)
                     {
-                        EditHistory.undoActions.Add(new() { new ActionHistoryObj(EditType.Edit, 0, ActionList[0]) });
+                        EditHistory.undoActions.Add(new() { new ActionHistoryObj(EditType.Edit, 0, ActionList[0], newAction) });
                         EditHistory.redoActions.Clear();
                     }
                     ActionList[0] = newAction;
@@ -1234,7 +1234,7 @@ namespace NSOEndingTreeMaker
                     }
                 }
                 catch (ArgumentOutOfRangeException) { return; }
-
+                return;
             }
             if (selectedActions.Count > 1)
             {
@@ -1764,7 +1764,7 @@ namespace NSOEndingTreeMaker
                         int actionIndex = ActionList.IndexOf(existingAction);
                         if (!(existingAction.Command == pasteList[i].Command && existingAction.TargetAction.IgnoreDM == pasteList[i].TargetAction.IgnoreDM))
                         {
-                            var undoObj = new ActionHistoryObj(EditType.Edit, actionIndex, existingAction);
+                            var undoObj = new ActionHistoryObj(EditType.Edit, actionIndex, existingAction, pasteList[i]);
                             listForUndoHistory.Add(undoObj);
                         }
                         ActionListView.Items.RemoveAt(actionIndex);
@@ -1955,14 +1955,17 @@ namespace NSOEndingTreeMaker
                         redoType = EditType.Delete;
                         break;
                 }
+                
                 var redoAction = new ActionHistoryObj(redoType, listToUse[i].ActionIndex, listToUse[i].Action);
-                var actionInActionList = ActionList.Find(a => a.TargetAction.DayIndex == listToUse[i].Action.TargetAction.DayIndex && a.TargetAction.DayPart == listToUse[i].Action.TargetAction.DayPart);
                 var index = 0;
                 index = listToUse[i].ActionIndex;
-                if (actionInActionList != null && listToUse[i].EditType == EditType.Edit)
+                if (redoType == EditType.Edit)
                 {
-                    index = ActionList.IndexOf(actionInActionList);
-                    redoAction.Action = actionInActionList;
+                    var act = listToUse[i].ActionAfterEdit;
+                    index = ActionList.FindIndex(a => a.TargetAction.DayIndex == act.TargetAction.DayIndex && a.TargetAction.DayPart == act.TargetAction.DayPart && a.Command == act.Command);
+                    redoAction.ActionIndex = index;
+                    redoAction.Action = new TargetActionData(act);
+                    redoAction.ActionAfterEdit = new TargetActionData(listToUse[i].Action);
                 }
                 listToEdit.Add(redoAction);
                 if (listToUse[i].EditType == EditType.Delete)

@@ -30,6 +30,14 @@ namespace NSOEndingTreeMaker
         [JsonConstructor]
         public TargetActionData() { }
 
+        public TargetActionData(TargetActionData action)
+        {
+            var t = action.TargetAction;
+            TargetAction = new TargetAction_Stub(t.DayIndex, t.DayPart, t.Action, t.IgnoreDM);
+            ActionName = action.ActionName;
+            Command = action.Command;
+            CommandResult = NSOCommandManager.CmdTypeToCommand(Command);
+        }
         public TargetActionData(TargetAction_Stub TargetAction, string action, CommandAction command = null)
         {
             this.TargetAction = TargetAction;

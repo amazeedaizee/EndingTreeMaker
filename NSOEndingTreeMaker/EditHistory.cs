@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace NSOEndingTreeMaker
 {
@@ -12,12 +13,15 @@ namespace NSOEndingTreeMaker
         public EditType EditType;
         public int ActionIndex;
         public TargetActionData Action;
+        public TargetActionData ActionAfterEdit;
 
-        public ActionHistoryObj(EditType editType, int index, TargetActionData action)
+        public ActionHistoryObj(EditType editType, int index, TargetActionData action, TargetActionData actionAfterEdit = null)
         {
             EditType = editType;
             this.ActionIndex = index;
             Action = new TargetActionData(action.TargetAction.DayIndex, action.TargetAction.DayPart, action.Command, action.TargetAction.IgnoreDM);
+            if (actionAfterEdit != null) 
+               ActionAfterEdit = new TargetActionData(actionAfterEdit.TargetAction.DayIndex, actionAfterEdit.TargetAction.DayPart, actionAfterEdit.Command, actionAfterEdit.TargetAction.IgnoreDM);
         }
     }
     public class EditHistory
@@ -27,7 +31,6 @@ namespace NSOEndingTreeMaker
 
         public EditHistory()
         {
-            undoActions.Capacity = 20;
         }
     }
 }
