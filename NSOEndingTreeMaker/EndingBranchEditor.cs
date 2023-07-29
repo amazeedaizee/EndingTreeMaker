@@ -27,6 +27,7 @@ namespace NSOEndingTreeMaker
         public EditHistory EditHistory = new();
 
         private bool isDeleting;
+        private bool isChanged;
 
         private string MilestoneTooltipText;
         private int tipCoordX;
@@ -976,6 +977,7 @@ namespace NSOEndingTreeMaker
                 TargetActionData newAction = new TargetActionData((int)DayIndexNumeric.Value, DayPart_Dropdown.SelectedIndex, command, IgnoreDMCheck.Checked);
                 EditHistory.undoActions.Add(new() { new ActionHistoryObj(EditType.Add, ActionList.Count, newAction) });
                 EditHistory.redoActions.Clear();
+                isChanged = true;
                 AddActionVisualData(newAction, true);
                 InitializeBreakdown();
                 ChangeNumeralDropdowns(newAction);
@@ -999,6 +1001,7 @@ namespace NSOEndingTreeMaker
                 int index = ActionList.IndexOf(SelectedAction);
                 if (!(moveSelected.TargetAction.DayIndex == actionToUndo.TargetAction.DayIndex && moveSelected.TargetAction.DayPart == actionToUndo.TargetAction.DayPart && moveSelected.Command == actionToUndo.Command && moveSelected.TargetAction.IgnoreDM == actionToUndo.TargetAction.IgnoreDM))
                 {
+                    isChanged = true;
                     EditHistory.undoActions.Add(new() { new(EditType.Edit, index, actionToUndo, moveSelected) });
                     EditHistory.redoActions.Clear();
                 }
@@ -1030,6 +1033,7 @@ namespace NSOEndingTreeMaker
                     var undoObj = new ActionHistoryObj(EditType.Edit, selectedIndexes[i], ActionList[selectedIndexes[i]], newAction);
                     if (!(newAction.TargetAction.DayIndex == selectedDatas[i].TargetAction.DayIndex && newAction.TargetAction.DayPart == selectedDatas[i].TargetAction.DayPart && newAction.Command == selectedDatas[i].Command && newAction.TargetAction.IgnoreDM == selectedDatas[i].TargetAction.IgnoreDM))
                     {
+
                         listForUndoHistory.Add(undoObj);
                     }
                     ActionList.RemoveAt(selectedIndexes[i]);
@@ -1039,6 +1043,7 @@ namespace NSOEndingTreeMaker
 
                 if (listForUndoHistory.Count > 0)
                 {
+                    isChanged = true;
                     EditHistory.undoActions.Add(listForUndoHistory);
                     EditHistory.redoActions.Clear();
                 }
@@ -1090,6 +1095,7 @@ namespace NSOEndingTreeMaker
                     MainForm.ResetStartingDayData(UnsavedEndingBranchData, index - 1);
                     if (ActionList[0].TargetAction.DayIndex != newAction.TargetAction.DayIndex)
                     {
+                        isChanged = true;
                         EditHistory.undoActions.Add(new() { new ActionHistoryObj(EditType.Edit, 0, ActionList[0], newAction) });
                         EditHistory.redoActions.Clear();
                     }
@@ -1372,7 +1378,7 @@ namespace NSOEndingTreeMaker
                 errorWindow.Show();
                 return;
             }
-            if (branchConflicts.Item2)
+            if (branchConflicts.Item2 && isChanged)
             {
                 var msgHasFutureBranchStartDays = MessageBox.Show($"Some future branches rely on this branch for stats, stream ideas, etc. By changing this branch, some of those future branches might become broken.\n\nAre you sure you want to proceed?", "Caution", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                 if (msgHasFutureBranchStartDays == DialogResult.No) return;
@@ -1434,7 +1440,7 @@ namespace NSOEndingTreeMaker
             int index = MainForm.CurrentEndingTree.EndingsList.IndexOf(SelectedEndingBranch);
             UnsavedEndingBranchData.EndingBranch.AllActions = ActionList;
             MainForm.CurrentEndingTree.EndingsList[index] = UnsavedEndingBranchData;
-            if (EditHistory.undoActions.Count > 0 && !MainForm.isBranchEdited) MainForm.isBranchEdited = true;
+            if (isChanged && !MainForm.isBranchEdited) MainForm.isBranchEdited = true;
             MainForm.SelectedEnding = null;
             Close();
         }
@@ -1697,6 +1703,7 @@ namespace NSOEndingTreeMaker
                 }
                 if (listForUndoHistory.Count > 0)
                 {
+                    isChanged = true;
                     EditHistory.undoActions.Add(listForUndoHistory);
                     EditHistory.redoActions.Clear();
                 }
@@ -1740,6 +1747,7 @@ namespace NSOEndingTreeMaker
                 }
                 if (listForUndoHistory.Count > 0)
                 {
+                    isChanged = true;
                     EditHistory.undoActions.Add(listForUndoHistory);
                     EditHistory.redoActions.Clear();
                 }
@@ -1769,6 +1777,7 @@ namespace NSOEndingTreeMaker
             EditHistory.redoActions.Add(redoActions);
             EditHistory.undoActions.Remove(undoActions);
             InitializeBreakdown();
+            if (EditHistory.undoActions.Count == 0) isChanged = false;
             return;
         }
 
@@ -1788,6 +1797,7 @@ namespace NSOEndingTreeMaker
             }
             if (listForUndoHistory.Count > 0)
             {
+                isChanged = true;
                 EditHistory.undoActions.Add(listForUndoHistory);
                 EditHistory.redoActions.Clear();
             }
