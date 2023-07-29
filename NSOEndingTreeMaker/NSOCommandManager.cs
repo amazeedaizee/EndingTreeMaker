@@ -187,7 +187,7 @@ namespace NSOEndingTreeMaker
             switch (cmd)
             {
                 case CmdType.Error:
-                    return new CommandAction("???", "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+                    return new CommandAction("Stream", "", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
                 case CmdType.Zatudan_1:
                     return streamChatOne;
                 case CmdType.Zatudan_2:
