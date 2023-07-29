@@ -374,7 +374,7 @@ namespace NSOEndingTreeMaker
             if (!ValidateEndingTree()) return false;
             Stream stream;
             var treeData = JsonConvert.SerializeObject(CurrentEndingTree, Formatting.Indented);
-            if ((stream = File.OpenWrite(pathToTree)) != null)
+            if ((stream = File.Create(pathToTree)) != null)
             {
                 stream.Write(Encoding.UTF8.GetBytes(treeData), 0, Encoding.UTF8.GetByteCount(treeData));
                 _isNotesEdited = false;
@@ -398,7 +398,7 @@ namespace NSOEndingTreeMaker
             if (saveEndingTree.ShowDialog() == DialogResult.OK)
             {
                 var treeData = JsonConvert.SerializeObject(CurrentEndingTree, Formatting.Indented);
-                if ((stream = saveEndingTree.OpenFile()) != null)
+                if ((stream = File.Create(saveEndingTree.FileName)) != null)
                 {
                     _directoryToOpen = Path.GetDirectoryName(saveEndingTree.FileName);
                     Properties.Settings.Default.Directory = _directoryToOpen;
