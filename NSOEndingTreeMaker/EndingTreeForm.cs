@@ -884,7 +884,7 @@ namespace NSOEndingTreeMaker
                 LoadExistingEndingTree(_recentlyClosed);
             else if (e.KeyCode == Keys.O && e.Control)
                 LoadEndingTree();
-            else if (e.KeyCode == Keys.R && e.Shift && e.Control)
+            else if (e.KeyCode == Keys.Z && e.Shift && e.Control)
                 ReloadEndingTree();
             else if (e.KeyCode == Keys.E && e.Control)
                 ExportEndingTreeToCSV();

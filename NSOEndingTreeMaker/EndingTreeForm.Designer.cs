@@ -42,54 +42,54 @@
             this.IsStressBreakdownColumn = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.File_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newEndingTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.openEndingTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openRecentEndingTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.saveEndingTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveEndingTreeAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
             this.exportTreeAsCSVToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
+            this.resetEndingTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Favorites_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.slot1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.Slot1_Name = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.saveTreeToSlot1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadTreeFromSlot1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.slot2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.Slot2_Name = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.saveTreeToSlot2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadTreeFromSlot2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.slot3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.Slot3_Name = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
             this.saveTreeToSlot3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadTreeFromSlot3ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.slot4ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.Slot4_Name = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
             this.saveTreeToSlot5ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadTreeFromSlot4ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.slot5ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.Slot5_Name = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.saveTreeToSlot5ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.loadTreeFromSlot5ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.EndingSim_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setCurrentTreeAsMainSimulationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.setSlot1TreeAsMainSimulationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setSlot2TreeAsMainSimulationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setSlot3TreeAsMainSimulationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.setSlot4TreeAsMainSimulationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setSlot5TreeAsMainSimulationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.openSimulationLogsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.resetEndingTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
-            this.Slot1_Name = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
-            this.Slot2_Name = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
-            this.Slot3_Name = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator7 = new System.Windows.Forms.ToolStripSeparator();
-            this.Slot4_Name = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator8 = new System.Windows.Forms.ToolStripSeparator();
-            this.Slot5_Name = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator9 = new System.Windows.Forms.ToolStripSeparator();
             this.PlayGame_Button = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
-            this.newEndingTreeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CurrentEndingTree_Group.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -227,6 +227,19 @@
             this.File_MenuItem.Size = new System.Drawing.Size(37, 20);
             this.File_MenuItem.Text = "File";
             // 
+            // newEndingTreeToolStripMenuItem
+            // 
+            this.newEndingTreeToolStripMenuItem.Name = "newEndingTreeToolStripMenuItem";
+            this.newEndingTreeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this.newEndingTreeToolStripMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.newEndingTreeToolStripMenuItem.Text = "New Ending Tree";
+            this.newEndingTreeToolStripMenuItem.Click += new System.EventHandler(this.newEndingTreeToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator4
+            // 
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(309, 6);
+            // 
             // openEndingTreeToolStripMenuItem
             // 
             this.openEndingTreeToolStripMenuItem.Name = "openEndingTreeToolStripMenuItem";
@@ -266,6 +279,11 @@
             this.saveEndingTreeAsToolStripMenuItem.Text = "Save Ending Tree as...";
             this.saveEndingTreeAsToolStripMenuItem.Click += new System.EventHandler(this.saveEndingTreeAsToolStripMenuItem_Click);
             // 
+            // toolStripSeparator10
+            // 
+            this.toolStripSeparator10.Name = "toolStripSeparator10";
+            this.toolStripSeparator10.Size = new System.Drawing.Size(309, 6);
+            // 
             // exportTreeAsCSVToolStripMenuItem
             // 
             this.exportTreeAsCSVToolStripMenuItem.Name = "exportTreeAsCSVToolStripMenuItem";
@@ -273,6 +291,20 @@
             this.exportTreeAsCSVToolStripMenuItem.Size = new System.Drawing.Size(312, 22);
             this.exportTreeAsCSVToolStripMenuItem.Text = "Export Ending Tree as CSV";
             this.exportTreeAsCSVToolStripMenuItem.Click += new System.EventHandler(this.exportTreeAsCSVToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator11
+            // 
+            this.toolStripSeparator11.Name = "toolStripSeparator11";
+            this.toolStripSeparator11.Size = new System.Drawing.Size(309, 6);
+            // 
+            // resetEndingTreeToolStripMenuItem
+            // 
+            this.resetEndingTreeToolStripMenuItem.Name = "resetEndingTreeToolStripMenuItem";
+            this.resetEndingTreeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.Z)));
+            this.resetEndingTreeToolStripMenuItem.Size = new System.Drawing.Size(312, 22);
+            this.resetEndingTreeToolStripMenuItem.Text = "Reset Ending Tree To Last Saved";
+            this.resetEndingTreeToolStripMenuItem.Click += new System.EventHandler(this.resetEndingTreeToolStripMenuItem_Click);
             // 
             // Favorites_MenuItem
             // 
@@ -294,8 +326,20 @@
             this.saveTreeToSlot1ToolStripMenuItem,
             this.loadTreeFromSlot1ToolStripMenuItem});
             this.slot1ToolStripMenuItem.Name = "slot1ToolStripMenuItem";
-            this.slot1ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.slot1ToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.slot1ToolStripMenuItem.Text = "Slot 1";
+            // 
+            // Slot1_Name
+            // 
+            this.Slot1_Name.Enabled = false;
+            this.Slot1_Name.Name = "Slot1_Name";
+            this.Slot1_Name.Size = new System.Drawing.Size(220, 22);
+            this.Slot1_Name.Text = "(none)";
+            // 
+            // toolStripSeparator5
+            // 
+            this.toolStripSeparator5.Name = "toolStripSeparator5";
+            this.toolStripSeparator5.Size = new System.Drawing.Size(217, 6);
             // 
             // saveTreeToSlot1ToolStripMenuItem
             // 
@@ -321,8 +365,20 @@
             this.saveTreeToSlot2ToolStripMenuItem,
             this.loadTreeFromSlot2ToolStripMenuItem});
             this.slot2ToolStripMenuItem.Name = "slot2ToolStripMenuItem";
-            this.slot2ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.slot2ToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.slot2ToolStripMenuItem.Text = "Slot 2";
+            // 
+            // Slot2_Name
+            // 
+            this.Slot2_Name.Enabled = false;
+            this.Slot2_Name.Name = "Slot2_Name";
+            this.Slot2_Name.Size = new System.Drawing.Size(220, 22);
+            this.Slot2_Name.Text = "(none)";
+            // 
+            // toolStripSeparator6
+            // 
+            this.toolStripSeparator6.Name = "toolStripSeparator6";
+            this.toolStripSeparator6.Size = new System.Drawing.Size(217, 6);
             // 
             // saveTreeToSlot2ToolStripMenuItem
             // 
@@ -348,8 +404,20 @@
             this.saveTreeToSlot3ToolStripMenuItem,
             this.loadTreeFromSlot3ToolStripMenuItem});
             this.slot3ToolStripMenuItem.Name = "slot3ToolStripMenuItem";
-            this.slot3ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.slot3ToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.slot3ToolStripMenuItem.Text = "Slot 3";
+            // 
+            // Slot3_Name
+            // 
+            this.Slot3_Name.Enabled = false;
+            this.Slot3_Name.Name = "Slot3_Name";
+            this.Slot3_Name.Size = new System.Drawing.Size(220, 22);
+            this.Slot3_Name.Text = "(none)";
+            // 
+            // toolStripSeparator7
+            // 
+            this.toolStripSeparator7.Name = "toolStripSeparator7";
+            this.toolStripSeparator7.Size = new System.Drawing.Size(217, 6);
             // 
             // saveTreeToSlot3ToolStripMenuItem
             // 
@@ -375,8 +443,20 @@
             this.saveTreeToSlot5ToolStripMenuItem,
             this.loadTreeFromSlot4ToolStripMenuItem});
             this.slot4ToolStripMenuItem.Name = "slot4ToolStripMenuItem";
-            this.slot4ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.slot4ToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.slot4ToolStripMenuItem.Text = "Slot 4";
+            // 
+            // Slot4_Name
+            // 
+            this.Slot4_Name.Enabled = false;
+            this.Slot4_Name.Name = "Slot4_Name";
+            this.Slot4_Name.Size = new System.Drawing.Size(220, 22);
+            this.Slot4_Name.Text = "(none)";
+            // 
+            // toolStripSeparator8
+            // 
+            this.toolStripSeparator8.Name = "toolStripSeparator8";
+            this.toolStripSeparator8.Size = new System.Drawing.Size(217, 6);
             // 
             // saveTreeToSlot5ToolStripMenuItem
             // 
@@ -402,8 +482,20 @@
             this.saveTreeToSlot5ToolStripMenuItem1,
             this.loadTreeFromSlot5ToolStripMenuItem});
             this.slot5ToolStripMenuItem.Name = "slot5ToolStripMenuItem";
-            this.slot5ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.slot5ToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.slot5ToolStripMenuItem.Text = "Slot 5";
+            // 
+            // Slot5_Name
+            // 
+            this.Slot5_Name.Enabled = false;
+            this.Slot5_Name.Name = "Slot5_Name";
+            this.Slot5_Name.Size = new System.Drawing.Size(220, 22);
+            this.Slot5_Name.Text = "(none)";
+            // 
+            // toolStripSeparator9
+            // 
+            this.toolStripSeparator9.Name = "toolStripSeparator9";
+            this.toolStripSeparator9.Size = new System.Drawing.Size(217, 6);
             // 
             // saveTreeToSlot5ToolStripMenuItem1
             // 
@@ -445,6 +537,11 @@
             this.setCurrentTreeAsMainSimulationToolStripMenuItem.Text = "Set Current Tree as Main Simulation";
             this.setCurrentTreeAsMainSimulationToolStripMenuItem.Click += new System.EventHandler(this.setCurrentTreeAsMainSimulationToolStripMenuItem_Click);
             // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(358, 6);
+            // 
             // setSlot1TreeAsMainSimulationToolStripMenuItem
             // 
             this.setSlot1TreeAsMainSimulationToolStripMenuItem.Name = "setSlot1TreeAsMainSimulationToolStripMenuItem";
@@ -465,11 +562,6 @@
             this.setSlot3TreeAsMainSimulationToolStripMenuItem.Size = new System.Drawing.Size(361, 22);
             this.setSlot3TreeAsMainSimulationToolStripMenuItem.Text = "Set Slot 3 Tree as Main Simulation";
             this.setSlot3TreeAsMainSimulationToolStripMenuItem.Click += new System.EventHandler(this.setSlot3TreeAsMainSimulationToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(358, 6);
             // 
             // setSlot4TreeAsMainSimulationToolStripMenuItem
             // 
@@ -497,80 +589,6 @@
             this.openSimulationLogsToolStripMenuItem.Text = "Open Simulation Logs";
             this.openSimulationLogsToolStripMenuItem.Click += new System.EventHandler(this.openSimulationLogsToolStripMenuItem_Click);
             // 
-            // resetEndingTreeToolStripMenuItem
-            // 
-            this.resetEndingTreeToolStripMenuItem.Name = "resetEndingTreeToolStripMenuItem";
-            this.resetEndingTreeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.R)));
-            this.resetEndingTreeToolStripMenuItem.Size = new System.Drawing.Size(312, 22);
-            this.resetEndingTreeToolStripMenuItem.Text = "Reset Ending Tree To Last Saved";
-            this.resetEndingTreeToolStripMenuItem.Click += new System.EventHandler(this.resetEndingTreeToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator4
-            // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(309, 6);
-            // 
-            // Slot1_Name
-            // 
-            this.Slot1_Name.Enabled = false;
-            this.Slot1_Name.Name = "Slot1_Name";
-            this.Slot1_Name.Size = new System.Drawing.Size(220, 22);
-            this.Slot1_Name.Text = "(none)";
-            // 
-            // toolStripSeparator5
-            // 
-            this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(217, 6);
-            // 
-            // Slot2_Name
-            // 
-            this.Slot2_Name.Enabled = false;
-            this.Slot2_Name.Name = "Slot2_Name";
-            this.Slot2_Name.Size = new System.Drawing.Size(220, 22);
-            this.Slot2_Name.Text = "(none)";
-            // 
-            // toolStripSeparator6
-            // 
-            this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(217, 6);
-            // 
-            // Slot3_Name
-            // 
-            this.Slot3_Name.Enabled = false;
-            this.Slot3_Name.Name = "Slot3_Name";
-            this.Slot3_Name.Size = new System.Drawing.Size(220, 22);
-            this.Slot3_Name.Text = "(none)";
-            // 
-            // toolStripSeparator7
-            // 
-            this.toolStripSeparator7.Name = "toolStripSeparator7";
-            this.toolStripSeparator7.Size = new System.Drawing.Size(217, 6);
-            // 
-            // Slot4_Name
-            // 
-            this.Slot4_Name.Enabled = false;
-            this.Slot4_Name.Name = "Slot4_Name";
-            this.Slot4_Name.Size = new System.Drawing.Size(220, 22);
-            this.Slot4_Name.Text = "(none)";
-            // 
-            // toolStripSeparator8
-            // 
-            this.toolStripSeparator8.Name = "toolStripSeparator8";
-            this.toolStripSeparator8.Size = new System.Drawing.Size(217, 6);
-            // 
-            // Slot5_Name
-            // 
-            this.Slot5_Name.Enabled = false;
-            this.Slot5_Name.Name = "Slot5_Name";
-            this.Slot5_Name.Size = new System.Drawing.Size(220, 22);
-            this.Slot5_Name.Text = "(none)";
-            // 
-            // toolStripSeparator9
-            // 
-            this.toolStripSeparator9.Name = "toolStripSeparator9";
-            this.toolStripSeparator9.Size = new System.Drawing.Size(217, 6);
-            // 
             // PlayGame_Button
             // 
             this.PlayGame_Button.Name = "PlayGame_Button";
@@ -580,24 +598,6 @@
             this.PlayGame_Button.Size = new System.Drawing.Size(361, 22);
             this.PlayGame_Button.Text = "Open NEEDY STREAMER OVERLOAD";
             this.PlayGame_Button.Click += new System.EventHandler(this.PlayGame_Button_Click);
-            // 
-            // toolStripSeparator10
-            // 
-            this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(309, 6);
-            // 
-            // toolStripSeparator11
-            // 
-            this.toolStripSeparator11.Name = "toolStripSeparator11";
-            this.toolStripSeparator11.Size = new System.Drawing.Size(309, 6);
-            // 
-            // newEndingTreeToolStripMenuItem
-            // 
-            this.newEndingTreeToolStripMenuItem.Name = "newEndingTreeToolStripMenuItem";
-            this.newEndingTreeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.newEndingTreeToolStripMenuItem.Size = new System.Drawing.Size(312, 22);
-            this.newEndingTreeToolStripMenuItem.Text = "New Ending Tree";
-            this.newEndingTreeToolStripMenuItem.Click += new System.EventHandler(this.newEndingTreeToolStripMenuItem_Click);
             // 
             // EndingTreeForm
             // 
