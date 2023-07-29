@@ -3,6 +3,7 @@ using ngov3;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Windows.Forms;
 using static NSOEndingTreeMaker.EndingBranchSubData;
@@ -744,8 +745,15 @@ namespace NSOEndingTreeMaker
                 TargetActionData pastAction = ActionList[ActionList.FindLastIndex(a => (a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart < DayPart_Dropdown.SelectedIndex) || a.TargetAction.DayIndex < DayIndexNumeric.Value)];
                 CommandAction command = SelectedAction != null ? SelectedAction.CommandResult : NSOCommandManager.CmdTypeToCommand(NewAction.Command);
                 CmdType stream = CmdType.Error;
-                if (ParentAction_Dropdown.SelectedIndex == 0 && !(StreamTopic_Dropdown.SelectedIndex == NSODataManager.StreamTopicList.IndexOf(AlphaType.Imbouron) && StreamLevelNumeric.Value == 6)) stream = (CmdType)Enum.Parse(typeof(CmdType), $"{NSODataManager.StreamTopicList[StreamTopic_Dropdown.SelectedIndex]}_{StreamLevelNumeric.Value}");
-                int followerCalc = ParentAction_Dropdown.SelectedIndex == 0 ? NSOCommandManager.CalculateFollowers(pastAction, new TargetActionData((int)DayIndexNumeric.Value, DayPart_Dropdown.SelectedIndex, stream)) : 0;
+                if (ParentAction_Dropdown.SelectedIndex == 0 && !(StreamTopic_Dropdown.SelectedIndex == NSODataManager.StreamTopicList.IndexOf(AlphaType.Imbouron) && StreamLevelNumeric.Value == 6)) 
+                    stream = (CmdType)Enum.Parse(typeof(CmdType), $"{NSODataManager.StreamTopicList[StreamTopic_Dropdown.SelectedIndex]}_{StreamLevelNumeric.Value}");
+                TargetActionData followerAction = new TargetActionData((int)DayIndexNumeric.Value, DayPart_Dropdown.SelectedIndex, stream);
+                if (command.id == "Internet: Social Media" && command.stress > 0)
+                {
+                    followerAction.TargetAction.Action = ActionType.InternetPoketter;
+                    followerAction.CommandResult = command;
+                }
+                int followerCalc = ParentAction_Dropdown.SelectedIndex == 0 || followerAction.TargetAction.Action == ActionType.InternetPoketter ? NSOCommandManager.CalculateFollowers(pastAction, followerAction) : 0;
                 int followerResult = pastAction.Followers + followerCalc;
                 int stressResult = pastAction.Stress + command.stress;
                 if (IgnoreDMCheck.Checked) stressResult += 4;
@@ -767,6 +775,7 @@ namespace NSOEndingTreeMaker
                 }
                 if (IgnoreDMCheck.Checked) affectionResult -= 5;
                 if (darknessResult > 100) darknessResult = 100;
+                SetFollowersTooltip(followerCalc, pastAction, followerAction.CommandResult);
                 FollowersDiff.Text = $"{pastAction.Followers} => {followerResult}";
                 StressDiff.Text = $"{pastAction.Stress} => {stressResult}";
                 AffectionDiff.Text = $"{pastAction.Affection} => {affectionResult}";
@@ -779,6 +788,26 @@ namespace NSOEndingTreeMaker
             {
                 ClearStatPreview();
             }
+            void SetFollowersTooltip(int followersCalculation, TargetActionData pastAction, CommandAction streamCmd)
+            {
+                if (followersCalculation == 0) 
+                {
+                    FollowerResults_Tooltip.SetToolTip(FollowersDiff, "");
+                    return;
+                }
+                double followerBase = Math.Min((float)(Math.Log10(pastAction.Followers) * 25f), Math.Floor(pastAction.Followers / 100.0));
+                string streamMultiplier = streamCmd.id == "Stream" ? $"\nStream Streak Multiplier: {pastAction.StreamStreak + 1f}" : "";
+                string preAlertMultiplier = pastAction.PreAlertBonus ? $"\nPre-Alert Multiplier: {(double)1.2f}" : "";
+                string gameMultiplier = streamCmd.name.Contains("Letsplay") ? $"\nGamer Girl Multiplier: {(double)(pastAction.GamerGirl/2f + 1f)}" : "";
+                string movieMultiplier = streamCmd.name.Contains("Nerd Talk") ? $"\nCinephile Multiplier: {(double)(pastAction.Cinephile / 2f + 1f)}" : "";
+                string impactMultiplier = streamCmd.name.Contains("Breakdown Stream") || streamCmd.name.Contains("Darkness ") ? $"\nImpact Multiplier: {(double)(pastAction.Impact / 2f + 1f)}" : "";
+                string expMultiplier = streamCmd.name.Contains("ASMR") || streamCmd.name.Contains("Sexy Stream") ? $"\nExperience Multiplier: {(double)(pastAction.Experience / 2f + 1f)}" : "";
+                string commMultiplier = streamCmd.id == "Stream" ? $"\nCommunication Multiplier: {(double)(pastAction.Communication / 10f + 1f)}" : "";
+                string holeMultiplier = pastAction.RabbitHole > 0 ? $"\nRabbit Hole Multiplier: {(double)(1f - (pastAction.RabbitHole / 100f)  )}" : "";
+                string followerDesc = $"Base Number: {followerBase}{streamMultiplier}{preAlertMultiplier}{gameMultiplier}{movieMultiplier}{impactMultiplier}{expMultiplier}{commMultiplier}{holeMultiplier}\n\nNew Followers: {followersCalculation}";
+                FollowerResults_Tooltip.SetToolTip(FollowersDiff, followerDesc);
+            }
+
             void SetStreamIdeaPreview(TargetActionData pastAction)
             {
                 var ideaAction = new TargetActionData((int)DayIndexNumeric.Value, DayPart_Dropdown.SelectedIndex, CmdType.None, IgnoreDMCheck.Checked);

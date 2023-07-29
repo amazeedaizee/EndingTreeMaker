@@ -115,17 +115,18 @@
             this.Edit_ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.Undo = new System.Windows.Forms.ToolStripMenuItem();
             this.Redo = new System.Windows.Forms.ToolStripMenuItem();
+            this.EditHistoryToClipboard = new System.Windows.Forms.ToolStripSeparator();
             this.Copy = new System.Windows.Forms.ToolStripMenuItem();
             this.Cut = new System.Windows.Forms.ToolStripMenuItem();
             this.Paste = new System.Windows.Forms.ToolStripMenuItem();
             this.PasteNewAction = new System.Windows.Forms.ToolStripMenuItem();
-            this.EditHistoryToClipboard = new System.Windows.Forms.ToolStripSeparator();
             this.BranchToolStrip = new System.Windows.Forms.ToolStrip();
-            this.Branch_ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.resetEndingBranchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStrip_Branch = new System.Windows.Forms.ToolStripDropDownButton();
             this.ToolStrip_Edit = new System.Windows.Forms.ToolStripDropDownButton();
+            this.Branch_ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.saveEndingBranchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resetEndingBranchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.FollowerResults_Tooltip = new System.Windows.Forms.ToolTip(this.components);
             this.EndingToGet_Group.SuspendLayout();
             this.ActionStatDelta.SuspendLayout();
             this.BaseStatDelta.SuspendLayout();
@@ -1039,6 +1040,11 @@
             this.Redo.Text = "Redo";
             this.Redo.Click += new System.EventHandler(this.Redo_Click);
             // 
+            // EditHistoryToClipboard
+            // 
+            this.EditHistoryToClipboard.Name = "EditHistoryToClipboard";
+            this.EditHistoryToClipboard.Size = new System.Drawing.Size(241, 6);
+            // 
             // Copy
             // 
             this.Copy.Name = "Copy";
@@ -1072,11 +1078,6 @@
             this.PasteNewAction.Text = "Paste As New Action(s)";
             this.PasteNewAction.Click += new System.EventHandler(this.PasteNewAction_Click);
             // 
-            // EditHistoryToClipboard
-            // 
-            this.EditHistoryToClipboard.Name = "EditHistoryToClipboard";
-            this.EditHistoryToClipboard.Size = new System.Drawing.Size(241, 6);
-            // 
             // BranchToolStrip
             // 
             this.BranchToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1087,24 +1088,6 @@
             this.BranchToolStrip.Size = new System.Drawing.Size(1373, 25);
             this.BranchToolStrip.TabIndex = 24;
             this.BranchToolStrip.Text = "toolStrip1";
-            // 
-            // Branch_ContextMenuStrip
-            // 
-            this.Branch_ContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveEndingBranchToolStripMenuItem,
-            this.resetEndingBranchToolStripMenuItem});
-            this.Branch_ContextMenuStrip.Name = "Branch_ContextMenuStrip";
-            this.Branch_ContextMenuStrip.Size = new System.Drawing.Size(279, 48);
-            // 
-            // resetEndingBranchToolStripMenuItem
-            // 
-            this.resetEndingBranchToolStripMenuItem.Name = "resetEndingBranchToolStripMenuItem";
-            this.resetEndingBranchToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
-            | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.Z)));
-            this.resetEndingBranchToolStripMenuItem.Size = new System.Drawing.Size(278, 22);
-            this.resetEndingBranchToolStripMenuItem.Text = "Reset Ending Branch";
-            this.resetEndingBranchToolStripMenuItem.Click += new System.EventHandler(this.resetEndingBranchToolStripMenuItem_Click);
             // 
             // ToolStrip_Branch
             // 
@@ -1124,6 +1107,14 @@
             this.ToolStrip_Edit.Size = new System.Drawing.Size(40, 22);
             this.ToolStrip_Edit.Text = "Edit";
             // 
+            // Branch_ContextMenuStrip
+            // 
+            this.Branch_ContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveEndingBranchToolStripMenuItem,
+            this.resetEndingBranchToolStripMenuItem});
+            this.Branch_ContextMenuStrip.Name = "Branch_ContextMenuStrip";
+            this.Branch_ContextMenuStrip.Size = new System.Drawing.Size(279, 48);
+            // 
             // saveEndingBranchToolStripMenuItem
             // 
             this.saveEndingBranchToolStripMenuItem.Name = "saveEndingBranchToolStripMenuItem";
@@ -1131,6 +1122,21 @@
             this.saveEndingBranchToolStripMenuItem.Size = new System.Drawing.Size(278, 22);
             this.saveEndingBranchToolStripMenuItem.Text = "Save Ending Branch";
             this.saveEndingBranchToolStripMenuItem.Click += new System.EventHandler(this.saveEndingBranchToolStripMenuItem_Click);
+            // 
+            // resetEndingBranchToolStripMenuItem
+            // 
+            this.resetEndingBranchToolStripMenuItem.Name = "resetEndingBranchToolStripMenuItem";
+            this.resetEndingBranchToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
+            | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.Z)));
+            this.resetEndingBranchToolStripMenuItem.Size = new System.Drawing.Size(278, 22);
+            this.resetEndingBranchToolStripMenuItem.Text = "Reset Ending Branch";
+            this.resetEndingBranchToolStripMenuItem.Click += new System.EventHandler(this.resetEndingBranchToolStripMenuItem_Click);
+            // 
+            // FollowerResults_Tooltip
+            // 
+            this.FollowerResults_Tooltip.IsBalloon = true;
+            this.FollowerResults_Tooltip.ToolTipTitle = "Followers calculated from:";
             // 
             // EndingBranchEditor
             // 
@@ -1280,5 +1286,6 @@
         private System.Windows.Forms.ToolStripDropDownButton ToolStrip_Branch;
         private System.Windows.Forms.ToolStripDropDownButton ToolStrip_Edit;
         private System.Windows.Forms.ToolStripMenuItem saveEndingBranchToolStripMenuItem;
+        private System.Windows.Forms.ToolTip FollowerResults_Tooltip;
     }
 }

@@ -106,81 +106,81 @@ namespace NSOEndingTreeMaker
 
         public static CommandAction streamOne = new CommandAction("First Streams", "FirstStream", 1000, 5, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0);
 
-        public static CommandAction streamChatOne = new CommandAction("Chat & Chill 1", "Hi", 1, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamChatTwo = new CommandAction("Chat & Chill 2", "Hi", 4, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamChatThree = new CommandAction("Chat & Chill 3", "Hi", 8, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamChatFour = new CommandAction("Chat & Chill 4", "Hi", 16, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamChatFive = new CommandAction("Chat & Chill 5", "Hi", 48, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamChatOne = new CommandAction("Stream", "Chat & Chill 1", 1, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamChatTwo = new CommandAction("Stream", "Chat & Chill 2", 4, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamChatThree = new CommandAction("Stream", "Chat & Chill 3", 8, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamChatFour = new CommandAction("Stream", "Chat & Chill 4", 16, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamChatFive = new CommandAction("Stream", "Chat & Chill 5", 48, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
 
-        public static CommandAction streamGameOne = new CommandAction("Letsplay 1", "Hi", 3, 18, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1);
-        public static CommandAction streamGameTwo = new CommandAction("Letsplay 2", "Hi", 6, 18, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1);
-        public static CommandAction streamGameThree = new CommandAction("Letsplay 3", "Hi", 9, 18, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1);
-        public static CommandAction streamGameFour = new CommandAction("Letsplay 4", "Hi", 20, 18, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1);
-        public static CommandAction streamGameFive = new CommandAction("Letsplay 5", "Hi", 40, 18, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1);
+        public static CommandAction streamGameOne = new CommandAction("Stream", "Letsplay 1", 3, 18, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1);
+        public static CommandAction streamGameTwo = new CommandAction("Stream", "Letsplay 2", 6, 18, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1);
+        public static CommandAction streamGameThree = new CommandAction("Stream", "Letsplay 3", 9, 18, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1);
+        public static CommandAction streamGameFour = new CommandAction("Stream", "Letsplay 4", 20, 18, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1);
+        public static CommandAction streamGameFive = new CommandAction("Stream", "Letsplay 5", 40, 18, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1);
 
-        public static CommandAction streamNerdOne = new CommandAction("Nerd Talk 1", "Hi", 2, 14, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamNerdTwo = new CommandAction("Nerd Talk 2", "Hi", 6, 14, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamNerdThree = new CommandAction("Nerd Talk 3", "Hi", 12, 14, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamNerdFour = new CommandAction("Nerd Talk 4", "Hi", 18, 14, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamNerdFive = new CommandAction("Nerd Talk 5", "Hi", 30, 14, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamNerdOne = new CommandAction("Stream", "Nerd Talk 1", 2, 14, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamNerdTwo = new CommandAction("Stream", "Nerd Talk 2", 6, 14, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamNerdThree = new CommandAction("Stream", "Nerd Talk 3", 12, 14, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamNerdFour = new CommandAction("Stream", "Nerd Talk 4", 18, 14, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamNerdFive = new CommandAction("Stream", "Nerd Talk 5", 30, 14, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
 
-        public static CommandAction streamAdOne = new CommandAction("Sponsorship 1", "Hi", 10, 18, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamAdTwo = new CommandAction("Sponsorship 2", "Hi", 15, 18, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamAdThree = new CommandAction("Sponsorship 3", "Hi", 20, 18, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamAdFour = new CommandAction("Sponsorship 4", "Hi", 25, 18, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamAdFive = new CommandAction("Sponsorship 5", "Hi", 30, 18, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamAdOne = new CommandAction("Stream", "Sponsorship 1", 10, 18, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamAdTwo = new CommandAction("Stream", "Sponsorship 2", 15, 18, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamAdThree = new CommandAction("Stream", "Sponsorship 3", 20, 18, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamAdFour = new CommandAction("Stream", "Sponsorship 4", 25, 18, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamAdFive = new CommandAction("Stream", "Sponsorship 5", 30, 18, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
 
-        public static CommandAction streamConspireOne = new CommandAction("Conspiracy Theories 1", "Hi", 25, 20, 0, 8, 0, 0, 1, 0, 0, 0, 1, 1, 1);
-        public static CommandAction streamConspireTwo = new CommandAction("Conspiracy Theories 2", "Hi", 25, 20, 0, 8, 0, 0, 1, 0, 0, 0, 1, 4, 1);
-        public static CommandAction streamConspireThree = new CommandAction("Conspiracy Theories 3", "Hi", 25, 20, 0, 8, 0, 0, 1, 0, 0, 0, 1, 8, 1);
-        public static CommandAction streamConspireFour = new CommandAction("Conspiracy Theories 4", "Hi", 25, 20, 0, 8, 0, 0, 1, 0, 0, 0, 1, 20, 1);
-        public static CommandAction streamConspireFive = new CommandAction("Conspiracy Theories 5", "Hi", 25, 20, 0, 8, 0, 0, 1, 0, 0, 0, 1, 40, 1);
+        public static CommandAction streamConspireOne = new CommandAction("Stream", "Conspiracy Theories 1", 25, 20, 0, 8, 0, 0, 1, 0, 0, 0, 1, 1, 1);
+        public static CommandAction streamConspireTwo = new CommandAction("Stream", "Conspiracy Theories 2", 25, 20, 0, 8, 0, 0, 1, 0, 0, 0, 1, 4, 1);
+        public static CommandAction streamConspireThree = new CommandAction("Stream", "Conspiracy Theories 3", 25, 20, 0, 8, 0, 0, 1, 0, 0, 0, 1, 8, 1);
+        public static CommandAction streamConspireFour = new CommandAction("Stream", "Conspiracy Theories 4", 25, 20, 0, 8, 0, 0, 1, 0, 0, 0, 1, 20, 1);
+        public static CommandAction streamConspireFive = new CommandAction("Stream", "Conspiracy Theories 5", 25, 20, 0, 8, 0, 0, 1, 0, 0, 0, 1, 40, 1);
 
-        public static CommandAction streamNetloreOne = new CommandAction("Netlore 1", "Hi", 3, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamNetloreTwo = new CommandAction("Netlore 2", "Hi", 6, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamNetloreThree = new CommandAction("Netlore 3", "Hi", 9, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamNetloreFour = new CommandAction("Netlore 4", "Hi", 20, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamNetloreFive = new CommandAction("Netlore 5", "Hi", 40, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamNetloreOne = new CommandAction("Stream", "Netlore 1", 3, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamNetloreTwo = new CommandAction("Stream", "Netlore 2", 6, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamNetloreThree = new CommandAction("Stream", "Netlore 3", 9, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamNetloreFour = new CommandAction("Stream", "Netlore 4", 20, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamNetloreFive = new CommandAction("Stream", "Netlore 5", 40, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
 
-        public static CommandAction streamASMROne = new CommandAction("ASMR 1", "Hi", 10, 24, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamASMRTwo = new CommandAction("ASMR 2", "Hi", 14, 24, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamASMRThree = new CommandAction("ASMR 3", "Hi", 20, 24, -4, 4, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamASMRFour = new CommandAction("ASMR 4", "Hi", 30, 24, -8, 4, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamASMRFive = new CommandAction("ASMR 5", "Hi", 40, 24, -12, 8, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamASMROne = new CommandAction("Stream", "ASMR 1", 10, 24, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamASMRTwo = new CommandAction("Stream", "ASMR 2", 14, 24, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamASMRThree = new CommandAction("Stream", "ASMR 3", 20, 24, -4, 4, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamASMRFour = new CommandAction("Stream", "ASMR 4", 30, 24, -8, 4, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamASMRFive = new CommandAction("Stream", "ASMR 5", 40, 24, -12, 8, 0, 0, 1, 0, 0, 0, 1, 0, 1);
 
-        public static CommandAction streamSexyOne = new CommandAction("Sexy Stream 1", "Hi", 30, 28, -15, 8, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamSexyTwo = new CommandAction("Sexy Stream 2", "Hi", 32, 28, -15, 8, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamSexyThree = new CommandAction("Sexy Stream 3", "Hi", 35, 28, -15, 8, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamSexyFour = new CommandAction("Sexy Stream 4", "Hi", 40, 28, -15, 8, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamSexyFive = new CommandAction("Sexy Stream 5", "Hi", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+        public static CommandAction streamSexyOne = new CommandAction("Stream", "Sexy Stream 1", 30, 28, -15, 8, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamSexyTwo = new CommandAction("Stream", "Sexy Stream 2", 32, 28, -15, 8, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamSexyThree = new CommandAction("Stream", "Sexy Stream 3", 35, 28, -15, 8, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamSexyFour = new CommandAction("Stream", "Sexy Stream 4", 40, 28, -15, 8, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamSexyFive = new CommandAction("Stream", "Sexy Stream 5", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
-        public static CommandAction streamPodcastOne = new CommandAction("Angel Explain 1", "Hi", 2, 14, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamPodcastTwo = new CommandAction("Angel Explain 2", "Hi", 4, 14, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamPodcastThree = new CommandAction("Angel Explain 3", "Hi", 8, 14, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamPodcastFour = new CommandAction("Angel Explain 4", "Hi", 12, 14, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamPodcastFive = new CommandAction("Angel Explain 5", "Hi", 30, 14, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamPodcastOne = new CommandAction("Stream", "Angel Explain 1", 2, 14, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamPodcastTwo = new CommandAction("Stream", "Angel Explain 2", 4, 14, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamPodcastThree = new CommandAction("Stream", "Angel Explain 3", 8, 14, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamPodcastFour = new CommandAction("Stream", "Angel Explain 4", 12, 14, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamPodcastFive = new CommandAction("Stream", "Angel Explain 5", 30, 14, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
 
-        public static CommandAction streamStuffOne = new CommandAction("KAngel Tries Stuff 1", "Hi", 4, 18, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamStuffTwo = new CommandAction("KAngel Tries Stuff 2", "Hi", 8, 18, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamStuffThree = new CommandAction("KAngel Tries Stuff 3", "Hi", 12, 18, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamStuffFour = new CommandAction("KAngel Tries Stuff 4", "Hi", 16, 18, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamStuffFive = new CommandAction("KAngel Tries Stuff 5", "Hi", 40, 18, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamStuffOne = new CommandAction("Stream", "KAngel Tries Stuff 1", 4, 18, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamStuffTwo = new CommandAction("Stream", "KAngel Tries Stuff 2", 8, 18, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamStuffThree = new CommandAction("Stream", "KAngel Tries Stuff 3", 12, 18, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamStuffFour = new CommandAction("Stream", "KAngel Tries Stuff 4", 16, 18, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamStuffFive = new CommandAction("Stream", "KAngel Tries Stuff 5", 40, 18, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
 
-        public static CommandAction streamBreakOne = new CommandAction("Breakdown Stream 1", "Hi", 20, 22, 0, 8, 1, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamBreakTwo = new CommandAction("Breakdown Stream 2", "Hi", 25, 22, 0, 8, 1, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamBreakThree = new CommandAction("Breakdown Stream 3", "Hi", 40, 22, 0, 8, 1, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamBreakFour = new CommandAction("Breakdown Stream 4", "Hi", 30, 22, 0, 8, 1, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamBreakFive = new CommandAction("Breakdown Stream 5", "Hi", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+        public static CommandAction streamBreakOne = new CommandAction("Stream", "Breakdown Stream 1", 20, 22, 0, 8, 1, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamBreakTwo = new CommandAction("Stream", "Breakdown Stream 2", 25, 22, 0, 8, 1, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamBreakThree = new CommandAction("Stream", "Breakdown Stream 3", 40, 22, 0, 8, 1, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamBreakFour = new CommandAction("Stream", "Breakdown Stream 4", 30, 22, 0, 8, 1, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamBreakFive = new CommandAction("Stream", "Breakdown Stream 5", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
-        public static CommandAction streamAngelOne = new CommandAction("Internet Angel 1", "Hi", 25, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamAngelTwo = new CommandAction("Internet Angel 2", "Hi", 25, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamAngelThree = new CommandAction("Internet Angel 3", "Hi", 25, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamAngelFour = new CommandAction("Internet Angel 4", "Hi", 25, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamAngelFive = new CommandAction("Internet Angel 5", "Hi", 50, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
-        public static CommandAction streamAngelSix = new CommandAction("Internet Angel 5?", "Hi", 50, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamAngelOne = new CommandAction("Stream", "Internet Angel 1", 25, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamAngelTwo = new CommandAction("Stream", "Internet Angel 2", 25, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamAngelThree = new CommandAction("Stream", "Internet Angel 3", 25, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamAngelFour = new CommandAction("Stream", "Internet Angel 4", 25, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamAngelFive = new CommandAction("Stream", "Internet Angel 5", 50, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
+        public static CommandAction streamAngelSix = new CommandAction("Stream", "Internet Angel 5?", 50, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
 
-        public static CommandAction streamDarkOne = new CommandAction("Darkness 1", "Hi", 10, 0, 0, 10, 0, 0, 1, 0, 0, 0, 0, 0, 1);
-        public static CommandAction streamDarkTwo = new CommandAction("Darkness 2", "Hi", 10, 0, 0, 10, 0, 0, 1, 0, 0, 0, 0, 0, 1);
+        public static CommandAction streamDarkOne = new CommandAction("Stream", "Darkness 1", 10, 0, 0, 10, 0, 0, 1, 0, 0, 0, 0, 0, 1);
+        public static CommandAction streamDarkTwo = new CommandAction("Stream", "Darkness 2", 10, 0, 0, 10, 0, 0, 1, 0, 0, 0, 0, 0, 1);
 
         public static CommandAction CmdTypeToCommand(CmdType cmd)
         {
