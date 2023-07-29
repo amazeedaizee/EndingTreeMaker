@@ -46,5 +46,77 @@ namespace NSOEndingTreeMaker.Properties {
                 this["ExportDirectory"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string RecentClosedEndingTree {
+            get {
+                return ((string)(this["RecentClosedEndingTree"]));
+            }
+            set {
+                this["RecentClosedEndingTree"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SlotOne {
+            get {
+                return ((string)(this["SlotOne"]));
+            }
+            set {
+                this["SlotOne"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SlotTwo {
+            get {
+                return ((string)(this["SlotTwo"]));
+            }
+            set {
+                this["SlotTwo"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SlotThree {
+            get {
+                return ((string)(this["SlotThree"]));
+            }
+            set {
+                this["SlotThree"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SlotFour {
+            get {
+                return ((string)(this["SlotFour"]));
+            }
+            set {
+                this["SlotFour"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SlotFive {
+            get {
+                return ((string)(this["SlotFive"]));
+            }
+            set {
+                this["SlotFive"] = value;
+            }
+        }
     }
 }

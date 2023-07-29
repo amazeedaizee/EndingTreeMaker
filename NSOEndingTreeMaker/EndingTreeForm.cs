@@ -1,10 +1,14 @@
 ﻿using Microsoft.Win32;
 using Newtonsoft.Json;
+using NGO;
 using ngov3;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Windows.Forms;
 
@@ -12,10 +16,24 @@ namespace NSOEndingTreeMaker
 {
     public partial class EndingTreeForm : Form
     {
+        internal bool isBranchEdited;
+        private bool _isNotesEdited;
+        private string _currentNotes;
         private string _directoryToOpen = Properties.Settings.Default.Directory;
         private string _directoryToExport = Properties.Settings.Default.ExportDirectory;
+        private string _currentFile = "";
+        private string _recentlyClosed = Properties.Settings.Default.RecentClosedEndingTree;
         public EndingTreeData CurrentEndingTree;
         public EndingBranchData SelectedEnding;
+
+        private Dictionary<int, string> _slots = new Dictionary<int, string>()
+            {
+                {1, File.Exists(Properties.Settings.Default.SlotOne) ? Properties.Settings.Default.SlotOne : "" },
+                {2, File.Exists(Properties.Settings.Default.SlotTwo) ? Properties.Settings.Default.SlotTwo : ""},
+                {3, File.Exists(Properties.Settings.Default.SlotThree) ? Properties.Settings.Default.SlotThree : ""},
+                {4, File.Exists(Properties.Settings.Default.SlotFour) ? Properties.Settings.Default.SlotFour : ""},
+                {5, File.Exists(Properties.Settings.Default.SlotFive) ? Properties.Settings.Default.SlotFive : ""},
+            };
 
         public bool DeletingEndings;
 
@@ -71,8 +89,11 @@ namespace NSOEndingTreeMaker
                     if (SetStartingAction(CurrentEndingTree.EndingsList[i], false, i - 1) == null)
                         throw new Exception($"Tried to initialize starting stats for starting day of a specific ending branch, however no valid day exists to set stats.\n\nSpecific ending branch: \nIndex: {i + 1}. \nEnding To Get: {NSODataManager.EndingNames[CurrentEndingTree.EndingsList[i].EndingBranch.EndingToGet]} \nStarting Day: {CurrentEndingTree.EndingsList[i].EndingBranch.StartingDay} \nIs Stressful Breakdown: {CurrentEndingTree.EndingsList[i].EndingBranch.IsStressfulBressdown}");
                     ResetStartingDayData(CurrentEndingTree.EndingsList[i], i - 1);
+                    CurrentEndingTree.EndingsList[i].InitializeActionStats(out EndingType end);
+                    CurrentEndingTree.EndingsList[i].EndingBranch.EndingToGet = end;
                 }
             }
+            _currentNotes = CurrentEndingTree.Notes;
             Notes.Text = CurrentEndingTree.Notes;
         }
 
@@ -267,269 +288,106 @@ namespace NSOEndingTreeMaker
             }
         }
 
-        public List<(string, string)> ValidateFutureEndingBranches(int index, EndingBranchData branch)
+        public (bool, bool, string) ValidateFutureBranchStarts(int index, EndingBranchData branch)
         {
-            List<(string branch, string errorMsg)> errorBranches = new();
+            int minStartingDay = branch.EndingBranch.StartingDay;
+            bool hasAnyFutureStartDays = false;
+            bool isValidated = true;
+            string errorMsg = "";
+            List<string> endings = new List<string>();
             int oldLatestDay = CurrentEndingTree.EndingsList[index].EndingBranch.AllActions[CurrentEndingTree.EndingsList[index].EndingBranch.AllActions.Count - 1].TargetAction.DayIndex;
-            var oldPresentBranch = CurrentEndingTree.EndingsList[index];
             for (int i = index; i < CurrentEndingTree.EndingsList.Count; i++)
             {
                 if (i == 0) continue;
                 if (i == index) continue;
                 var futureBranch = CurrentEndingTree.EndingsList[i];
                 int futureStartDay = futureBranch.EndingBranch.StartingDay;
-                int futurelatestDay = futureBranch.EndingBranch.AllActions[futureBranch.EndingBranch.AllActions.Count - 1].TargetAction.DayIndex;
-                var futureIdeas = futureBranch.StreamIdeaList;
-                var futureStreamed = futureBranch.StreamUsedList;
-                var presentIdeas_Condensed = branch.StreamIdeaList.FindAll(i => i.DayIndex < futureStartDay);
-                var futureIdeas_Condensed = futureBranch.StreamIdeaList.FindAll(i => i.DayIndex < futureStartDay);
-                var presentStreamed_Condensed = branch.StreamUsedList.FindAll(i => i.DayIndex < futureStartDay);
-                var futureStreamed_Condensed = futureBranch.StreamUsedList.FindAll(i => i.DayIndex < futureStartDay);
                 int latestDay = branch.EndingBranch.AllActions[branch.EndingBranch.AllActions.Count - 1].TargetAction.DayIndex;
-
-                var future150M = !branch.is150M.isEventing && oldPresentBranch.is150M.isEventing && futureBranch.is150M.isEventing ? futureBranch.EndingBranch.AllActions.FirstOrDefault(a => a.Followers >= 1500000 && branch.IsNotMidnightEvents(a, branch.hasGalacticRail, branch.is150M, branch.is300M, branch.is500M)) : null;
-                var future300M = !branch.is300M.isEventing && oldPresentBranch.is300M.isEventing && futureBranch.is300M.isEventing ? futureBranch.EndingBranch.AllActions.FirstOrDefault(a => (future150M == null || a != future150M) && a.Followers >= 3000000 && branch.IsNotMidnightEvents(a, branch.hasGalacticRail, branch.is150M, branch.is300M, branch.is500M)) : null;
-                var future500M = !branch.is500M.isEventing && oldPresentBranch.is500M.isEventing && futureBranch.is500M.isEventing ? futureBranch.EndingBranch.AllActions.FirstOrDefault(a => (future150M == null || a != future150M) && (future300M == null || a != future300M) && a.Followers >= 5000000 && branch.IsNotMidnightEvents(a, branch.hasGalacticRail, branch.is150M, branch.is300M, branch.is500M)) : null;
-                var futureMaxFollowers = futureBranch.EndingBranch.AllActions.FirstOrDefault(a => (future150M == null || a != future150M) && (future300M == null || a != future300M) && (future500M == null || a != future500M) && a.Followers >= 9999999 && branch.IsNotMidnightEvents(a, branch.hasGalacticRail, branch.is150M, branch.is300M, branch.is500M));
 
                 string futureBranchName = $"Branch {i + 1}. {NSODataManager.EndingNames[CurrentEndingTree.EndingsList[i].EndingBranch.EndingToGet]}";
 
+
                 if (futureStartDay > latestDay && latestDay < oldLatestDay && futureStartDay <= oldLatestDay)
                 {
-                    errorBranches.Add(new(futureBranchName, $"Listed branch's starting day (Day {CurrentEndingTree.EndingsList[i].EndingBranch.StartingDay}) is reliant on a day from this branch that now doesn't exist."));
+                    isValidated = false;
+                    endings.Add(futureBranchName);
+                    errorMsg = $"Other branches' starting days are reliant on a day from this branch that now doesn't exist. \n\nList of branches that relied on this branch:\n{string.Join("\n", endings)}";
+                    continue;
+                }
+                if (futureStartDay <= latestDay && futureStartDay > minStartingDay)
+                {
+                    hasAnyFutureStartDays = true;
+                    break;
                 }
 
-                // Check For Event Counter Desync
-
-                if (oldPresentBranch.isStressed.isEventing && !branch.isStressed.isEventing && (futureBranch.isReallyStressed.isEventing || futureBranch.isHorror.isEventing))
-                {
-                    string flagName = "Very Stressed";
-                    if (futureBranch.isHorror.isEventing) flagName = "Horror";
-                    errorBranches.Add(new(futureBranchName, $"Listed branch relies on this branch's Stressed flag, due to the listed branch's {flagName} flag being active. \nThis branch's Stressed flag is currently inactive."));
-                }
-                if (oldPresentBranch.isStressed.isEventing && branch.isStressed.isEventing && futureBranch.isReallyStressed.isEventing && branch.isStressed.DayIndex >= futureBranch.isReallyStressed.DayIndex)
-                {
-                    errorBranches.Add(new(futureBranchName, $"Listed branch currently relies on this branch's Stressed flag, due to the listed branch's Very Stressed flag being active. \nThis branch's Stressed flag is active a day(s) after or the same day the listed branch's Very Stressed flag became active (Day {branch.isReallyStressed.DayIndex}), which isn't allowed. \nThis branch's Stressed flag became active on Day {branch.isStressed.DayIndex}. \nListed branch's Very Stressed flag became active on Day {futureBranch.isReallyStressed.DayIndex}."));
-                }
-                if (oldPresentBranch.isStressed.isEventing && branch.isStressed.isEventing && futureBranch.isHorror.isEventing && branch.isStressed.DayIndex >= 25)
-                {
-                    errorBranches.Add(new(futureBranchName, $"Listed branch currently relies on this branch's Stressed flag, due to the listed branch's Horror flag being active. \nThis branch's Stressed flag is active a day(s) after or the same day the listed branch's Horror flag became active (Day {branch.isHorror.DayIndex}), which isn't allowed. \nThis branch's Stressed flag became active on Day {branch.isStressed.DayIndex}."));
-                }
-                if (branch.EndingBranch.AllActions.Exists(a => a.Command == CmdType.DarknessS1 || a.Command == CmdType.Darkness_1) && futureBranch.EndingBranch.AllActions.Exists(a => a.Command == CmdType.DarknessS1 || a.Command == CmdType.Darkness_1))
-                {
-                    int darkDay = branch.EndingBranch.AllActions.Find(a => a.Command == CmdType.DarknessS1 || a.Command == CmdType.Darkness_1).TargetAction.DayIndex;
-                    int futureDarkDay = futureBranch.EndingBranch.AllActions.Find(a => a.Command == CmdType.DarknessS1 || a.Command == CmdType.Darkness_1).TargetAction.DayIndex;
-                    errorBranches.Add(new(futureBranchName, $"Listed branch has Stressed events even though Stressed events have already been done on previous days in this branch.\nDay Stressed Events were done in this branch: Day {darkDay} \nDay Stressed Events were done in listed branch: Day {futureDarkDay}"));
-                }
-                if (oldPresentBranch.isReallyStressed.isEventing && !branch.isReallyStressed.isEventing && futureBranch.isHorror.isEventing)
-                {
-                    errorBranches.Add(new(futureBranchName, $"Listed branch currently relies on this branch's Very Stressed flag, due to the listed branch's Horror flag being active. \nThis branch's Very Stressed flag is currently inactive."));
-                }
-                if (oldPresentBranch.isReallyStressed.isEventing && branch.isReallyStressed.isEventing && futureBranch.isHorror.isEventing && branch.isReallyStressed.DayIndex >= 25)
-                {
-                    errorBranches.Add(new(futureBranchName, $"Listed branch currently relies on this branch's Very Stressed flag, due to the listed branch's Horror flag being active. \nThis branch's Very Stressed flag is active a day(s) after or the same day the listed branch's Horror flag became active (Day {branch.isHorror.DayIndex}), which isn't allowed. \nThis branch's Very Stressed flag became active on Day {branch.isReallyStressed.DayIndex}."));
-                }
-                if (oldPresentBranch.isReallyStressed.isEventing && !branch.isReallyStressed.isEventing && futureBranch.EndingBranch.AllActions.Exists(a => a.Stress > 100))
-                {
-                    errorBranches.Add(new(futureBranchName, $"Listed branch contains actions that have more than 100 Stress, even though this branch's Very Stressed flag is inactive."));
-                }
-                if (branch.EndingBranch.AllActions.Exists(a => a.Command == CmdType.DarknessS2 || a.Command == CmdType.Darkness_2) && futureBranch.EndingBranch.AllActions.Exists(a => a.Command == CmdType.DarknessS2 || a.Command == CmdType.Darkness_2))
-                {
-                    int darkDay = branch.EndingBranch.AllActions.Find(a => a.Command == CmdType.DarknessS2 || a.Command == CmdType.Darkness_2).TargetAction.DayIndex;
-                    int futureDarkDay = futureBranch.EndingBranch.AllActions.Find(a => a.Command == CmdType.DarknessS2 || a.Command == CmdType.Darkness_2).TargetAction.DayIndex;
-                    errorBranches.Add(new(futureBranchName, $"Listed branch has Very Stressed events even though Very Stressed events have already been done on previous days in this branch.\n Day Very Stressed Events were done in this branch: Day {darkDay} \nDay Very Stressed Events were done in listed branch: Day {futureDarkDay}"));
-                }
-                if (oldPresentBranch.isReallyStressed.isEventing && branch.isReallyStressed.isEventing && futureBranch.EndingBranch.AllActions.Exists(a => a.TargetAction.DayIndex < branch.isReallyStressed.DayIndex && a.Stress > 100))
-                {
-                    string allStressMsgs = "";
-                    var Stress = futureBranch.EndingBranch.AllActions.FindAll(a => a.TargetAction.DayIndex < branch.isReallyStressed.DayIndex && a.Stress > 100);
-                    for (int d = 0; d < Stress.Count; d++)
-                    {
-                        string stressMsg = $"\nDay {Stress[d].TargetAction.DayIndex}, {NSODataManager.DayPartNames[Stress[d].TargetAction.DayPart]}: {NSODataManager.CmdName(Stress[d].Command)}";
-                        allStressMsgs += stressMsg;
-                    }
-                    errorBranches.Add(new(futureBranchName, $"Listed branch contains actions that have more than 100 Stress before the day this branch's Very Stressed flag became active. (Day {branch.isStressed.DayIndex}) \nActions from listed branch containing more than 100 Stress: {allStressMsgs}"));
-                }
-                if (oldPresentBranch.isReallyLove.isEventing && !branch.isReallyLove.isEventing && futureBranch.EndingBranch.AllActions.Exists(a => a.Command == CmdType.OdekakeZikka))
-                {
-                    errorBranches.Add(new(futureBranchName, $"Listed branch contains \"Go Out: Ame's Parents\", even though this branch's Visited Parents flag is inactive."));
-                }
-                if (oldPresentBranch.isReallyLove.isEventing && !branch.isReallyLove.isEventing && futureBranch.EndingBranch.AllActions.Exists(a => a.Affection > 100))
-                {
-                    errorBranches.Add(new(futureBranchName, $"Listed branch contains actions that have more than 100 Affection, even though this branch's Visited Parents flag is inactive."));
-                }
-                if (oldPresentBranch.isReallyLove.isEventing && branch.isReallyLove.isEventing && futureBranch.EndingBranch.AllActions.Exists(a => a.TargetAction.DayIndex < branch.isReallyLove.DayIndex && a.Affection > 100))
-                {
-                    string allAffectionMsgs = "";
-                    var Affection = futureBranch.EndingBranch.AllActions.FindAll(a => a.TargetAction.DayIndex < branch.isReallyStressed.DayIndex && a.Affection > 100);
-                    for (int d = 0; d < Affection.Count; d++)
-                    {
-                        string affectionMsg = $"\nDay {Affection[d].TargetAction.DayIndex}, {NSODataManager.DayPartNames[Affection[d].TargetAction.DayPart]}: {NSODataManager.CmdName(Affection[d].Command)}";
-                        allAffectionMsgs += affectionMsg;
-                    }
-                    errorBranches.Add(new(futureBranchName, $"Listed branch contains actions that have more than 100 Affection before the day this branch's Visited Parents flag became active. (Day {branch.isReallyLove.DayIndex} \nActions from listed branch containing more than 100 Stress: {allAffectionMsgs}"));
-                }
-                if (oldPresentBranch.isReallyLove.isEventing && futureStartDay <= 24 && branch.isReallyLove.isEventing && futureBranch.EndingBranch.AllActions.Exists(a => a.TargetAction.DayIndex == 24) && !futureBranch.EndingBranch.AllActions.Exists(a => a.Command == CmdType.OdekakeZikka))
-                {
-                    errorBranches.Add(new(futureBranchName, $"Listed branch does not contain \"Go Out: Ame's Parents\", even though this branch's Visited Parents flag is currently active."));
-                }
-                if (oldPresentBranch.isVideo.isEventing && !branch.isVideo.isEventing && futureBranch.EndingBranch.AllActions.Exists(a => a.Command == CmdType.OdekakeOdaiba))
-                {
-                    errorBranches.Add(new(futureBranchName, $"Listed branch contains \"Go Out: Music Video\", even though this branch's Did Music Video flag is inactive."));
-                }
-                if (oldPresentBranch.isVideo.isEventing && futureStartDay <= 27 && branch.isVideo.isEventing && futureBranch.EndingBranch.AllActions.Exists(a => a.TargetAction.DayIndex == 27) && !futureBranch.EndingBranch.AllActions.Exists(a => a.Command == CmdType.OdekakeOdaiba))
-                {
-                    errorBranches.Add(new(futureBranchName, $"Listed branch does not contain \"Go Out: Music Video\", even though this branch's Did Music Video flag is currently active."));
-                }
-                if (oldPresentBranch.NoMeds.isEventing && branch.NoMeds.isEventing &&
-                    futureBranch.EndingBranch.AllActions.Exists(a => a.TargetAction.DayIndex >= branch.NoMeds.DayIndex
-                    && (a.Command.ToString().Contains("Overdose") || a.Command.ToString().Contains("Happa") || a.Command == CmdType.OkusuriPsyche)))
-                {
-                    string allDrugMsgs = "";
-                    var drugs = futureBranch.EndingBranch.AllActions.FindAll(a => a.TargetAction.DayIndex >= branch.NoMeds.DayIndex
-                    && (a.Command.ToString().Contains("Overdose") || a.Command.ToString().Contains("Happa") || a.Command == CmdType.OkusuriPsyche));
-                    for (int d = 0; d < drugs.Count; d++)
-                    {
-                        string drugMsg = $"\nDay {drugs[d].TargetAction.DayIndex}, {NSODataManager.DayPartNames[drugs[d].TargetAction.DayPart]}: {NSODataManager.CmdName(drugs[d].Command)}";
-                        allDrugMsgs += drugMsg;
-                    }
-                    errorBranches.Add(new(futureBranchName, $"Listed branch contains non-moderate medication use after the day this branch's No Meds flag became active (Day {branch.NoMeds.DayIndex}).\nActions from listed branch containing non-moderate medication use: {allDrugMsgs}"));
-                }
-                if (oldPresentBranch.hasGalacticRail.isEventing && !branch.hasGalacticRail.isEventing && futureBranch.EndingBranch.AllActions.Exists(a => a.Command == CmdType.OdekakeGinga))
-                {
-                    errorBranches.Add(new(futureBranchName, $"Listed branch contains \"Go Out: Galactic Rail\", even though this branch's Galactic rail flag is inactive."));
-                }
-                if (oldPresentBranch.hasGalacticRail.isEventing && branch.hasGalacticRail.isEventing && futureBranch.EndingBranch.AllActions.Exists(a => a.TargetAction.DayIndex < branch.hasGalacticRail.DayIndex && a.Command == CmdType.OdekakeGinga))
-                {
-                    var galaxy = futureBranch.EndingBranch.AllActions.Find(a => a.TargetAction.DayIndex < branch.hasGalacticRail.DayIndex && a.Command == CmdType.OdekakeGinga);
-                    errorBranches.Add(new(futureBranchName, $"Listed branch contains \"Go Out: Galactic Rail\" before the day this branch's Galactic rail flag became active. (Day {branch.hasGalacticRail.DayIndex}) \nGalactic Rail action from listed branch: (Day {galaxy.TargetAction.DayIndex}, {NSODataManager.DayPartNames[galaxy.TargetAction.DayPart]}: {NSODataManager.CmdName(galaxy.Command)})"));
-                }
-                if (futureBranch.isMaxFollowers.isEventing)
-                {
-                    if (!branch.is150M.isEventing && oldPresentBranch.is150M.isEventing && futureBranch.is150M.isEventing && future150M == null)
-                    {
-                        errorBranches.Add(new(futureBranchName, $"Listed branch has max followers, and relies on this branch's 300M Extra Milestone flag which now doesn't exist, however no valid day to substitute the missing flag exists on the listed branch."));
-                    }
-                    if (!branch.is300M.isEventing && oldPresentBranch.is300M.isEventing && futureBranch.is300M.isEventing && future300M == null)
-                    {
-                        errorBranches.Add(new(futureBranchName, $"Listed branch has max followers, and relies on this branch's 300M Extra Milestone flag which now doesn't exist, however no valid day to substitute the missing flag exists on the listed branch."));
-                    }
-                    if (!branch.is500M.isEventing && oldPresentBranch.is500M.isEventing && futureBranch.is500M.isEventing && future500M == null)
-                    {
-                        errorBranches.Add(new(futureBranchName, $"Listed branch has max followers, and relies on this branch's 500M Extra Milestone flag which now doesn't exist, however no valid day to substitute the missing flag exists on the listed branch."));
-                    }
-                    if (futureMaxFollowers == null && futureBranch.EndingBranch.EndingToGet == NGO.EndingType.Ending_Ideon)
-                    {
-                        errorBranches.Add(new(futureBranchName, $"Listed branch has max followers, however the day this is on is not valid for the Internet Runaway Angel ending."));
-                    }
-                }
-
-                // Check For Stream Idea Desync
-
-                for (int j = 0; j < futureStreamed.Count; j++)
-                {
-                    var oldPresentIdeas = oldPresentBranch.StreamIdeaList.FindAll(i => i.DayIndex <= futureStartDay);
-                    var presentStreamIdea = presentIdeas_Condensed.Find(i => i.Idea == futureStreamed[j].UsedStream);
-                    var usedStreamIdea = futureIdeas_Condensed.Find(i => i.Idea == futureStreamed[j].UsedStream);
-                    if (usedStreamIdea == null)
-                        continue;
-                    if (futureStreamed[j].UsedStream.ToString().Contains("Darkness"))
-                        continue;
-                    if (presentStreamIdea == null && futureBranch.EndingBranch.AllActions.Exists(a => a.Command == futureStreamed[j].UsedStream) && oldPresentIdeas.Exists(a => a.Idea == futureStreamed[j].UsedStream))
-                        errorBranches.Add(new(futureBranchName, $"Stream from listed branch (Day {futureStreamed[j].DayIndex}, {NSODataManager.CmdName(futureStreamed[j].UsedStream)}) relies on a now non-existent stream idea from this branch."));
-                    if (presentStreamIdea != null && presentStreamIdea.DayIndex >= futureStartDay)
-                        continue;
-                    if (presentStreamIdea != null && presentStreamIdea.DayIndex <= futureStreamed[j].DayIndex)
-                        continue;
-                    else if (presentStreamIdea != null && presentStreamIdea.DayIndex > futureStreamed[j].DayIndex && futureBranch.EndingBranch.AllActions.Exists(a => a.Command == futureStreamed[j].UsedStream && oldPresentIdeas.Exists(a => a.Idea == futureStreamed[j].UsedStream)))
-                        errorBranches.Add(new(futureBranchName, $"Stream from listed branch (Day {futureStreamed[j].DayIndex}, {NSODataManager.CmdName(futureStreamed[j].UsedStream)}) relies on a now delayed stream idea from this branch. \n(Day {presentStreamIdea.DayIndex}, {NSODataManager.DayPartNames[presentStreamIdea.DayPart]}, {NSODataManager.CmdName(presentStreamIdea.Idea)})"));
-                }
-
-                // Check For Used Stream Desync
-
-                for (int u = 0; u < futureIdeas.Count; u++)
-                {
-                    var oldPresentUsed = oldPresentBranch.StreamUsedList.FindAll(i => i.DayIndex <= futureStartDay);
-                    bool isIdeaActionExist = futureIdeas.Exists(i => i.DayIndex >= futureStartDay && i.Idea == futureIdeas[u].Idea);
-                    if (futureIdeas[u].Idea.ToString().Contains("Darkness_"))
-                        continue;
-                    if (futureIdeas[u].Idea.ToString().Contains("Angel_"))
-                        continue;
-                    if (futureIdeas[u].Idea == CmdType.Error && futureStreamed.Exists(i => i.UsedStream == CmdType.Imbouron_5) && oldPresentUsed.Exists(i => i.UsedStream == CmdType.Imbouron_5))
-                    {
-                        if (isIdeaActionExist && !presentStreamed_Condensed.Exists(i => i.UsedStream == CmdType.Imbouron_5))
-                            errorBranches.Add(new(futureBranchName, $"Stream idea from listed branch (Day {futureIdeas[u].DayIndex}, {NSODataManager.DayPartNames[futureIdeas[u].DayPart]}, {NSODataManager.CmdName(futureIdeas[u].Idea)}) relies on a now non-existent streamed stream of a lower level from this branch."));
-                        else if (isIdeaActionExist && presentStreamed_Condensed.Exists(i => i.UsedStream == CmdType.Imbouron_5 && i.DayIndex > futureIdeas[u].DayIndex))
-                        {
-                            var lastConspire = presentStreamed_Condensed.Find(i => i.UsedStream == CmdType.Imbouron_5 && i.DayIndex > futureIdeas[u].DayIndex);
-                            errorBranches.Add(new(futureBranchName, $"Stream idea from listed branch (Day {futureIdeas[u].DayIndex}, {NSODataManager.DayPartNames[futureIdeas[u].DayPart]}, {NSODataManager.CmdName(futureIdeas[u].Idea)}) relies on a now delayed streamed stream of a lower level from this branch. \n(Day {lastConspire.DayIndex}, {NSODataManager.CmdName(lastConspire.UsedStream)})"));
-                        }
-                        continue;
-                    }
-                    else if (futureIdeas[u].Idea.ToString().Contains("_1")) continue;
-                    else if (futureIdeas[u].Idea != CmdType.Error)
-                    {
-                        var stream = futureIdeas[u].Idea.ToString().Split('_');
-                        string streamTopic = stream[0];
-                        int streamLevel = (int.Parse(stream[1]) - 1);
-                        CmdType pastStream = (CmdType)Enum.Parse(typeof(CmdType), $"{streamTopic}_{streamLevel}");
-                        Console.WriteLine($"Past Stream: {NSODataManager.CmdName(pastStream)}");
-                        if (futureStreamed.Exists(i => i.UsedStream == pastStream) && oldPresentUsed.Exists(i => i.UsedStream == pastStream))
-                        {
-                            if (isIdeaActionExist && !presentStreamed_Condensed.Exists(i => i.UsedStream == pastStream) && oldPresentUsed.Exists(i => i.UsedStream == pastStream))
-                                errorBranches.Add(new(futureBranchName, $"Stream idea from listed branch (Day {futureIdeas[u].DayIndex}, {NSODataManager.DayPartNames[futureIdeas[u].DayPart]}, {NSODataManager.CmdName(futureIdeas[u].Idea)}) relies on a now non-existent streamed stream of a lower level this branch."));
-                            else if (isIdeaActionExist && presentStreamed_Condensed.Exists(i => i.UsedStream == pastStream && i.DayIndex > futureIdeas[u].DayIndex))
-                            {
-                                var pastStreamed = presentStreamed_Condensed.Find(i => i.UsedStream == CmdType.Imbouron_5 && i.DayIndex > futureIdeas[u].DayIndex);
-                                errorBranches.Add(new(futureBranchName, $"Stream idea from listed branch (Day {futureIdeas[u].DayIndex}, {NSODataManager.DayPartNames[futureIdeas[u].DayPart]}, {NSODataManager.CmdName(futureIdeas[u].Idea)}) relies on a now delayed streamed stream of a lower level from this branch. \n(Day {pastStreamed.DayIndex}, {NSODataManager.CmdName(pastStreamed.UsedStream)})"));
-                            }
-                        }
-                    }
-
-                }
-
-                // Check for future streams done during this stream's hiatus period (if applicable)
-
-                if (futureStreamed.Exists(u => u.UsedStream == CmdType.Yamihaishin_3))
-                {
-                    var hiatus = futureStreamed.Find(u => u.UsedStream == CmdType.Yamihaishin_3);
-                    string allStreamMsgs = "";
-                    var stream = futureBranch.EndingBranch.AllActions.FindAll(a => a.TargetAction.DayIndex > hiatus.DayIndex && a.TargetAction.DayIndex <= (hiatus.DayIndex + 2) && a.TargetAction.Action == ActionType.Haishin);
-                    if (stream.Count > 0)
-                    {
-                        for (int d = 0; d < stream.Count; d++)
-                        {
-                            string streamMsg = $"\nDay {stream[d].TargetAction.DayIndex}, {NSODataManager.DayPartNames[stream[d].TargetAction.DayPart]}: {NSODataManager.CmdName(stream[d].Command)}";
-                            allStreamMsgs += streamMsg;
-                        }
-                        errorBranches.Add(new(futureBranchName, $"Listed branch contains streams done during this branch's hiatus period. (Day {hiatus.DayIndex}).\nActions from listed branch containing said streams: {allStreamMsgs}"));
-                    }
-                }
-
-                if (futureStartDay <= latestDay) break;
             }
-            return errorBranches;
+            return (isValidated, hasAnyFutureStartDays, errorMsg);
+        }
 
+        private bool ValidateEndingTree()
+        {
+            List<(string, string, string)> errorList = new();
+            for (int i = 0; i <  CurrentEndingTree.EndingsList.Count; i++)
+            {
+                if (i == 0) continue;
+                var branch = CurrentEndingTree.EndingsList[i];
+                if (SetStartingAction(branch, false, i - 1) == null)
+                    throw new Exception($"Tried to initialize starting stats for starting day of a specific ending branch, however no valid day exists to set stats.\n\nSpecific ending branch: \nIndex: {i + 1}. \nEnding To Get: {NSODataManager.EndingNames[CurrentEndingTree.EndingsList[i].EndingBranch.EndingToGet]} \nStarting Day: {CurrentEndingTree.EndingsList[i].EndingBranch.StartingDay} \nIs Stressful Breakdown: {CurrentEndingTree.EndingsList[i].EndingBranch.IsStressfulBressdown}");
+                ResetStartingDayData(branch, i - 1);
+                string futureBranchName = $"Branch {i + 1}. {NSODataManager.EndingNames[branch.EndingBranch.EndingToGet]}";
+                var list = branch.ValidateBranch(futureBranchName);
+                errorList.AddRange(list);
+            }
+            if (errorList.Count > 0)
+            {
+                BranchErrorDetails errorDetails = new BranchErrorDetails(errorList, false);
+                errorDetails.ErrorIntro.Text = "Could not save Ending Tree. More details are found below.";
+                errorDetails.Show();
+                return false;
+            }
+            return true;
         }
 
         private void EndingTreeForm_Load(object sender, EventArgs e)
         {
+            EndingListView.Capture = true;
             var endingTree = MakeFirstTree();
             CurrentEndingTree = endingTree;
             SetEndingListViewData();
             DeleteEndingBranch.Enabled = false;
             EditEndingBranch.Enabled = false;
+            openRecentEndingTreeToolStripMenuItem.Text += $" {Path.GetFileName(_recentlyClosed)}";
+            string gameModPath = InitializeValidGamePath() + @"\BepInEx\plugins\EndingTreeSimulator";
+            EndingSim_MenuItem.Visible = Directory.Exists(gameModPath) && File.Exists(gameModPath + @"\EndingTreeSimulator.dll");
+            SetEnableBoolForMenuOptions();
         }
 
         private void AddEndingButton_Click(object sender, EventArgs e)
         {
             AddEndingBranch newEnding = new(this);
-            newEnding.ShowDialog();
+            newEnding.Show();
         }
 
-
-        private void SaveEndingTree(object sender, EventArgs e)
+        private bool SaveExistingEndingTree(string pathToTree)
         {
+            if (string.IsNullOrEmpty(pathToTree)) return false;
+            if (!ValidateEndingTree()) return false;
+            Stream stream;
+            var treeData = JsonConvert.SerializeObject(CurrentEndingTree, Formatting.Indented);
+            if ((stream = File.OpenWrite(pathToTree)) != null)
+            {
+                stream.Write(Encoding.UTF8.GetBytes(treeData), 0, Encoding.UTF8.GetByteCount(treeData));
+                _isNotesEdited = false;
+                isBranchEdited = false;
+                stream.Close();
+                MessageBox.Show("Successfully saved Ending Tree!", "Success", MessageBoxButtons.OK);
+                return true;
+            }
+            return false;
+        }
+        private bool SaveAsEndingTree()
+        {
+            if (!ValidateEndingTree()) return false;
             Stream stream;
             SaveFileDialog saveEndingTree = new SaveFileDialog();
             saveEndingTree.InitialDirectory = !string.IsNullOrEmpty(_directoryToOpen) ? _directoryToOpen : PathToGameModOrDocuments();
@@ -544,16 +402,52 @@ namespace NSOEndingTreeMaker
                 {
                     _directoryToOpen = Path.GetDirectoryName(saveEndingTree.FileName);
                     Properties.Settings.Default.Directory = _directoryToOpen;
-                    stream.Write(Encoding.UTF8.GetBytes(treeData), 0, Encoding.UTF8.GetByteCount(treeData));
+                    stream.Write(Encoding.UTF8.GetBytes(treeData), 0, Encoding.UTF8.GetByteCount(treeData));                 
+                    _currentFile = saveEndingTree.FileName;
+                    _isNotesEdited = false;
+                    isBranchEdited = false;
                     stream.Close();
                     MessageBox.Show("Successfully saved Ending Tree!", "Success", MessageBoxButtons.OK);
+                    return true;
                 }
+                return false;
             }
+            return false;
+
+        }
+
+        private bool LoadExistingEndingTree(string pathToTree)
+        {
+            if (string.IsNullOrEmpty(pathToTree)) return false;
+            try
+                {
+                var fileContent = File.OpenRead(pathToTree);
+                using (StreamReader reader = new StreamReader(fileContent))
+                    {
+                        var importedTreeData = reader.ReadToEnd();
+                        var newTreeData = JsonConvert.DeserializeObject<EndingTreeData>(importedTreeData);
+                        CurrentEndingTree = newTreeData;
+                        SetEndingListViewData(true);
+                        DeleteEndingBranch.Enabled = false;
+                        EditEndingBranch.Enabled = false;
+                        if (!string.IsNullOrEmpty(_currentFile)) _recentlyClosed = _currentFile;
+                        _currentFile = pathToTree;
+                        
+                    _isNotesEdited = false;
+                    isBranchEdited = false;
+                    return true;
+                    }
+                }
+            catch 
+            { 
+                MessageBox.Show("Could not open JSON file, either the JSON file is invalid or the JSON file does not represent an Ending Tree.", "Could not read JSON file", MessageBoxButtons.OK, MessageBoxIcon.Error); 
+            }
+            return false;
 
 
         }
 
-        private void LoadEndingTree(object sender, EventArgs e)
+        private bool LoadEndingTree()
         {
             OpenFileDialog openEndingTree = new OpenFileDialog();
             openEndingTree.InitialDirectory = !string.IsNullOrEmpty(_directoryToOpen) ? _directoryToOpen : PathToGameModOrDocuments();
@@ -574,12 +468,17 @@ namespace NSOEndingTreeMaker
                         CurrentEndingTree = newTreeData;
                         SetEndingListViewData(true);
                         DeleteEndingBranch.Enabled = false;
-                        EditEndingBranch.Enabled = false;
+                        EditEndingBranch.Enabled = false;                       
+                        _currentFile = openEndingTree.FileName;                                          
+                        _isNotesEdited = false;
+                        isBranchEdited = false;
+                        openEndingTree.Dispose();
+                        return true;
                     }
                 }
-                catch { MessageBox.Show("Could not open JSON file, either the JSON file is invalid or the JSON file does not represent an Ending Tree.", "Could not read JSON file", MessageBoxButtons.OK, MessageBoxIcon.Error); }
-
+                catch { MessageBox.Show("Could not open JSON file, either the JSON file is invalid or the JSON file does not represent an Ending Tree.", "Could not read JSON file", MessageBoxButtons.OK, MessageBoxIcon.Error); } 
             }
+            return false;
         }
 
         private void DeleteEndingBranch_Click(object sender, EventArgs e)
@@ -628,6 +527,11 @@ namespace NSOEndingTreeMaker
 
         private void EndingListView_DoubleClick(object sender, EventArgs e)
         {
+            ListWhenDoubleClicked();
+        }
+
+        private void ListWhenDoubleClicked()
+        {
             var selectedEndings = EndingListView.SelectedIndices;
             if (SelectedEnding == null || selectedEndings.Count == 0)
             {
@@ -653,9 +557,11 @@ namespace NSOEndingTreeMaker
         private void Notes_TextChanged(object sender, EventArgs e)
         {
             CurrentEndingTree.Notes = Notes.Text;
+            if (CurrentEndingTree.Notes != _currentNotes) _isNotesEdited = true;
+            else _isNotesEdited = false;
         }
 
-        private void ExportEndingTreeToCSV(object sender, EventArgs e)
+        private void ExportEndingTreeToCSV()
         {
             SaveFileDialog saveEndingTree = new SaveFileDialog();
             saveEndingTree.InitialDirectory = !string.IsNullOrEmpty(_directoryToExport) ? _directoryToExport : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
@@ -681,6 +587,7 @@ namespace NSOEndingTreeMaker
                         }
                         streamWriter.WriteLine($",,Expected Ending: {NSODataManager.EndingNames[branch.EndingBranch.EndingToGet]},,,,,,,,,,,,,");
                     }
+                    saveEndingTree.Dispose();
                 }
                 MessageBox.Show("Successfully exported Ending Tree!", "Success", MessageBoxButtons.OK);
             }
@@ -688,7 +595,332 @@ namespace NSOEndingTreeMaker
 
         private void EndingTreeForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (!IsCloseIfUnsaved()) 
+            {
+                e.Cancel = true;
+                return;
+            }
+            SaveNewSlotPathsToSettings();  
+            if (!string.IsNullOrEmpty(_currentFile)) 
+                Properties.Settings.Default.RecentClosedEndingTree = _currentFile;
             Properties.Settings.Default.Save();
+        }
+
+        private void SetEnableBoolForMenuOptions()
+        {
+            loadTreeFromSlot1ToolStripMenuItem.Enabled = !string.IsNullOrEmpty(_slots[1]);
+            loadTreeFromSlot2ToolStripMenuItem.Enabled = !string.IsNullOrEmpty(_slots[2]);
+            loadTreeFromSlot3ToolStripMenuItem.Enabled = !string.IsNullOrEmpty(_slots[3]);
+            loadTreeFromSlot4ToolStripMenuItem.Enabled = !string.IsNullOrEmpty(_slots[4]);
+            loadTreeFromSlot5ToolStripMenuItem.Enabled = !string.IsNullOrEmpty(_slots[5]);
+
+            setSlot1TreeAsMainSimulationToolStripMenuItem.Enabled = !string.IsNullOrEmpty(_slots[1]);
+            setSlot2TreeAsMainSimulationToolStripMenuItem.Enabled = !string.IsNullOrEmpty(_slots[2]);
+            setSlot3TreeAsMainSimulationToolStripMenuItem.Enabled = !string.IsNullOrEmpty(_slots[3]);
+            setSlot4TreeAsMainSimulationToolStripMenuItem.Enabled = !string.IsNullOrEmpty(_slots[4]);
+            setSlot5TreeAsMainSimulationToolStripMenuItem.Enabled = !string.IsNullOrEmpty(_slots[5]);
+
+            Slot1_Name.Text = !string.IsNullOrEmpty(_slots[1]) ? Path.GetFileName(_slots[1]): "(none)" ;
+            Slot2_Name.Text = !string.IsNullOrEmpty(_slots[2]) ? Path.GetFileName(_slots[2]): "(none)" ;
+            Slot3_Name.Text = !string.IsNullOrEmpty(_slots[3]) ? Path.GetFileName(_slots[3]): "(none)" ;
+            Slot4_Name.Text = !string.IsNullOrEmpty(_slots[4]) ? Path.GetFileName(_slots[4]): "(none)" ;
+            Slot5_Name.Text = !string.IsNullOrEmpty(_slots[5]) ? Path.GetFileName(_slots[5]): "(none)" ;
+        }
+
+        private void SavePathToSlot(int slot)
+        {
+            if (!ConfirmSave()) return;
+            _slots[slot] = _currentFile;
+            SetEnableBoolForMenuOptions();
+        }
+
+        private void SaveNewSlotPathsToSettings()
+        {
+            Properties.Settings.Default.SlotOne = _slots[1];
+            Properties.Settings.Default.SlotTwo = _slots[2];
+            Properties.Settings.Default.SlotThree = _slots[3];
+            Properties.Settings.Default.SlotFour = _slots[4];
+            Properties.Settings.Default.SlotFive = _slots[5];
+        }
+
+        private void LoadPathFromSlot(int slot)
+        {
+            if (string.IsNullOrEmpty(_slots[slot]))
+            {
+                MessageBox.Show($"Could not load Ending Tree, as nothing is saved in Slot {slot}.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            LoadExistingEndingTree(_slots[slot]);
+        }
+
+        private void SetTreeAsSimulation(int slot)
+        {
+            string gameModPath = InitializeValidGamePath() + "\\BepInEx\\plugins\\EndingTreeSimulator";
+            if (!Directory.Exists(gameModPath)) return;
+            string[] existingJSONs = Directory.GetFiles(gameModPath);
+            if (slot == 0)
+            {
+                if (!ConfirmSave()) return;
+            }
+            string treepath = slot == 0 ? _currentFile : _slots[slot];
+            if (string.IsNullOrEmpty(treepath)) return;
+            string fileName = Path.GetFileName(treepath);
+            string simulatingTreePath = Path.Combine(gameModPath, fileName);
+            foreach (string json in existingJSONs)
+            {
+                if (json.EndsWith(".json")) File.Delete(json);
+            }
+            var pathData = File.ReadAllBytes(treepath);
+            using (FileStream stream = File.Create(simulatingTreePath))
+            {
+                stream.Write(pathData, 0, pathData.Length);
+                stream.Dispose();
+            }
+            MessageBox.Show("Successfully set Ending Tree!", "Success", MessageBoxButtons.OK);
+        }
+
+        private bool ConfirmSave()
+        {
+            if (!(isBranchEdited || _isNotesEdited) && !string.IsNullOrEmpty(_currentFile)) return true;
+            var confirm = MessageBox.Show($"Saving is required before proceeding. Do you want to save?", "Confirm Save", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (confirm == DialogResult.Yes)
+            {
+                SaveOrSaveAs();
+                return true;
+            }
+            return false;
+        }
+        private bool IsCloseIfUnsaved()
+        {
+            if (!(isBranchEdited || _isNotesEdited)) return true;
+            var confirm = MessageBox.Show($"Ending tree isn't saved yet. Do you want to save?", "Confirm Save", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+            if (confirm == DialogResult.Yes)
+            {
+                SaveOrSaveAs();
+                return true;
+            }
+            if (confirm == DialogResult.No) return true;
+            return false;
+        }
+
+        private void SaveOrSaveAs()
+        {
+            if (string.IsNullOrEmpty(_currentFile))
+            {
+                SaveAsEndingTree();
+                return;
+            }
+            SaveExistingEndingTree(_currentFile);
+        }
+        private void openEndingTreeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LoadEndingTree();
+        }
+
+        private void openRecentEndingTreeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LoadExistingEndingTree(_recentlyClosed);
+        }
+
+        private void saveEndingTreeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveOrSaveAs();
+        }
+
+        private void saveEndingTreeAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveAsEndingTree();
+        }
+
+        private void exportTreeAsCSVToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ExportEndingTreeToCSV();
+        }
+
+        private void openSimulationLogsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(InitializeValidGamePath() + "\\BepInEx\\plugins\\EndingTreeSimulator\\Logs");
+            }
+            catch { MessageBox.Show("Could not open the Simulation Logs folder: either the folder doesn't exist, has been moved to another location, or is corrupted.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+        }
+
+        private void saveTreeToSlot1ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SavePathToSlot(1);
+        }
+
+        private void loadTreeFromSlot1ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LoadPathFromSlot(1);
+        }
+
+        private void saveTreeToSlot2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SavePathToSlot(2);
+        }
+
+        private void loadTreeFromSlot2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LoadPathFromSlot(2);
+        }
+
+        private void saveTreeToSlot3ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SavePathToSlot(3);
+        }
+
+        private void loadTreeToSlot3ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LoadPathFromSlot(3);
+        }
+
+        private void saveTreeToSlot5ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SavePathToSlot(4);
+        }
+
+        private void loadTreeFromSlot5ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LoadPathFromSlot(4);
+        }
+
+        private void saveTreeToSlot5ToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            SavePathToSlot(5);
+        }
+
+        private void loadTreeFromSlot5ToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            LoadPathFromSlot(5);
+        }
+
+        private void resetEndingTreeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ReloadEndingTree();
+        }
+
+        private void ReloadEndingTree()
+        {
+            var confirm = MessageBox.Show($"Are you sure you want to reset this ending tree? \nThis will reset it back to when it was last saved (or default if it was never saved).\n\nThis action can't be undone.", "Confirm Reset", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (confirm == DialogResult.Yes)
+            {
+                _isNotesEdited = false;
+                isBranchEdited = false;
+                if (string.IsNullOrEmpty(_currentFile))
+                {
+                    CurrentEndingTree = MakeFirstTree();
+                    SetEndingListViewData();
+                    return;
+                }
+                LoadExistingEndingTree(_currentFile);
+            }
+        }
+
+        private void CreateNewEndingTree()
+        {
+            if (ConfirmSave())
+            {
+                _isNotesEdited = false;
+                isBranchEdited = false;
+                _recentlyClosed = _currentFile;
+                _currentFile = "";
+                CurrentEndingTree = MakeFirstTree();
+                SetEndingListViewData();
+                return;
+
+
+            }
+        }
+
+
+        private void setCurrentTreeAsMainSimulationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetTreeAsSimulation(0);
+        }
+
+        private void setSlot1TreeAsMainSimulationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetTreeAsSimulation(1);
+        }
+
+        private void setSlot2TreeAsMainSimulationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetTreeAsSimulation(2);
+        }
+
+        private void setSlot3TreeAsMainSimulationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetTreeAsSimulation(3);
+        }
+
+        private void setSlot4TreeAsMToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetTreeAsSimulation(4);
+        }
+
+        private void setSlot5TreeAsMainSimulationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SetTreeAsSimulation(5);
+        }
+
+        private void PlayGame_Button_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(InitializeValidGamePath() + @"\Windose.exe");
+            }
+            catch { MessageBox.Show("Could not open the game from the Steam path: either the game doesn't exist, has been moved to another location, or is corrupted.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+        }
+
+        private void EndingTreeForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.S && e.Shift && e.Control)
+                SaveAsEndingTree();
+            else if (e.KeyCode == Keys.S && e.Control)
+                SaveOrSaveAs();
+            else if (e.KeyCode == Keys.O && e.Shift && e.Control)
+                LoadExistingEndingTree(_recentlyClosed);
+            else if (e.KeyCode == Keys.O && e.Control)
+                LoadEndingTree();
+            else if (e.KeyCode == Keys.R && e.Shift && e.Control)
+                ReloadEndingTree();
+            else if (e.KeyCode == Keys.E && e.Control)
+                ExportEndingTreeToCSV();
+            else if (e.KeyCode == Keys.F1 && e.Shift)
+                SavePathToSlot(1);
+            else if (e.KeyCode == Keys.F2 && e.Shift)
+                SavePathToSlot(2);
+            else if (e.KeyCode == Keys.F3 && e.Shift)
+                SavePathToSlot(3);
+            else if (e.KeyCode == Keys.F4 && e.Shift)
+                SavePathToSlot(4);
+            else if (e.KeyCode == Keys.F5)
+                SavePathToSlot(5);
+            else if (e.KeyCode == Keys.F1)
+                LoadPathFromSlot(1);
+            else if (e.KeyCode == Keys.F2)
+                LoadPathFromSlot(2);
+            else if (e.KeyCode == Keys.F3)
+                LoadPathFromSlot(3);
+            else if (e.KeyCode == Keys.F4)
+                LoadPathFromSlot(4);
+            else if (e.KeyCode == Keys.F5)
+                LoadPathFromSlot(5);
+            else if (e.KeyCode == Keys.P && e.Shift && e.Control && e.Alt)
+            {
+                try
+                {
+                    Process.Start(InitializeValidGamePath() + @"\Windose.exe");
+                }
+                catch { MessageBox.Show("Could not open the game from the Steam path: either the game doesn't exist, has been moved to another location, or is corrupted.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            }
+        }
+
+        private void newEndingTreeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CreateNewEndingTree();
         }
     }
 }

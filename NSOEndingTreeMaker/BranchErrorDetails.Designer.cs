@@ -79,7 +79,6 @@
             this.ErrorList.BackgroundColor = System.Drawing.Color.White;
             this.ErrorList.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             this.ErrorList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.ErrorList.ColumnHeadersVisible = false;
             this.ErrorList.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Type,
             this.ActionOrBranch,
@@ -109,15 +108,16 @@
             // 
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.Type.DefaultCellStyle = dataGridViewCellStyle1;
-            this.Type.HeaderText = "";
+            this.Type.HeaderText = "Branch";
             this.Type.Name = "Type";
             this.Type.ReadOnly = true;
+            this.Type.Width = 150;
             // 
             // ActionOrBranch
             // 
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.ActionOrBranch.DefaultCellStyle = dataGridViewCellStyle2;
-            this.ActionOrBranch.HeaderText = "";
+            this.ActionOrBranch.HeaderText = "Action";
             this.ActionOrBranch.Name = "ActionOrBranch";
             this.ActionOrBranch.ReadOnly = true;
             this.ActionOrBranch.Width = 200;
@@ -127,7 +127,7 @@
             this.ErrorMessage.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.ErrorMessage.DefaultCellStyle = dataGridViewCellStyle3;
-            this.ErrorMessage.HeaderText = "";
+            this.ErrorMessage.HeaderText = "Error Details";
             this.ErrorMessage.Name = "ErrorMessage";
             this.ErrorMessage.ReadOnly = true;
             // 
@@ -158,11 +158,11 @@
         #endregion
 
         private System.Windows.Forms.PictureBox ErrorIcon;
-        private System.Windows.Forms.Label ErrorIntro;
         private System.Windows.Forms.Button ErrorConfirm;
         private System.Windows.Forms.DataGridView ErrorList;
         private System.Windows.Forms.DataGridViewTextBoxColumn Type;
         private System.Windows.Forms.DataGridViewTextBoxColumn ActionOrBranch;
         private System.Windows.Forms.DataGridViewTextBoxColumn ErrorMessage;
+        internal System.Windows.Forms.Label ErrorIntro;
     }
 }

@@ -7,9 +7,9 @@ namespace NSOEndingTreeMaker
 {
     public partial class BranchErrorDetails : Form
     {
-        private List<(string TargetAction, string ErrorMsg)> Errors;
+        private List<(string ErrorSource, string TargetAction, string ErrorMsg)> Errors;
         bool ShowingTargetActions;
-        public BranchErrorDetails(List<(string TargetAction, string ErrorMsg)> actionList, bool showTargetActions)
+        public BranchErrorDetails(List<(string ErrorSource, string TargetAction, string ErrorMsg)> actionList, bool showTargetActions)
         {
             InitializeComponent();
             ErrorIcon.Image = SystemIcons.Error.ToBitmap();
@@ -22,7 +22,7 @@ namespace NSOEndingTreeMaker
             for (int i = 0; i < Errors.Count; i++)
             {
                 ErrorList.Rows.Add();
-                ErrorList.Rows[i].Cells[0].Value = ShowingTargetActions ? "Daily Action" : "Ending Branch";
+                ErrorList.Rows[i].Cells[0].Value = ShowingTargetActions ? "Current Ending Branch" : Errors[i].ErrorSource;
                 ErrorList.Rows[i].Cells[1].Value = Errors[i].TargetAction;
                 ErrorList.Rows[i].Cells[2].Value = Errors[i].ErrorMsg;
             }
