@@ -240,8 +240,6 @@
             this.ActionListView.View = System.Windows.Forms.View.Details;
             this.ActionListView.ItemMouseHover += new System.Windows.Forms.ListViewItemMouseHoverEventHandler(this.ActionListViewOnItemMouseHover);
             this.ActionListView.SelectedIndexChanged += new System.EventHandler(this.ActionListViewOnSelectedIndexChanged);
-            this.ActionListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ActionListViewOnKeyDown);
-            this.ActionListView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ActionListView_KeyPress);
             this.ActionListView.KeyUp += new System.Windows.Forms.KeyEventHandler(this.ActionListViewOnKeyUp);
             this.ActionListView.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ShowMilestoneTooltip);
             // 
@@ -440,7 +438,6 @@
             this.Hiatus_Label.TabIndex = 10;
             this.Hiatus_Label.Text = "Hiatus in effect.";
             this.Hiatus_Label.Visible = false;
-            this.Hiatus_Label.Click += new System.EventHandler(this.label1_Click);
             // 
             // StreamIdea_Label
             // 
@@ -555,7 +552,6 @@
             this.BonusStatDelta.TabIndex = 0;
             this.BonusStatDelta.UseCompatibleStateImageBehavior = false;
             this.BonusStatDelta.View = System.Windows.Forms.View.Details;
-            this.BonusStatDelta.SelectedIndexChanged += new System.EventHandler(this.BonusStatDelta_SelectedIndexChanged);
             // 
             // Bonuses
             // 
@@ -640,7 +636,6 @@
             this.StreamLevel_Label.Size = new System.Drawing.Size(33, 13);
             this.StreamLevel_Label.TabIndex = 16;
             this.StreamLevel_Label.Text = "Level";
-            this.StreamLevel_Label.Click += new System.EventHandler(this.StreamLevel_Label_Click);
             // 
             // StreamTopic_Label
             // 
@@ -868,7 +863,6 @@
             this.NoMeds_Bool.TabStop = false;
             this.NoMeds_Bool.Text = "No Meds";
             this.NoMeds_Bool.UseVisualStyleBackColor = false;
-            this.NoMeds_Bool.CheckedChanged += new System.EventHandler(this.NoMeds_Bool_CheckedChanged);
             // 
             // GalacticRail_Bool
             // 
@@ -889,7 +883,6 @@
             this.GalacticRail_Bool.TabStop = false;
             this.GalacticRail_Bool.Text = "Galactic Rail";
             this.GalacticRail_Bool.UseVisualStyleBackColor = false;
-            this.GalacticRail_Bool.CheckedChanged += new System.EventHandler(this.MV_bool_CheckedChanged);
             // 
             // MV_bool
             // 
@@ -910,7 +903,6 @@
             this.MV_bool.TabStop = false;
             this.MV_bool.Text = "Did Music Video";
             this.MV_bool.UseVisualStyleBackColor = false;
-            this.MV_bool.CheckedChanged += new System.EventHandler(this.MV_bool_CheckedChanged);
             // 
             // StressedInfo_Tooltip
             // 
@@ -948,7 +940,6 @@
             this.LoveCount.Size = new System.Drawing.Size(86, 13);
             this.LoveCount.TabIndex = 16;
             this.LoveCount.Text = "Love Counter : 0";
-            this.LoveCount.Click += new System.EventHandler(this.LoveCount_Click);
             // 
             // PaperCount
             // 
@@ -958,7 +949,6 @@
             this.PaperCount.Size = new System.Drawing.Size(90, 13);
             this.PaperCount.TabIndex = 17;
             this.PaperCount.Text = "Paper Counter : 0";
-            this.PaperCount.Click += new System.EventHandler(this.PaperCount_Click);
             // 
             // IgnoredCount
             // 
@@ -968,7 +958,6 @@
             this.IgnoredCount.Size = new System.Drawing.Size(85, 13);
             this.IgnoredCount.TabIndex = 15;
             this.IgnoredCount.Text = "Ignored DM\'s : 0";
-            this.IgnoredCount.Click += new System.EventHandler(this.LoveCount_Click);
             // 
             // EndingGuesser
             // 
@@ -978,7 +967,6 @@
             this.EndingGuesser.TabIndex = 19;
             this.EndingGuesser.Text = "Projected Ending : None";
             this.EndingGuesser.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            this.EndingGuesser.Click += new System.EventHandler(this.PaperCount_Click);
             // 
             // MilestoneTooltip
             // 

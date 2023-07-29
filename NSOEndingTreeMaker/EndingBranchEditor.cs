@@ -1600,16 +1600,6 @@ namespace NSOEndingTreeMaker
             return copiedActions;
         }
 
-        private void ActionListView_KeyPress(object sender, KeyPressEventArgs e)
-        {
-
-
-        }
-
-        private void ActionListViewOnKeyDown(object sender, KeyEventArgs e)
-        {
-        }
-
         private void ActionListViewOnKeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete && ActionListView.SelectedIndices.Count > 0)
@@ -1806,31 +1796,6 @@ namespace NSOEndingTreeMaker
             isDeleting = false;
         }
 
-
-        private void LoveCount_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void PaperCount_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void NoMeds_Bool_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void MV_bool_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void BonusStatDelta_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
         private void ShowMilestoneTooltip(object sender, MouseEventArgs e)
         {
             var item = ActionListView.GetItemAt(e.X, e.Y);
@@ -1855,19 +1820,9 @@ namespace NSOEndingTreeMaker
             MilestoneTooltip.Show(MilestoneTooltipText, ActionListView, tipCoordX + 35, tipCoordY - 10);
         }
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void EndingBranchEditorOnClick(object sender, EventArgs e)
         {
             ActionListView.SelectedIndices.Clear();
-        }
-
-        private void StreamLevel_Label_Click(object sender, EventArgs e)
-        {
-
         }
 
         private (List<ActionHistoryObj>, List<ActionHistoryObj>) UseEditHistory(List<ActionHistoryObj> listToUse, List<ActionHistoryObj> listToEdit)
