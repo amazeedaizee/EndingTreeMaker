@@ -828,7 +828,7 @@ namespace NSOEndingTreeMaker
                 return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Yami);
             if (action.Command == CmdType.Hnahaisin_5)
                 return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Av);
-            if (action.TargetAction.DayPart + action.CommandResult.daypart == 2)
+            if (action.TargetAction.DayPart + action.CommandResult.daypart == 2 && !(pastAction.Command == CmdType.DarknessS1 || pastAction.Command == CmdType.DarknessS2))
             {
                 if (isVeryVeryStressed && action.Stress == 120)
                     return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Stressful);
