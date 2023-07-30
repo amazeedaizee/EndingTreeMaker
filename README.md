@@ -46,6 +46,10 @@ With that being said, **Blazing Hell** (which can be achieved from a random noon
 
 **Also this is actually the first program I wrote, so some stuff might not be completely perfect. (that's why this program is only available on Windows.) If something doesn't work as intended, I apologize in advance!**
 
+If you have any issues, questions or concerns about the program, you can open up an issue on the Issues page.
+
+**Is this program being flagged as a virus?** See [HERE](https://github.com/amazeedaizee/EndingTreeMaker/issues/1) for more details.
+
 ## Other
 
 This program is fan-made and is not affiliated with xemono or WSS Playground.  All properties belong to their respective owners.
