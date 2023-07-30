@@ -10,6 +10,8 @@ Before using this program, you should have a moderate understanding of some of t
 **You also must have Needy Streamer Overload (1.1.0+) installed through Steam in order for this program to work properly.**
 Pirated or past copies of the game might not work well with this program.
 
+**\*Stats calculated is based on the Steam version**
+
 ## What is an Ending Tree?
 
 Basically a nickname for what I call a **full playthrough of the game on one save**, but for completing endings.
