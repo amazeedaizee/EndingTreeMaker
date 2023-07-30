@@ -90,6 +90,7 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.openSimulationLogsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PlayGame_Button = new System.Windows.Forms.ToolStripMenuItem();
+            this.illegalBranches_Label = new System.Windows.Forms.Label();
             this.CurrentEndingTree_Group.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -599,11 +600,22 @@
             this.PlayGame_Button.Text = "Open NEEDY STREAMER OVERLOAD";
             this.PlayGame_Button.Click += new System.EventHandler(this.PlayGame_Button_Click);
             // 
+            // illegalBranches_Label
+            // 
+            this.illegalBranches_Label.AutoSize = true;
+            this.illegalBranches_Label.Location = new System.Drawing.Point(14, 479);
+            this.illegalBranches_Label.Name = "illegalBranches_Label";
+            this.illegalBranches_Label.Size = new System.Drawing.Size(195, 13);
+            this.illegalBranches_Label.TabIndex = 11;
+            this.illegalBranches_Label.Text = "Unvalidated Ending Branches Detected";
+            this.illegalBranches_Label.VisibleChanged += new System.EventHandler(this.illegalBranches_Label_VisibleChanged);
+            // 
             // EndingTreeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(766, 500);
+            this.Controls.Add(this.illegalBranches_Label);
             this.Controls.Add(this.EndingListView);
             this.Controls.Add(this.CurrentEndingTree_Group);
             this.Controls.Add(this.menuStrip1);
@@ -688,6 +700,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
         private System.Windows.Forms.ToolStripMenuItem newEndingTreeToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
+        private System.Windows.Forms.Label illegalBranches_Label;
     }
 }
 

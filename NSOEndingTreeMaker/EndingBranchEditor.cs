@@ -553,6 +553,7 @@ namespace NSOEndingTreeMaker
                     endedDayPart = 3;
                 }
                 EndingGuesser.Text = ExpectedEnding.ending == EndingType.Ending_None ? "Projected Ending : None" : $"Projected Ending : {NSODataManager.EndingNames[ExpectedEnding.ending]} on Day {endedDay}, {NSODataManager.DayPartNames[endedDayPart]}";
+                UnsavedEndingBranchData.ExpectedDayOfEnd = expectedEnding;
             }
 
             void SetActionCounterText()
@@ -1115,11 +1116,14 @@ namespace NSOEndingTreeMaker
                     int index = MainForm.CurrentEndingTree.EndingsList.IndexOf(SelectedEndingBranch);
                     UnsavedEndingBranchData.EndingBranch.StartingDay = (int)DayIndexNumeric.Value;
                     var newAction = MainForm.SetStartingAction(UnsavedEndingBranchData, false, index - 1);
-                    if (newAction == null)
+                    if (newAction.Followers == 0)
                     {
-                        UnsavedEndingBranchData.EndingBranch.StartingDay = pastStartingDay;
-                        MessageBox.Show("Could not edit the starting day in the initializing action. \nEither the day does not exist in the branch list, or is currently inaccessible based on the previous branches.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return false;
+                        var caution = MessageBox.Show("This day either does not exist in the branch list, or is currently inaccessible based on the previous branches. Do you still want to set the starting day to this day?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                        if (caution == DialogResult.No)
+                        {
+                            UnsavedEndingBranchData.EndingBranch.StartingDay = pastStartingDay;
+                            return false;
+                        }                 
                     }
                     MainForm.ResetStartingDayData(UnsavedEndingBranchData, index - 1);
                     if (ActionList[0].TargetAction.DayIndex != newAction.TargetAction.DayIndex)
@@ -1404,15 +1408,16 @@ namespace NSOEndingTreeMaker
             {
                 if (branchConflicts.Item3 != "") validBranch.Add(new("", "", branchConflicts.Item3));
                 BranchErrorDetails errorWindow = new(validBranch, true);
-                errorWindow.Show();
-                return;
+                if (errorWindow.ShowDialog() == DialogResult.Yes)  
+                    ConfirmSaveEndingBranch();
+                return;                         
             }
             if (branchConflicts.Item2 && isChanged)
             {
                 var msgHasFutureBranchStartDays = MessageBox.Show($"Some future branches rely on this branch for stats, stream ideas, etc. By changing this branch, some of those future branches might become broken.\n\nAre you sure you want to proceed?", "Caution", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                 if (msgHasFutureBranchStartDays == DialogResult.No) return;
             }
-            (int, int, EndingType) checkEnding = ExpectedEnding;
+            (int, int, EndingType) checkEnding = UnsavedEndingBranchData.ExpectedDayOfEnd;
             switch (checkEnding.Item3)
             {
                 case EndingType.Ending_None:
@@ -1446,11 +1451,13 @@ namespace NSOEndingTreeMaker
                     }
                     break;
             }
+            // This isn't really needed anymore but its here just in case.
+            /*
             if (checkEnding.Item1 != 0)
             {
                 if (!(ActionList[ActionList.Count - 1].TargetAction.DayIndex == checkEnding.Item1 && ActionList[ActionList.Count - 1].TargetAction.DayPart == checkEnding.Item2))
                 {
-                    var extraActions = MessageBox.Show($"Extra actions found. Ending branches must end on the action that will achieve the selected ending. Do you want to remove the extra actions?", "Extra actions found!", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    var extraActions = MessageBox.Show($"Extra actions found. Ending branches must end on the action that will achieve the selected ending. Do you want to remove the extra actions?", "Extra actions found!", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
                     switch (extraActions)
                     {
                         case DialogResult.Yes:
@@ -1462,15 +1469,23 @@ namespace NSOEndingTreeMaker
                                 ActionList.RemoveAt(i);
                             }
                             break;
+                        case DialogResult.No: break;
                         default: return;
                     }
                 }
             }
+            */
+            ConfirmSaveEndingBranch();
+        }
+
+        private void ConfirmSaveEndingBranch()
+        {
             int index = MainForm.CurrentEndingTree.EndingsList.IndexOf(SelectedEndingBranch);
             UnsavedEndingBranchData.EndingBranch.AllActions = ActionList;
             MainForm.CurrentEndingTree.EndingsList[index] = UnsavedEndingBranchData;
             if (isChanged && !MainForm.isBranchEdited) MainForm.isBranchEdited = true;
             MainForm.SelectedEnding = null;
+            MainForm.SetEndingListViewData();
             Close();
         }
 

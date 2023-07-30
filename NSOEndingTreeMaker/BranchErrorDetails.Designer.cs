@@ -35,11 +35,12 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BranchErrorDetails));
             this.ErrorIcon = new System.Windows.Forms.PictureBox();
             this.ErrorIntro = new System.Windows.Forms.Label();
-            this.ErrorConfirm = new System.Windows.Forms.Button();
+            this.No_Button = new System.Windows.Forms.Button();
             this.ErrorList = new System.Windows.Forms.DataGridView();
             this.Type = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ActionOrBranch = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.ErrorMessage = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Yes_Button = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.ErrorIcon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ErrorList)).BeginInit();
             this.SuspendLayout();
@@ -56,19 +57,19 @@
             // 
             this.ErrorIntro.Location = new System.Drawing.Point(59, 19);
             this.ErrorIntro.Name = "ErrorIntro";
-            this.ErrorIntro.Size = new System.Drawing.Size(339, 23);
+            this.ErrorIntro.Size = new System.Drawing.Size(451, 23);
             this.ErrorIntro.TabIndex = 1;
-            this.ErrorIntro.Text = "Could not save ending branch. More details are found below.";
+            this.ErrorIntro.Text = "This branch contains validation errors.  Are you sure you want to proceed?";
             // 
-            // ErrorConfirm
+            // No_Button
             // 
-            this.ErrorConfirm.Location = new System.Drawing.Point(729, 377);
-            this.ErrorConfirm.Name = "ErrorConfirm";
-            this.ErrorConfirm.Size = new System.Drawing.Size(75, 23);
-            this.ErrorConfirm.TabIndex = 3;
-            this.ErrorConfirm.Text = "OK";
-            this.ErrorConfirm.UseVisualStyleBackColor = true;
-            this.ErrorConfirm.Click += new System.EventHandler(this.ErrorConfirm_Click);
+            this.No_Button.Location = new System.Drawing.Point(729, 377);
+            this.No_Button.Name = "No_Button";
+            this.No_Button.Size = new System.Drawing.Size(75, 23);
+            this.No_Button.TabIndex = 3;
+            this.No_Button.Text = "No";
+            this.No_Button.UseVisualStyleBackColor = true;
+            this.No_Button.Click += new System.EventHandler(this.ErrorConfirm_Click);
             // 
             // ErrorList
             // 
@@ -131,13 +132,24 @@
             this.ErrorMessage.Name = "ErrorMessage";
             this.ErrorMessage.ReadOnly = true;
             // 
+            // Yes_Button
+            // 
+            this.Yes_Button.Location = new System.Drawing.Point(648, 377);
+            this.Yes_Button.Name = "Yes_Button";
+            this.Yes_Button.Size = new System.Drawing.Size(75, 23);
+            this.Yes_Button.TabIndex = 3;
+            this.Yes_Button.Text = "Yes";
+            this.Yes_Button.UseVisualStyleBackColor = true;
+            this.Yes_Button.Click += new System.EventHandler(this.YesConfirm_Click);
+            // 
             // BranchErrorDetails
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(822, 418);
             this.Controls.Add(this.ErrorList);
-            this.Controls.Add(this.ErrorConfirm);
+            this.Controls.Add(this.Yes_Button);
+            this.Controls.Add(this.No_Button);
             this.Controls.Add(this.ErrorIntro);
             this.Controls.Add(this.ErrorIcon);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -147,6 +159,7 @@
             this.Name = "BranchErrorDetails";
             this.RightToLeftLayout = true;
             this.Text = "Save Failed";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.BranchErrorDetails_FormClosing);
             this.Load += new System.EventHandler(this.BranchErrorDetails_Load);
             this.Click += new System.EventHandler(this.BranchErrorDetails_Click);
             ((System.ComponentModel.ISupportInitialize)(this.ErrorIcon)).EndInit();
@@ -158,11 +171,12 @@
         #endregion
 
         private System.Windows.Forms.PictureBox ErrorIcon;
-        private System.Windows.Forms.Button ErrorConfirm;
+        private System.Windows.Forms.Button No_Button;
         private System.Windows.Forms.DataGridView ErrorList;
         private System.Windows.Forms.DataGridViewTextBoxColumn Type;
         private System.Windows.Forms.DataGridViewTextBoxColumn ActionOrBranch;
         private System.Windows.Forms.DataGridViewTextBoxColumn ErrorMessage;
         internal System.Windows.Forms.Label ErrorIntro;
+        private System.Windows.Forms.Button Yes_Button;
     }
 }

@@ -12,6 +12,7 @@ namespace NSOEndingTreeMaker
     public class EndingBranchData
     {
         public EndingBranch_Stub EndingBranch;
+        public (int, int, EndingType) ExpectedDayOfEnd;
         public List<StreamIdeaObj> StreamIdeaList = new();
         public List<StreamUsedObj> StreamUsedList = new();
         public EventCounter hasGalacticRail = new(0, false);
@@ -828,7 +829,7 @@ namespace NSOEndingTreeMaker
                 return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Yami);
             if (action.Command == CmdType.Hnahaisin_5)
                 return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Av);
-            if (action.TargetAction.DayPart + action.CommandResult.daypart == 2 && !(pastAction.Command == CmdType.DarknessS1 || pastAction.Command == CmdType.DarknessS2))
+            if (action.TargetAction.DayPart + action.CommandResult.daypart == 2 && action.Command != CmdType.DarknessS1 && action.Command != CmdType.DarknessS2)
             {
                 if (isVeryVeryStressed && action.Stress == 120)
                     return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Stressful);

@@ -34,7 +34,7 @@ namespace NSOEndingTreeMaker
                 if (NewEnding.EndingBranch.StartingDay > 1)
                 {
                     var newAction = mainForm.SetStartingAction(NewEnding);
-                    if (newAction == null)
+                    if (newAction.Followers == 0)
                     {
                         MessageBox.Show("Could not create the branch using the current starting day. \nEither the day does not exist in the branch list, or is currently inaccessible based on the previous branches.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;

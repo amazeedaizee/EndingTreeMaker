@@ -9,6 +9,7 @@ namespace NSOEndingTreeMaker
     {
         private List<(string ErrorSource, string TargetAction, string ErrorMsg)> Errors;
         bool ShowingTargetActions;
+
         public BranchErrorDetails(List<(string ErrorSource, string TargetAction, string ErrorMsg)> actionList, bool showTargetActions)
         {
             InitializeComponent();
@@ -30,6 +31,7 @@ namespace NSOEndingTreeMaker
 
         private void ErrorConfirm_Click(object sender, EventArgs e)
         {
+            DialogResult = DialogResult.No;
             Close();
         }
 
@@ -42,6 +44,7 @@ namespace NSOEndingTreeMaker
         private void ErrorList_SelectedIndexChanged(object sender, EventArgs e)
         {
 
+
         }
 
         private void ErrorList_Leave(object sender, EventArgs e)
@@ -52,6 +55,17 @@ namespace NSOEndingTreeMaker
         private void BranchErrorDetails_Click(object sender, EventArgs e)
         {
             ErrorList.ClearSelection();
+        }
+
+        private void YesConfirm_Click(object sender, EventArgs e)
+        {
+            DialogResult= DialogResult.Yes;
+            Close();
+        }
+
+        private void BranchErrorDetails_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Dispose();
         }
     }
 }

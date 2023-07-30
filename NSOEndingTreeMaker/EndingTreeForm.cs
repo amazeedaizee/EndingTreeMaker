@@ -76,26 +76,35 @@ namespace NSOEndingTreeMaker
             return data;
         }
 
-        public void SetEndingListViewData(bool initializeStartingView = true)
+        public List<(string, string, string)> SetEndingListViewData(bool initializeStartingView = true)
         {
             EndingListView.Items.Clear();
-            Console.WriteLine(CurrentEndingTree.EndingsList.Count);
+            List<(string, string, string)> errorList = new();
             for (int i = 0; i < CurrentEndingTree.EndingsList.Count; i++)
-            {
+            {   
+                var list = new List<(string, string, string)>();
+                var branch = CurrentEndingTree.EndingsList[i];
+                string futureBranchName = $"Branch {i + 1}. {NSODataManager.EndingNames[branch.EndingBranch.EndingToGet]}";
                 AddEndingToListView(CurrentEndingTree.EndingsList[i]);
-                if (i == 0) continue;
-                if (initializeStartingView && CurrentEndingTree.EndingsList[i].EndingBranch.StartingDay > 1)
-                {
-                    if (SetStartingAction(CurrentEndingTree.EndingsList[i], false, i - 1) == null)
-                        throw new Exception($"Tried to initialize starting stats for starting day of a specific ending branch, however no valid day exists to set stats.\n\nSpecific ending branch: \nIndex: {i + 1}. \nEnding To Get: {NSODataManager.EndingNames[CurrentEndingTree.EndingsList[i].EndingBranch.EndingToGet]} \nStarting Day: {CurrentEndingTree.EndingsList[i].EndingBranch.StartingDay} \nIs Stressful Breakdown: {CurrentEndingTree.EndingsList[i].EndingBranch.IsStressfulBressdown}");
-                    ResetStartingDayData(CurrentEndingTree.EndingsList[i], i - 1);
-                    CurrentEndingTree.EndingsList[i].InitializeActionStats(out EndingType end);
-                    CurrentEndingTree.EndingsList[i].EndingBranch.EndingToGet = end;
+                list.AddRange(branch.ValidateBranch(futureBranchName));
+                if (list.Count > 0 && i == 0) 
+                { 
+                    EndingListView.Items[i].SubItems[0].Text += " (!)";
+                    errorList.AddRange(list);
                 }
+                if (i == 0) continue;
+                if (SetStartingAction(branch, false, i - 1) == null)
+                    list.Add(new(futureBranchName, "", $"Tried to initialize starting stats for this branch's starting day, however no valid day exists to set stats."));
+                ResetStartingDayData(branch, i - 1);
+                if (list.Count > 0) EndingListView.Items[i].SubItems[0].Text += " (!)";
+                errorList.AddRange(list);
             }
-            _currentNotes = CurrentEndingTree.Notes;
+            if (errorList.Count > 0) illegalBranches_Label.Visible = true;
+            else illegalBranches_Label.Visible = false;
             Notes.Text = CurrentEndingTree.Notes;
+            return errorList;
         }
+        
 
         public void AddEndingToListView(EndingBranchData endingData)
         {
@@ -159,15 +168,14 @@ namespace NSOEndingTreeMaker
         public TargetActionData SetStartingAction(EndingBranchData branch, bool isNewEnding = true, int index = -1)
         {
             bool foundValidDay = false;
+            var newAction = new TargetActionData(branch.EndingBranch.StartingDay, -1, ngov3.CmdType.None);
             if (index == -1) index = CurrentEndingTree.EndingsList.Count - 1;
             for (int i = index; i >= 0; i--)
             {
                 List<TargetActionData> actions = CurrentEndingTree.EndingsList[i].EndingBranch.AllActions;
                 if (branch.EndingBranch.StartingDay > actions[actions.Count - 1].TargetAction.DayIndex)
                 {
-                    if (isNewEnding)
-                        return null;
-                    else continue;
+                    continue;
                 }
                 for (int j = actions.Count - 1; j >= 0; j--)
                 {
@@ -179,7 +187,6 @@ namespace NSOEndingTreeMaker
                     if (foundValidDay && actions[j].TargetAction.DayIndex == (branch.EndingBranch.StartingDay - 1))
                     {
                         var refAction = actions[j];
-                        var newAction = new TargetActionData(branch.EndingBranch.StartingDay, -1, ngov3.CmdType.None);
                         newAction.Followers = refAction.Followers;
                         newAction.Stress = refAction.Stress;
                         newAction.Affection = refAction.Affection;
@@ -196,7 +203,19 @@ namespace NSOEndingTreeMaker
                     }
                 }
             }
-            return null;
+            newAction.Followers = 0;
+            newAction.Stress = 0;
+            newAction.Affection = 0;
+            newAction.Darkness = 0;
+            newAction.StreamStreak = 0;
+            newAction.PreAlertBonus = false;
+            newAction.Cinephile = 0;
+            newAction.Impact = 0;
+            newAction.GamerGirl = 0;
+            newAction.Experience = 0;
+            newAction.Communication = 0;
+            newAction.RabbitHole = 0;
+            return newAction;
         }
 
         public void SetStartingDayData(EndingBranchData branch)
@@ -326,24 +345,14 @@ namespace NSOEndingTreeMaker
 
         private bool ValidateEndingTree()
         {
-            List<(string, string, string)> errorList = new();
-            for (int i = 0; i <  CurrentEndingTree.EndingsList.Count; i++)
-            {
-                if (i == 0) continue;
-                var branch = CurrentEndingTree.EndingsList[i];
-                if (SetStartingAction(branch, false, i - 1) == null)
-                    throw new Exception($"Tried to initialize starting stats for starting day of a specific ending branch, however no valid day exists to set stats.\n\nSpecific ending branch: \nIndex: {i + 1}. \nEnding To Get: {NSODataManager.EndingNames[CurrentEndingTree.EndingsList[i].EndingBranch.EndingToGet]} \nStarting Day: {CurrentEndingTree.EndingsList[i].EndingBranch.StartingDay} \nIs Stressful Breakdown: {CurrentEndingTree.EndingsList[i].EndingBranch.IsStressfulBressdown}");
-                ResetStartingDayData(branch, i - 1);
-                string futureBranchName = $"Branch {i + 1}. {NSODataManager.EndingNames[branch.EndingBranch.EndingToGet]}";
-                var list = branch.ValidateBranch(futureBranchName);
-                errorList.AddRange(list);
-            }
+            var errorList = SetEndingListViewData();
             if (errorList.Count > 0)
             {
+                bool isConfirm;
                 BranchErrorDetails errorDetails = new BranchErrorDetails(errorList, false);
-                errorDetails.ErrorIntro.Text = "Could not save Ending Tree. More details are found below.";
-                errorDetails.Show();
-                return false;
+                errorDetails.ErrorIntro.Text = "Branches in this tree contains validation errors. Are you sure you want to proceed?";
+                isConfirm = errorDetails.ShowDialog() == DialogResult.Yes ? true : false;               
+                return isConfirm;
             }
             return true;
         }
@@ -354,6 +363,7 @@ namespace NSOEndingTreeMaker
             var endingTree = MakeFirstTree();
             CurrentEndingTree = endingTree;
             SetEndingListViewData();
+            _currentNotes = CurrentEndingTree.Notes;
             DeleteEndingBranch.Enabled = false;
             EditEndingBranch.Enabled = false;
             openRecentEndingTreeToolStripMenuItem.Text += $" {Path.GetFileName(_recentlyClosed)}";
@@ -377,6 +387,7 @@ namespace NSOEndingTreeMaker
             if ((stream = File.Create(pathToTree)) != null)
             {
                 stream.Write(Encoding.UTF8.GetBytes(treeData), 0, Encoding.UTF8.GetByteCount(treeData));
+                _currentNotes = CurrentEndingTree.Notes;
                 _isNotesEdited = false;
                 isBranchEdited = false;
                 stream.Close();
@@ -404,6 +415,7 @@ namespace NSOEndingTreeMaker
                     Properties.Settings.Default.Directory = _directoryToOpen;
                     stream.Write(Encoding.UTF8.GetBytes(treeData), 0, Encoding.UTF8.GetByteCount(treeData));                 
                     _currentFile = saveEndingTree.FileName;
+                    _currentNotes = CurrentEndingTree.Notes;
                     _isNotesEdited = false;
                     isBranchEdited = false;
                     stream.Close();
@@ -427,7 +439,8 @@ namespace NSOEndingTreeMaker
                         var importedTreeData = reader.ReadToEnd();
                         var newTreeData = JsonConvert.DeserializeObject<EndingTreeData>(importedTreeData);
                         CurrentEndingTree = newTreeData;
-                        SetEndingListViewData(true);
+                    _currentNotes = CurrentEndingTree.Notes;
+                    SetEndingListViewData(true);
                         DeleteEndingBranch.Enabled = false;
                         EditEndingBranch.Enabled = false;
                         if (!string.IsNullOrEmpty(_currentFile)) _recentlyClosed = _currentFile;
@@ -469,7 +482,8 @@ namespace NSOEndingTreeMaker
                         SetEndingListViewData(true);
                         DeleteEndingBranch.Enabled = false;
                         EditEndingBranch.Enabled = false;                       
-                        _currentFile = openEndingTree.FileName;                                          
+                        _currentFile = openEndingTree.FileName;
+                        _currentNotes = CurrentEndingTree.Notes;
                         _isNotesEdited = false;
                         isBranchEdited = false;
                         openEndingTree.Dispose();
@@ -921,6 +935,16 @@ namespace NSOEndingTreeMaker
         private void newEndingTreeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CreateNewEndingTree();
+        }
+
+        private void illegalBranches_Label_VisibleChanged(object sender, EventArgs e)
+        {
+            if (CurrentEndingTree == null)
+            {
+                illegalBranches_Label.Visible = false;
+                return;
+            }
+            CurrentEndingTree.isBroken = illegalBranches_Label.Visible;
         }
     }
 }
