@@ -1629,6 +1629,7 @@ namespace NSOEndingTreeMaker
             MainForm.SetEndingListViewData(true);
             if (ideasWindow != null) { ideasWindow.Close(); }
             if (usedWindow != null) { usedWindow.Close(); }
+            Dispose();
         }
 
         private List<TargetActionData> CreateListCopy()

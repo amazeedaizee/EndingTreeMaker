@@ -375,7 +375,7 @@ namespace NSOEndingTreeMaker
         private void AddEndingButton_Click(object sender, EventArgs e)
         {
             AddEndingBranch newEnding = new(this);
-            newEnding.Show();
+            newEnding.ShowDialog();
         }
 
         private bool SaveExistingEndingTree(string pathToTree)

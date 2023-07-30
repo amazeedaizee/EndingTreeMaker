@@ -154,6 +154,7 @@
             this.MinimizeBox = false;
             this.Name = "AddEndingBranch";
             this.Text = "Add Ending Branch";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AddEndingBranch_FormClosing);
             this.Load += new System.EventHandler(this.AddEndingBranch_Load);
             ((System.ComponentModel.ISupportInitialize)(this.StartingDayNumeric)).EndInit();
             this.ResumeLayout(false);

@@ -63,5 +63,10 @@ namespace NSOEndingTreeMaker
         {
             NewEnding.EndingBranch.IsStressfulBressdown = IsStressfulBreakdown_CheckAdd.Checked;
         }
+
+        private void AddEndingBranch_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Dispose();
+        }
     }
 }
