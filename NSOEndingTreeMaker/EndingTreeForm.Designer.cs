@@ -91,13 +91,14 @@
             this.openSimulationLogsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PlayGame_Button = new System.Windows.Forms.ToolStripMenuItem();
             this.illegalBranches_Label = new System.Windows.Forms.Label();
+            this.Day2Exp_Check = new System.Windows.Forms.CheckBox();
             this.CurrentEndingTree_Group.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // AddEndingButton
             // 
-            this.AddEndingButton.Location = new System.Drawing.Point(19, 28);
+            this.AddEndingButton.Location = new System.Drawing.Point(19, 23);
             this.AddEndingButton.Name = "AddEndingButton";
             this.AddEndingButton.Size = new System.Drawing.Size(218, 36);
             this.AddEndingButton.TabIndex = 4;
@@ -112,16 +113,16 @@
             this.CurrentEndingTree_Group.Controls.Add(this.EditEndingBranch);
             this.CurrentEndingTree_Group.Controls.Add(this.DeleteEndingBranch);
             this.CurrentEndingTree_Group.Controls.Add(this.AddEndingButton);
-            this.CurrentEndingTree_Group.Location = new System.Drawing.Point(14, 29);
+            this.CurrentEndingTree_Group.Location = new System.Drawing.Point(14, 65);
             this.CurrentEndingTree_Group.Name = "CurrentEndingTree_Group";
-            this.CurrentEndingTree_Group.Size = new System.Drawing.Size(260, 443);
+            this.CurrentEndingTree_Group.Size = new System.Drawing.Size(260, 407);
             this.CurrentEndingTree_Group.TabIndex = 9;
             this.CurrentEndingTree_Group.TabStop = false;
             // 
             // Notes_Title
             // 
             this.Notes_Title.AutoSize = true;
-            this.Notes_Title.Location = new System.Drawing.Point(15, 176);
+            this.Notes_Title.Location = new System.Drawing.Point(16, 168);
             this.Notes_Title.Name = "Notes_Title";
             this.Notes_Title.Size = new System.Drawing.Size(35, 13);
             this.Notes_Title.TabIndex = 7;
@@ -129,17 +130,17 @@
             // 
             // Notes
             // 
-            this.Notes.Location = new System.Drawing.Point(19, 195);
+            this.Notes.Location = new System.Drawing.Point(19, 191);
             this.Notes.Multiline = true;
             this.Notes.Name = "Notes";
             this.Notes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.Notes.Size = new System.Drawing.Size(218, 225);
+            this.Notes.Size = new System.Drawing.Size(218, 179);
             this.Notes.TabIndex = 7;
             this.Notes.TextChanged += new System.EventHandler(this.Notes_TextChanged);
             // 
             // EditEndingBranch
             // 
-            this.EditEndingBranch.Location = new System.Drawing.Point(19, 120);
+            this.EditEndingBranch.Location = new System.Drawing.Point(19, 115);
             this.EditEndingBranch.Name = "EditEndingBranch";
             this.EditEndingBranch.Size = new System.Drawing.Size(218, 36);
             this.EditEndingBranch.TabIndex = 6;
@@ -149,7 +150,7 @@
             // 
             // DeleteEndingBranch
             // 
-            this.DeleteEndingBranch.Location = new System.Drawing.Point(19, 74);
+            this.DeleteEndingBranch.Location = new System.Drawing.Point(19, 69);
             this.DeleteEndingBranch.Name = "DeleteEndingBranch";
             this.DeleteEndingBranch.Size = new System.Drawing.Size(218, 36);
             this.DeleteEndingBranch.TabIndex = 5;
@@ -610,11 +611,24 @@
             this.illegalBranches_Label.Text = "Unvalidated Ending Branches Detected";
             this.illegalBranches_Label.VisibleChanged += new System.EventHandler(this.illegalBranches_Label_VisibleChanged);
             // 
+            // Day2Exp_Check
+            // 
+            this.Day2Exp_Check.AutoSize = true;
+            this.Day2Exp_Check.Location = new System.Drawing.Point(32, 41);
+            this.Day2Exp_Check.Name = "Day2Exp_Check";
+            this.Day2Exp_Check.Size = new System.Drawing.Size(213, 17);
+            this.Day2Exp_Check.TabIndex = 12;
+            this.Day2Exp_Check.Text = "Add Day 2 Extra Action To Ending Tree";
+            this.Day2Exp_Check.UseVisualStyleBackColor = true;
+            this.Day2Exp_Check.CheckedChanged += new System.EventHandler(this.Day2Exp_CheckedChanged);
+            this.Day2Exp_Check.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Day2Exp_Check_MouseClick);
+            // 
             // EndingTreeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(766, 500);
+            this.Controls.Add(this.Day2Exp_Check);
             this.Controls.Add(this.illegalBranches_Label);
             this.Controls.Add(this.EndingListView);
             this.Controls.Add(this.CurrentEndingTree_Group);
@@ -701,6 +715,7 @@
         private System.Windows.Forms.ToolStripMenuItem newEndingTreeToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
         private System.Windows.Forms.Label illegalBranches_Label;
+        private System.Windows.Forms.CheckBox Day2Exp_Check;
     }
 }
 

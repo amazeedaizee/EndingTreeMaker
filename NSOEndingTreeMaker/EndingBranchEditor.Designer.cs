@@ -127,6 +127,7 @@
             this.saveEndingBranchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetEndingBranchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FollowerResults_Tooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.IgnoreNightEnding_Label = new System.Windows.Forms.CheckBox();
             this.EndingToGet_Group.SuspendLayout();
             this.ActionStatDelta.SuspendLayout();
             this.BaseStatDelta.SuspendLayout();
@@ -144,11 +145,12 @@
             // 
             // EndingToGet_Group
             // 
+            this.EndingToGet_Group.Controls.Add(this.IgnoreNightEnding_Label);
             this.EndingToGet_Group.Controls.Add(this.StressfulBreakdown_Check);
             this.EndingToGet_Group.Controls.Add(this.EndingToGet_Dropdown);
-            this.EndingToGet_Group.Location = new System.Drawing.Point(1129, 25);
+            this.EndingToGet_Group.Location = new System.Drawing.Point(1129, 24);
             this.EndingToGet_Group.Name = "EndingToGet_Group";
-            this.EndingToGet_Group.Size = new System.Drawing.Size(232, 98);
+            this.EndingToGet_Group.Size = new System.Drawing.Size(232, 109);
             this.EndingToGet_Group.TabIndex = 7;
             this.EndingToGet_Group.TabStop = false;
             this.EndingToGet_Group.Text = "Ending To Get";
@@ -156,7 +158,7 @@
             // StressfulBreakdown_Check
             // 
             this.StressfulBreakdown_Check.AutoSize = true;
-            this.StressfulBreakdown_Check.Location = new System.Drawing.Point(11, 69);
+            this.StressfulBreakdown_Check.Location = new System.Drawing.Point(11, 54);
             this.StressfulBreakdown_Check.Name = "StressfulBreakdown_Check";
             this.StressfulBreakdown_Check.Size = new System.Drawing.Size(123, 17);
             this.StressfulBreakdown_Check.TabIndex = 2;
@@ -194,7 +196,7 @@
             "Galactic Express",
             "Dark Angel",
             "Internet Runaway Angel: Be Invoked"});
-            this.EndingToGet_Dropdown.Location = new System.Drawing.Point(11, 30);
+            this.EndingToGet_Dropdown.Location = new System.Drawing.Point(11, 23);
             this.EndingToGet_Dropdown.Name = "EndingToGet_Dropdown";
             this.EndingToGet_Dropdown.Size = new System.Drawing.Size(215, 21);
             this.EndingToGet_Dropdown.TabIndex = 1;
@@ -407,7 +409,7 @@
             this.ActionStatDelta.Location = new System.Drawing.Point(6, 216);
             this.ActionStatDelta.Name = "ActionStatDelta";
             this.ActionStatDelta.SelectedIndex = 0;
-            this.ActionStatDelta.Size = new System.Drawing.Size(220, 286);
+            this.ActionStatDelta.Size = new System.Drawing.Size(220, 275);
             this.ActionStatDelta.TabIndex = 11;
             // 
             // BaseStatDelta
@@ -425,7 +427,7 @@
             this.BaseStatDelta.Location = new System.Drawing.Point(4, 22);
             this.BaseStatDelta.Name = "BaseStatDelta";
             this.BaseStatDelta.Padding = new System.Windows.Forms.Padding(3);
-            this.BaseStatDelta.Size = new System.Drawing.Size(212, 260);
+            this.BaseStatDelta.Size = new System.Drawing.Size(212, 249);
             this.BaseStatDelta.TabIndex = 0;
             this.BaseStatDelta.Text = "Base Stat Changes";
             this.BaseStatDelta.UseVisualStyleBackColor = true;
@@ -433,7 +435,7 @@
             // Hiatus_Label
             // 
             this.Hiatus_Label.AutoSize = true;
-            this.Hiatus_Label.Location = new System.Drawing.Point(9, 234);
+            this.Hiatus_Label.Location = new System.Drawing.Point(9, 225);
             this.Hiatus_Label.Name = "Hiatus_Label";
             this.Hiatus_Label.Size = new System.Drawing.Size(81, 13);
             this.Hiatus_Label.TabIndex = 10;
@@ -443,7 +445,7 @@
             // StreamIdea_Label
             // 
             this.StreamIdea_Label.AutoSize = true;
-            this.StreamIdea_Label.Location = new System.Drawing.Point(9, 216);
+            this.StreamIdea_Label.Location = new System.Drawing.Point(9, 207);
             this.StreamIdea_Label.Name = "StreamIdea_Label";
             this.StreamIdea_Label.Size = new System.Drawing.Size(60, 13);
             this.StreamIdea_Label.TabIndex = 10;
@@ -452,7 +454,7 @@
             // DarknessDiff
             // 
             this.DarknessDiff.AutoSize = true;
-            this.DarknessDiff.Location = new System.Drawing.Point(9, 183);
+            this.DarknessDiff.Location = new System.Drawing.Point(9, 174);
             this.DarknessDiff.Name = "DarknessDiff";
             this.DarknessDiff.Size = new System.Drawing.Size(61, 13);
             this.DarknessDiff.TabIndex = 9;
@@ -463,7 +465,7 @@
             // 
             this.Darkness_Title.AutoSize = true;
             this.Darkness_Title.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Darkness_Title.Location = new System.Drawing.Point(8, 162);
+            this.Darkness_Title.Location = new System.Drawing.Point(8, 153);
             this.Darkness_Title.Name = "Darkness_Title";
             this.Darkness_Title.Size = new System.Drawing.Size(120, 18);
             this.Darkness_Title.TabIndex = 8;
@@ -472,7 +474,7 @@
             // AffectionDiff
             // 
             this.AffectionDiff.AutoSize = true;
-            this.AffectionDiff.Location = new System.Drawing.Point(9, 135);
+            this.AffectionDiff.Location = new System.Drawing.Point(9, 126);
             this.AffectionDiff.Name = "AffectionDiff";
             this.AffectionDiff.Size = new System.Drawing.Size(61, 13);
             this.AffectionDiff.TabIndex = 7;
@@ -483,7 +485,7 @@
             // 
             this.Affection_Title.AutoSize = true;
             this.Affection_Title.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Affection_Title.Location = new System.Drawing.Point(8, 114);
+            this.Affection_Title.Location = new System.Drawing.Point(8, 105);
             this.Affection_Title.Name = "Affection_Title";
             this.Affection_Title.Size = new System.Drawing.Size(65, 18);
             this.Affection_Title.TabIndex = 6;
@@ -492,7 +494,7 @@
             // StressDiff
             // 
             this.StressDiff.AutoSize = true;
-            this.StressDiff.Location = new System.Drawing.Point(9, 87);
+            this.StressDiff.Location = new System.Drawing.Point(9, 78);
             this.StressDiff.Name = "StressDiff";
             this.StressDiff.Size = new System.Drawing.Size(61, 13);
             this.StressDiff.TabIndex = 5;
@@ -513,7 +515,7 @@
             // 
             this.Stress_Title.AutoSize = true;
             this.Stress_Title.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Stress_Title.Location = new System.Drawing.Point(8, 66);
+            this.Stress_Title.Location = new System.Drawing.Point(8, 57);
             this.Stress_Title.Name = "Stress_Title";
             this.Stress_Title.Size = new System.Drawing.Size(51, 18);
             this.Stress_Title.TabIndex = 1;
@@ -599,9 +601,9 @@
             this.TargetAction_Group.Controls.Add(this.DayIndex_Label);
             this.TargetAction_Group.Controls.Add(this.ParentAction_Label);
             this.TargetAction_Group.Controls.Add(this.ParentAction_Dropdown);
-            this.TargetAction_Group.Location = new System.Drawing.Point(1129, 129);
+            this.TargetAction_Group.Location = new System.Drawing.Point(1129, 140);
             this.TargetAction_Group.Name = "TargetAction_Group";
-            this.TargetAction_Group.Size = new System.Drawing.Size(232, 508);
+            this.TargetAction_Group.Size = new System.Drawing.Size(232, 500);
             this.TargetAction_Group.TabIndex = 6;
             this.TargetAction_Group.TabStop = false;
             this.TargetAction_Group.Text = "Daily Action";
@@ -1138,6 +1140,17 @@
             this.FollowerResults_Tooltip.IsBalloon = true;
             this.FollowerResults_Tooltip.ToolTipTitle = "Followers calculated from:";
             // 
+            // IgnoreNightEnding_Label
+            // 
+            this.IgnoreNightEnding_Label.AutoSize = true;
+            this.IgnoreNightEnding_Label.Location = new System.Drawing.Point(11, 78);
+            this.IgnoreNightEnding_Label.Name = "IgnoreNightEnding_Label";
+            this.IgnoreNightEnding_Label.Size = new System.Drawing.Size(125, 17);
+            this.IgnoreNightEnding_Label.TabIndex = 2;
+            this.IgnoreNightEnding_Label.Text = "Ignore Night Endings";
+            this.IgnoreNightEnding_Label.UseVisualStyleBackColor = true;
+            this.IgnoreNightEnding_Label.CheckedChanged += new System.EventHandler(this.IgnoreNightEnding_Label_CheckedChanged);
+            // 
             // EndingBranchEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1287,5 +1300,6 @@
         private System.Windows.Forms.ToolStripDropDownButton ToolStrip_Edit;
         private System.Windows.Forms.ToolStripMenuItem saveEndingBranchToolStripMenuItem;
         private System.Windows.Forms.ToolTip FollowerResults_Tooltip;
+        private System.Windows.Forms.CheckBox IgnoreNightEnding_Label;
     }
 }

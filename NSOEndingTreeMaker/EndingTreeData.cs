@@ -6,6 +6,7 @@ namespace NSOEndingTreeMaker
     public class EndingTreeData
     {
         public List<EndingBranchData> EndingsList = new();
+        public bool isDay2Exp;
         public bool isBroken;
         public string Notes = "";
 

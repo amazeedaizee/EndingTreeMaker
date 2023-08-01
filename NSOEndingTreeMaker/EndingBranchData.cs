@@ -30,6 +30,7 @@ namespace NSOEndingTreeMaker
         public List<ActionCounter> LoveCounter = new();
         public List<ActionCounter> PsycheCounter = new();
         public List<ActionCounter> IgnoreCounter = new();
+        public bool IgnoreNightEndings;
 
         [JsonConstructor]
         public EndingBranchData() { }
@@ -128,6 +129,7 @@ namespace NSOEndingTreeMaker
                     
                     ValidatePreviousDay(EndingBranch.AllActions[i - 1], EndingBranch.AllActions[i], errorList, branchName);
                     ValidateIgnoreDm(EndingBranch.AllActions[i - 1], EndingBranch.AllActions[i], errorList, branchName);
+                    ValidateNightEvents(EndingBranch.AllActions[i], errorList, branchName);
                 }
                 ValidateNextDay(EndingBranch.AllActions[i], EndingBranch.AllActions[i + 1], errorList, branchName);
                 LookForMissingDays(EndingBranch.AllActions[i], EndingBranch.AllActions[i + 1], errorList, branchName);
@@ -256,16 +258,16 @@ namespace NSOEndingTreeMaker
                     if (presentAction.TargetAction.DayPart == 0 && presentAction.TargetAction.Action.ToString().Contains("Overdose")) break;
                     return (false, "Previous action must be any action that involves non-moderate drug use.", futureAction.Command);
                 case CmdType.SleepToTwilight1:
-                    if (futureAction.TargetAction.DayPart != 0) return (false, "This action is not done during Noon.", futureAction.Command);
+                    if (futureAction.TargetAction.DayPart > 0) return (false, "This action is not done during Noon.", futureAction.Command);
                     break;
                 case CmdType.SleepToNight2:
-                    if (futureAction.TargetAction.DayPart != 0) return (false, "This action is not done during Noon.", futureAction.Command);
+                    if (futureAction.TargetAction.DayPart > 0) return (false, "This action is not done during Noon.", futureAction.Command);
                     break;
                 case CmdType.SleepToNight1:
                     if (futureAction.TargetAction.DayPart != 1) return (false, "This action is not done during Dusk.", futureAction.Command);
                     break;
                 case CmdType.SleepToTomorrow3:
-                    if (futureAction.TargetAction.DayPart != 0) return (false, "This action is not done during Noon.", futureAction.Command);
+                    if (futureAction.TargetAction.DayPart > 0) return (false, "This action is not done during Noon.", futureAction.Command);
                     break;
                 case CmdType.SleepToTomorrow2:
                     if (futureAction.TargetAction.DayPart != 1) return (false, "This action is not done during Dusk.", futureAction.Command);
@@ -596,7 +598,7 @@ namespace NSOEndingTreeMaker
             return true;
         }
 
-        public void InitializeActionStats(out EndingType predictedEnding)
+        public void InitializeActionStats()
         {
             var branch = this;
             int startingDay = branch.EndingBranch.StartingDay;
@@ -772,7 +774,6 @@ namespace NSOEndingTreeMaker
                 }
                 if (expectedEnding.Item1 == 0)
                     expectedEnding = branch.CheckIfEndingAchieved(EndingBranch.AllActions[i - 1], EndingBranch.AllActions[i], ReallyStressed.Item2, Horror.Item2, VisitParents.Item2, NoMeds.Item2);
-                predictedEnding = expectedEnding.Item3;
             }
 
             SetNewEventFlags();
@@ -794,7 +795,55 @@ namespace NSOEndingTreeMaker
             }
         }
 
-        public (int, int, EndingType) CheckIfEndingAchieved(TargetActionData pastAction, TargetActionData action, bool isVeryVeryStressed, bool isHorror, bool isVeryLove, bool isAngelFive)
+        public void ValidateNightEvents(TargetActionData action, List<(string branch, string action, string errorMsg)> errorList, string branchName)
+        {
+            bool isVeryVeryStressed = false;
+            bool isVeryLove = false;
+            ActionCounter paperDay = new(30, 0);
+            if (PsycheCounter.Count >= 5) paperDay = PsycheCounter[4];
+            
+            if (isReallyStressed.isEventing && isReallyStressed.DayIndex <= action.TargetAction.DayIndex)
+                isVeryVeryStressed = true;
+            if (isReallyLove.isEventing && isReallyLove.DayIndex <= action.TargetAction.DayIndex)
+                isVeryLove = true;
+            if (!IgnoreNightEndings) return;
+            if (action.TargetAction.DayPart + action.CommandResult.daypart == 2 && action.Command != CmdType.DarknessS1 && action.Command != CmdType.DarknessS2)
+            {
+                if (isVeryVeryStressed && action.Stress == 120)
+                {
+                    errorList.Add(new(branchName, $"Day {action.TargetAction.DayIndex}, {NSODataManager.DayPartNames[action.TargetAction.DayPart]}: {NSODataManager.CmdName(action.Command)}", $"Can't ignore DM in this action since this will trigger Bomber Girl, and Ignore Night Endings is enabled."));
+                    return;
+                }
+
+                //return (action.TargetAction.DayIndex, 2, EndingType.Ending_Stressful);
+                if (action.Darkness == 0)
+                {
+                    errorList.Add(new(branchName, $"Day {action.TargetAction.DayIndex}, {NSODataManager.DayPartNames[action.TargetAction.DayPart]}: {NSODataManager.CmdName(action.Command)}", $"Can't ignore DM in this action since this will trigger Normie Life, and Ignore Night Endings is enabled."));
+                    return;
+                }
+                //return (action.TargetAction.DayIndex, 2, EndingType.Ending_Healthy);
+                if ((!isVeryLove && action.Affection == 100) || (isVeryLove && action.Affection == 120))
+                {
+                    errorList.Add(new(branchName, $"Day {action.TargetAction.DayIndex}, {NSODataManager.DayPartNames[action.TargetAction.DayPart]}: {NSODataManager.CmdName(action.Command)}", $"Can't ignore DM in this action since this will trigger Ground Control To Psychoelectric Angel, and Ignore Night Endings is enabled."));
+                    return;
+                }
+                //return (action.TargetAction.DayIndex, 2, EndingType.Ending_Sukisuki);
+                if (action.Affection == 0)
+                {
+                    errorList.Add(new(branchName, $"Day {action.TargetAction.DayIndex}, {NSODataManager.DayPartNames[action.TargetAction.DayPart]}: {NSODataManager.CmdName(action.Command)}", $"Can't ignore DM in this action since this will trigger Bomber Girl, and Ignore Night Endings is enabled."));
+                    return;
+                }
+                //return (action.TargetAction.DayIndex, 2, EndingType.Ending_Ntr);
+                if (paperDay.DayIndex != 30 && action.TargetAction.DayIndex == paperDay.DayIndex && action.TargetAction.DayPart == paperDay.DayPart)
+                {
+                    errorList.Add(new(branchName, $"Day {action.TargetAction.DayIndex}, {NSODataManager.DayPartNames[action.TargetAction.DayPart]}: {NSODataManager.CmdName(action.Command)}", $"Can't ignore DM in this action since this will trigger Bomber Girl, and Ignore Night Endings is enabled."));
+                    return;
+                }
+                // return (action.TargetAction.DayIndex, 2, EndingType.Ending_Meta);
+            }
+        }
+
+        public (int, int, EndingType) CheckIfEndingAchieved(TargetActionData pastAction, TargetActionData action, bool isVeryVeryStressed, bool isHorror, bool isVeryLove, bool isAngelFive, bool isSkipNightEnds = false)
         {
             ActionCounter ignoreDay = new(30, 0);
             ActionCounter loveDay = new(30, 0);
@@ -816,62 +865,62 @@ namespace NSOEndingTreeMaker
             if (branch.NoMeds.isEventing && branch.NoMeds.DayIndex <= action.TargetAction.DayIndex)
                 isAngelFive = true;
             if (isVeryVeryStressed && isHorror && action.Stress >= 80)
-                return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_KowaiInternet);
+                return (25, 0, EndingType.Ending_KowaiInternet);
             if (loveDay.DayIndex != 30 && action.TargetAction.DayIndex == loveDay.DayIndex && action.TargetAction.DayPart == loveDay.DayPart)
-                return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Lust);
+                return (action.TargetAction.DayIndex, action.TargetAction.DayPart + 1, EndingType.Ending_Lust);
             if (ignoreDay.DayIndex != 30 && action.TargetAction.DayIndex == ignoreDay.DayIndex && action.TargetAction.DayPart == ignoreDay.DayPart)
-                return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Jine);
+                return (action.TargetAction.DayIndex, action.TargetAction.DayPart + 1, EndingType.Ending_Jine);
             if (isVeryVeryStressed && action.Command == CmdType.Angel_6)
-                return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_DarkAngel);
+                return (action.TargetAction.DayIndex, action.TargetAction.DayPart + 1, EndingType.Ending_DarkAngel);
             if (action.Command == CmdType.Error)
-                return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Kyouso);
+                return (action.TargetAction.DayIndex, action.TargetAction.DayPart + 1, EndingType.Ending_Kyouso);
             if (action.Command == CmdType.Yamihaishin_5)
-                return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Yami);
+                return (action.TargetAction.DayIndex, action.TargetAction.DayPart + 1, EndingType.Ending_Yami);
             if (action.Command == CmdType.Hnahaisin_5)
-                return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Av);
-            if (action.TargetAction.DayPart + action.CommandResult.daypart == 2 && action.Command != CmdType.DarknessS1 && action.Command != CmdType.DarknessS2)
+                return (action.TargetAction.DayIndex, action.TargetAction.DayPart + 1, EndingType.Ending_Av);
+            if (action.TargetAction.DayPart + action.CommandResult.daypart == 2 && action.Command != CmdType.DarknessS1 && action.Command != CmdType.DarknessS2 && !isSkipNightEnds)
             {
                 if (isVeryVeryStressed && action.Stress == 120)
-                    return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Stressful);
+                    return (action.TargetAction.DayIndex, 2, EndingType.Ending_Stressful);
                 if (action.Darkness == 0)
-                    return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Healthy);
+                    return (action.TargetAction.DayIndex, 2, EndingType.Ending_Healthy);
                 if ((!isVeryLove && action.Affection == 100) || (isVeryLove && action.Affection == 120))
-                    return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Sukisuki);
+                    return (action.TargetAction.DayIndex, 2, EndingType.Ending_Sukisuki);
                 if (action.Affection == 0)
-                    return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Ntr);
+                    return (action.TargetAction.DayIndex, 2, EndingType.Ending_Ntr);
                 if (paperDay.DayIndex != 30 && action.TargetAction.DayIndex == paperDay.DayIndex && action.TargetAction.DayPart == paperDay.DayPart)
-                    return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Meta);
+                    return (action.TargetAction.DayIndex, 2, EndingType.Ending_Meta);
             }
             if (pastAction.TargetAction.Action.ToString().Contains("Okusuri") &&
                 pastAction.TargetAction.Action != ActionType.OkusuriPuronModerate &&
                 pastAction.TargetAction.Action != ActionType.OkusuriHipuronModerate &&
                 pastAction.TargetAction.Action != ActionType.OkusuriDaypassModerate &&
                 branch.StreamUsedList.Exists(a => a.DayIndex < action.TargetAction.DayIndex && a.UsedStream == CmdType.Kaidan_5) && action.Command == CmdType.OdekakeGinga && action.TargetAction.DayPart == 2)
-                return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Ginga);
+                return (action.TargetAction.DayIndex, action.TargetAction.DayPart + 1, EndingType.Ending_Ginga);
             if (action.TargetAction.DayIndex == 10 && action.TargetAction.DayPart + action.CommandResult.daypart >= 3 && action.Followers < 10000)
-                return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Jikka);
+                return (action.TargetAction.DayIndex, 3, EndingType.Ending_Jikka);
             if (action.Followers >= 9999999 && branch.isMaxFollowers.isEventing && branch.isMaxFollowers.DayIndex == action.TargetAction.DayIndex && IsNotMidnightEvents(action, (branch.hasGalacticRail.DayIndex, branch.hasGalacticRail.isEventing), (branch.is150M.DayIndex, branch.is150M.isEventing), (branch.is300M.DayIndex, branch.is300M.isEventing), (branch.is500M.DayIndex, branch.is500M.isEventing)))
-                return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Ideon);
+                return (action.TargetAction.DayIndex, 3, EndingType.Ending_Ideon);
             if (action.TargetAction.DayIndex == 29 && (action.TargetAction.DayPart + action.CommandResult.daypart >= 3))
             {
                 if (isCultStreamIdeaExists)
-                    return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Kyouso);
+                    return (30, 0, EndingType.Ending_Kyouso);
                 if (action.Followers >= 1000000 && action.Affection >= 80 && action.Darkness >= 80 && isAngelFive)
-                    return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Grand);
+                    return (30, 0, EndingType.Ending_Grand);
                 if (action.Followers >= 1000000 && action.Affection >= 80)
-                    return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Happy);
+                    return (30, 0, EndingType.Ending_Happy);
                 if (action.Followers >= 500000 && action.Affection >= 80)
-                    return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Normal);
+                    return (30, 0, EndingType.Ending_Normal);
                 if (action.Followers >= 500000)
-                    return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Yarisute);
+                    return (30, 0, EndingType.Ending_Yarisute);
                 if (action.Affection >= 60 && action.Darkness >= 60)
-                    return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Needy);
+                    return (30, 0, EndingType.Ending_Needy);
                 if (action.Affection < 60 && action.Darkness >= 60)
-                    return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Sucide);
+                    return (30, 0, EndingType.Ending_Sucide);
                 if (action.Affection >= 60 && action.Darkness < 60)
-                    return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Work);
+                    return (30, 0, EndingType.Ending_Work);
                 if (action.Affection < 60 && action.Darkness < 60)
-                    return (action.TargetAction.DayIndex, action.TargetAction.DayPart, EndingType.Ending_Bad);
+                    return (30, 0, EndingType.Ending_Bad);
             }
 
             return (0, 0, EndingType.Ending_None);

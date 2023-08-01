@@ -63,6 +63,28 @@ namespace NSOEndingTreeMaker
              {EndingType.Ending_DarkAngel, "Dark Angel" },
              {EndingType.Ending_Ideon, "Internet Runaway Angel: Be Invoked" }
          };
+
+        public static bool IsNightEnding(EndingType ending)
+        {
+            return ending == EndingType.Ending_Stressful ||
+            ending == EndingType.Ending_Healthy ||
+            ending == EndingType.Ending_Sukisuki ||
+            ending == EndingType.Ending_Ntr ||
+            ending == EndingType.Ending_Meta;
+        }
+
+        public static bool IsLastDayEnding(EndingType ending)
+        {
+            return ending == EndingType.Ending_Grand ||
+            ending == EndingType.Ending_Happy ||
+            ending == EndingType.Ending_Normal ||
+            ending == EndingType.Ending_Yarisute ||
+            ending == EndingType.Ending_Needy ||
+            ending == EndingType.Ending_Sucide ||
+            ending == EndingType.Ending_Work ||
+            ending == EndingType.Ending_Bad;
+        }
+
         public static Dictionary<int, string> DayPartNames = new()
         {
             {-1, "" },

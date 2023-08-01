@@ -76,6 +76,29 @@ namespace NSOEndingTreeMaker
             CommandResult = NSOCommandManager.CmdTypeToCommand(cmd);
         }
 
+        public void ResetActionStats()
+        {
+            TargetAction.Action = ActionType.None;
+            TargetAction.Stream = AlphaType.none;
+            TargetAction.IgnoreDM = false;
+            ActionName = "";
+            Followers = 1001;
+            Stress = 15;
+            Affection = 40;
+            Darkness = 15;
+            StreamStreak = 1;
+            PreAlertBonus = false;
+            Communication = 0;
+            Experience = 0;
+            Impact = 0;
+            GamerGirl = 0;
+            Cinephile = 0;
+            RabbitHole = 0;
+            Command = CmdType.None;
+            CommandResult = null;
+            StreamIdea = CmdType.None;
+            MilestoneIdea = CmdType.None;
+        }
         public void ChangeStats(int followers, int stress, int love, int dark, int streamstreak, bool prealert, int communication, int experience, int impact, int game, int movie, int rabbithole)
         {
             Followers = followers;

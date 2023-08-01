@@ -36,8 +36,13 @@ namespace NSOEndingTreeMaker
                     var newAction = mainForm.SetStartingAction(NewEnding);
                     if (newAction.Followers == 0)
                     {
-                        MessageBox.Show("Could not create the branch using the current starting day. \nEither the day does not exist in the branch list, or is currently inaccessible based on the previous branches.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
+                        var confirm = MessageBox.Show("Chosen starting day does not exist in the branch list, or is currently inaccessible based on the previous branches. (ending is queued to be on a day, etc)\n\nAre you sure you want to continue?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                        if (confirm == DialogResult.No)
+                            return;
+                    }
+                    if (mainForm.CurrentEndingTree.isDay2Exp && NewEnding.EndingBranch.StartingDay == 2)
+                    {
+                        newAction.TargetAction.IgnoreDM = true;
                     }
                     NewEnding.EndingBranch.AllActions.Add(newAction);
                     mainForm.SetStartingDayData(NewEnding);

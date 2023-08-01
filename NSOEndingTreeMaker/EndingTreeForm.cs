@@ -18,6 +18,8 @@ namespace NSOEndingTreeMaker
     {
         internal bool isBranchEdited;
         private bool _isNotesEdited;
+        private bool _isExpEdited;
+        private bool _currentExp;
         private string _currentNotes;
         private string _directoryToOpen = Properties.Settings.Default.Directory;
         private string _directoryToExport = Properties.Settings.Default.ExportDirectory;
@@ -86,7 +88,12 @@ namespace NSOEndingTreeMaker
                 var branch = CurrentEndingTree.EndingsList[i];
                 string futureBranchName = $"Branch {i + 1}. {NSODataManager.EndingNames[branch.EndingBranch.EndingToGet]}";
                 AddEndingToListView(CurrentEndingTree.EndingsList[i]);
-                list.AddRange(branch.ValidateBranch(futureBranchName));
+                branch.InitializeActionStats();
+                if (CurrentEndingTree.isDay2Exp && branch.EndingBranch.AllActions.Exists(a => a.TargetAction.DayIndex == 2 && a.TargetAction.DayPart == -1 && a.Command == CmdType.None))
+                {
+                    list.Add(new("", "", "Day 2 Extra Action must have an action if Day 2 Extra Action is enabled."));
+                }
+                if (i == 0) list.AddRange(branch.ValidateBranch(futureBranchName));
                 if (list.Count > 0 && i == 0) 
                 { 
                     EndingListView.Items[i].SubItems[0].Text += " (!)";
@@ -96,12 +103,16 @@ namespace NSOEndingTreeMaker
                 if (SetStartingAction(branch, false, i - 1) == null)
                     list.Add(new(futureBranchName, "", $"Tried to initialize starting stats for this branch's starting day, however no valid day exists to set stats."));
                 ResetStartingDayData(branch, i - 1);
+                list.AddRange(branch.ValidateBranch(futureBranchName));
                 if (list.Count > 0) EndingListView.Items[i].SubItems[0].Text += " (!)";
                 errorList.AddRange(list);
             }
+
+
             if (errorList.Count > 0) illegalBranches_Label.Visible = true;
             else illegalBranches_Label.Visible = false;
             Notes.Text = CurrentEndingTree.Notes;
+            Day2Exp_Check.Checked = CurrentEndingTree.isDay2Exp;
             return errorList;
         }
         
@@ -172,14 +183,15 @@ namespace NSOEndingTreeMaker
             if (index == -1) index = CurrentEndingTree.EndingsList.Count - 1;
             for (int i = index; i >= 0; i--)
             {
-                List<TargetActionData> actions = CurrentEndingTree.EndingsList[i].EndingBranch.AllActions;
+                var refBranch = CurrentEndingTree.EndingsList[i];
+                List<TargetActionData> actions = refBranch.EndingBranch.AllActions;
                 if (branch.EndingBranch.StartingDay > actions[actions.Count - 1].TargetAction.DayIndex)
                 {
                     continue;
                 }
                 for (int j = actions.Count - 1; j >= 0; j--)
                 {
-                    if (actions[j].TargetAction.DayIndex == branch.EndingBranch.StartingDay)
+                    if (actions[j].TargetAction.DayIndex == branch.EndingBranch.StartingDay && (refBranch.ExpectedDayOfEnd.Item3 == EndingType.Ending_None || (actions[j].TargetAction.DayIndex <= refBranch.ExpectedDayOfEnd.Item1 && !(refBranch.isHorror.isEventing && actions[j].TargetAction.DayIndex >= refBranch.isHorror.DayIndex))))
                     {
                         foundValidDay = true;
                         continue;
@@ -216,6 +228,7 @@ namespace NSOEndingTreeMaker
             newAction.Communication = 0;
             newAction.RabbitHole = 0;
             return newAction;
+
         }
 
         public void SetStartingDayData(EndingBranchData branch)
@@ -388,6 +401,7 @@ namespace NSOEndingTreeMaker
             {
                 stream.Write(Encoding.UTF8.GetBytes(treeData), 0, Encoding.UTF8.GetByteCount(treeData));
                 _currentNotes = CurrentEndingTree.Notes;
+                _currentExp = CurrentEndingTree.isDay2Exp;
                 _isNotesEdited = false;
                 isBranchEdited = false;
                 stream.Close();
@@ -415,6 +429,7 @@ namespace NSOEndingTreeMaker
                     Properties.Settings.Default.Directory = _directoryToOpen;
                     stream.Write(Encoding.UTF8.GetBytes(treeData), 0, Encoding.UTF8.GetByteCount(treeData));                 
                     _currentFile = saveEndingTree.FileName;
+                    _currentExp = CurrentEndingTree.isDay2Exp;
                     _currentNotes = CurrentEndingTree.Notes;
                     _isNotesEdited = false;
                     isBranchEdited = false;
@@ -440,12 +455,13 @@ namespace NSOEndingTreeMaker
                         var newTreeData = JsonConvert.DeserializeObject<EndingTreeData>(importedTreeData);
                         CurrentEndingTree = newTreeData;
                     _currentNotes = CurrentEndingTree.Notes;
+                    _currentExp = CurrentEndingTree.isDay2Exp;
                     SetEndingListViewData(true);
                         DeleteEndingBranch.Enabled = false;
                         EditEndingBranch.Enabled = false;
                         if (!string.IsNullOrEmpty(_currentFile)) _recentlyClosed = _currentFile;
                         _currentFile = pathToTree;
-                        
+                    Day2ExtraAction();
                     _isNotesEdited = false;
                     isBranchEdited = false;
                     return true;
@@ -484,6 +500,8 @@ namespace NSOEndingTreeMaker
                         EditEndingBranch.Enabled = false;                       
                         _currentFile = openEndingTree.FileName;
                         _currentNotes = CurrentEndingTree.Notes;
+                        _currentExp = CurrentEndingTree.isDay2Exp;
+                        Day2ExtraAction();
                         _isNotesEdited = false;
                         isBranchEdited = false;
                         openEndingTree.Dispose();
@@ -695,7 +713,7 @@ namespace NSOEndingTreeMaker
 
         private bool ConfirmSave()
         {
-            if (!(isBranchEdited || _isNotesEdited) && !string.IsNullOrEmpty(_currentFile)) return true;
+            if (!(isBranchEdited || _isNotesEdited || _isExpEdited) && !string.IsNullOrEmpty(_currentFile)) return true;
             var confirm = MessageBox.Show($"Saving is required before proceeding. Do you want to save?", "Confirm Save", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (confirm == DialogResult.Yes)
             {
@@ -706,7 +724,7 @@ namespace NSOEndingTreeMaker
         }
         private bool IsCloseIfUnsaved()
         {
-            if (!(isBranchEdited || _isNotesEdited)) return true;
+            if (!(isBranchEdited || _isNotesEdited || _isExpEdited)) return true;
             var confirm = MessageBox.Show($"Ending tree isn't saved yet. Do you want to save?", "Confirm Save", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
             if (confirm == DialogResult.Yes)
             {
@@ -843,11 +861,8 @@ namespace NSOEndingTreeMaker
                 CurrentEndingTree = MakeFirstTree();
                 SetEndingListViewData();
                 return;
-
-
             }
         }
-
 
         private void setCurrentTreeAsMainSimulationToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -945,6 +960,73 @@ namespace NSOEndingTreeMaker
                 return;
             }
             CurrentEndingTree.isBroken = illegalBranches_Label.Visible;
+        }
+
+        private void Day2ExtraAction()
+        {
+            switch (CurrentEndingTree.isDay2Exp)
+            {
+                case true:
+                    for (int i = 0; i < CurrentEndingTree.EndingsList.Count; i++)
+                    {
+                        var allActions = CurrentEndingTree.EndingsList[i].EndingBranch.AllActions;
+                        if (i == 0 && allActions.Count == 1)
+                        {
+                            allActions.Add(new TargetActionData(2, -1, CmdType.None));
+                            continue;
+                        }
+                        if (i == 0 && allActions.Count >= 2 && allActions[1].TargetAction.DayIndex != 2 && allActions[1].TargetAction.DayPart != -1)
+                        {
+                            allActions.Insert(1, new TargetActionData(2,-1,CmdType.None));
+                            continue;
+                        }
+                        if (i == 0 && allActions.Count >= 2 && allActions[1].TargetAction.DayIndex == 2 && allActions[1].TargetAction.DayPart == -1 && !allActions[1].TargetAction.IgnoreDM)
+                        {
+                            // allActions[1].TargetAction.IgnoreDM = true;
+                            continue;
+                        }
+                        if (allActions[0].TargetAction.DayIndex == 2 && allActions[0].TargetAction.DayPart == -1)
+                        {
+                            // allActions[0].TargetAction.IgnoreDM = true;
+                            continue;
+                        }
+                    }
+                    break;
+                case false:
+                    for (int i =0; i < CurrentEndingTree.EndingsList.Count; i++)
+                    {
+                        var allActions = CurrentEndingTree.EndingsList[i].EndingBranch.AllActions;
+                        if (i == 0 && allActions.Count >= 2 && allActions[1].TargetAction.DayIndex == 2 && allActions[1].TargetAction.DayPart == -1)
+                        {
+                            allActions.RemoveAt(1);
+                            continue;
+                        }
+                        if (allActions[0].TargetAction.DayIndex == 2 && allActions[0].TargetAction.DayPart == -1)
+                        {
+                            allActions[0].ResetActionStats();
+                        }
+                    }
+                    break;
+            }
+            SetEndingListViewData();
+            
+        }
+        private void Day2Exp_CheckedChanged(object sender, EventArgs e)
+        {
+        }
+
+        private void Day2Exp_Check_MouseClick(object sender, MouseEventArgs e)
+        {
+            var confirm = MessageBox.Show("Are you sure you want to change this variable?", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+            if (confirm == DialogResult.No)
+            {
+                Day2Exp_Check.Checked = !Day2Exp_Check.Checked;
+                return;
+            }
+            CurrentEndingTree.isDay2Exp = Day2Exp_Check.Checked;
+            if (_currentExp != CurrentEndingTree.isDay2Exp) _isExpEdited = true;
+            else _isExpEdited = false;
+            Day2ExtraAction();
         }
     }
 }
