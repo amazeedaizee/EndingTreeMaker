@@ -911,9 +911,7 @@ namespace NSOEndingTreeMaker
         {
             try
             {
-                if (InitializeValidSteamPath() != null)
-                    Process.Start(InitializeValidSteamPath(), @"steam://rungameid/1451940");
-                else Process.Start(InitializeValidGamePath() + @"\Windose.exe");
+                Process.Start(InitializeValidGamePath() + @"\Windose.exe");
             }
             catch { MessageBox.Show("Could not open the game from the Steam path: either the game doesn't exist, has been moved to another location, or is corrupted.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
