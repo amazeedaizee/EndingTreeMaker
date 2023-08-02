@@ -801,7 +801,9 @@ namespace NSOEndingTreeMaker
             bool isVeryLove = false;
             ActionCounter paperDay = new(30, 0);
             if (PsycheCounter.Count >= 5) paperDay = PsycheCounter[4];
-            
+
+            if (!action.TargetAction.IgnoreDM) 
+                return;
             if (isReallyStressed.isEventing && isReallyStressed.DayIndex <= action.TargetAction.DayIndex)
                 isVeryVeryStressed = true;
             if (isReallyLove.isEventing && isReallyLove.DayIndex <= action.TargetAction.DayIndex)
