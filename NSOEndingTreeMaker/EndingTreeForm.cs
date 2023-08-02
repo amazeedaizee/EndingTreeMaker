@@ -964,6 +964,7 @@ namespace NSOEndingTreeMaker
 
         private void Day2ExtraAction()
         {
+            CurrentEndingTree.isDay2Exp = false;
             switch (CurrentEndingTree.isDay2Exp)
             {
                 case true:

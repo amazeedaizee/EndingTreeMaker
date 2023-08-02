@@ -108,14 +108,15 @@
             // 
             // CurrentEndingTree_Group
             // 
+            this.CurrentEndingTree_Group.Controls.Add(this.Day2Exp_Check);
             this.CurrentEndingTree_Group.Controls.Add(this.Notes_Title);
             this.CurrentEndingTree_Group.Controls.Add(this.Notes);
             this.CurrentEndingTree_Group.Controls.Add(this.EditEndingBranch);
             this.CurrentEndingTree_Group.Controls.Add(this.DeleteEndingBranch);
             this.CurrentEndingTree_Group.Controls.Add(this.AddEndingButton);
-            this.CurrentEndingTree_Group.Location = new System.Drawing.Point(14, 65);
+            this.CurrentEndingTree_Group.Location = new System.Drawing.Point(14, 27);
             this.CurrentEndingTree_Group.Name = "CurrentEndingTree_Group";
-            this.CurrentEndingTree_Group.Size = new System.Drawing.Size(260, 407);
+            this.CurrentEndingTree_Group.Size = new System.Drawing.Size(260, 445);
             this.CurrentEndingTree_Group.TabIndex = 9;
             this.CurrentEndingTree_Group.TabStop = false;
             // 
@@ -614,12 +615,13 @@
             // Day2Exp_Check
             // 
             this.Day2Exp_Check.AutoSize = true;
-            this.Day2Exp_Check.Location = new System.Drawing.Point(32, 41);
+            this.Day2Exp_Check.Location = new System.Drawing.Point(19, 390);
             this.Day2Exp_Check.Name = "Day2Exp_Check";
             this.Day2Exp_Check.Size = new System.Drawing.Size(213, 17);
             this.Day2Exp_Check.TabIndex = 12;
             this.Day2Exp_Check.Text = "Add Day 2 Extra Action To Ending Tree";
             this.Day2Exp_Check.UseVisualStyleBackColor = true;
+            this.Day2Exp_Check.Visible = false;
             this.Day2Exp_Check.CheckedChanged += new System.EventHandler(this.Day2Exp_CheckedChanged);
             this.Day2Exp_Check.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Day2Exp_Check_MouseClick);
             // 
@@ -628,7 +630,6 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(766, 500);
-            this.Controls.Add(this.Day2Exp_Check);
             this.Controls.Add(this.illegalBranches_Label);
             this.Controls.Add(this.EndingListView);
             this.Controls.Add(this.CurrentEndingTree_Group);
