@@ -228,7 +228,6 @@ namespace NSOEndingTreeMaker
             newAction.Communication = 0;
             newAction.RabbitHole = 0;
             return newAction;
-
         }
 
         public void SetStartingDayData(EndingBranchData branch)

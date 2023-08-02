@@ -121,6 +121,13 @@ namespace NSOEndingTreeMaker
             CmdType.PlayKimeLove
         };
 
+        public static List<ActionType> HangOutActionList = new()
+        {
+            ActionType.EntameGame,
+            ActionType.PlayIchatuku,
+            ActionType.PlayMakeLove,
+        };
+
         public static List<CmdType> SleepList = new()
         {
             CmdType.SleepToTwilight1,
@@ -129,6 +136,13 @@ namespace NSOEndingTreeMaker
             CmdType.SleepToTomorrow3,
             CmdType.SleepToTomorrow2,
             CmdType.SleepToTomorrow1
+        };
+
+        public static List<ActionType> SleepActionList = new()
+        {
+            ActionType.SleepToTwilight,
+            ActionType.SleepToNight,
+            ActionType.SleepToTomorrow,
         };
 
         public static List<CmdType> DrugList = new()
@@ -149,6 +163,17 @@ namespace NSOEndingTreeMaker
             CmdType.OkusuriPsyche
         };
 
+        public static List<ActionType> DrugActionList = new()
+        {
+            ActionType.OkusuriDaypassModerate,
+            ActionType.OkusuriDaypassOverdose,
+            ActionType.OkusuriPuronModerate,
+            ActionType.OkusuriPuronOverdose,
+            ActionType.OkusuriHiPuronOverdose,
+            ActionType.OkusuriHappa,
+            ActionType.OkusuriPsyche
+        };
+
         public static List<CmdType> InternetList = new()
         {
             CmdType.InternetPoketterF0Y12,
@@ -162,6 +187,15 @@ namespace NSOEndingTreeMaker
             CmdType.Internet2chY3,
             CmdType.Internet2chY45,
             CmdType.InternetDeai2
+        };
+
+        public static List<ActionType> InternetActionList = new()
+        {
+            ActionType.InternetPoketter,
+            ActionType.InternetPoketterEgosa,
+            ActionType.InternetYoutube,
+            ActionType.Internet2ch,
+            ActionType.InternetDeai
         };
 
         public static List<CmdType> OutsideList = new()
@@ -509,32 +543,32 @@ namespace NSOEndingTreeMaker
                 case CmdType.OkusuriDaypassModerate:
                     return "Prescription (normal dose)";
                 case CmdType.OkusuriDaypassOverdoseY1:
-                    return "Prescription GO! (Strongest)";
+                    return "Prescription GO! (strongest)";
                 case CmdType.OkusuriDaypassOverdoseY2:
                     return "Prescription GO! (Dylsem)";
                 case CmdType.OkusuriDaypassOverdoseY3:
                     return "Prescription GO! (Embian)";
                 case CmdType.OkusuriDaypassOverdoseY4:
                 case CmdType.OkusuriDaypassOverdoseY5:
-                    return "Prescription GO! (Grass/Paper)";
+                    return "Prescription GO! (weakest)";
                 case CmdType.OkusuriPuronModerate:
                     return "OTC (normal dose)";
                 case CmdType.OkusuriPuronOverdoseY2:
-                    return "OTC GO! (Strongest)";
+                    return "OTC GO! (strongest)";
                 case CmdType.OkusuriPuronOverdoseY3:
                     return "OTC GO! (Embian)";
                 case CmdType.OkusuriPuronOverdoseY4:
-                    return "OTC GO! (Grass/Paper)";
+                    return "OTC GO! (weakest)";
                 case CmdType.OkusuriHipuronModerate:
                     return "Sleeping Pills (normal dose)";
                 case CmdType.OkusuriHiPuronOverdoseY3:
-                    return "Sleeping Pills GO! (Strongest)";
+                    return "Sleeping Pills GO! (strongest)";
                 case CmdType.OkusuriHiPuronOverdoseY4:
-                    return "Sleeping Pills GO! (Grass/Paper)";
+                    return "Sleeping Pills GO! (weakest)";
                 case CmdType.OkusuriHappaY4:
-                    return "Magic Grass GO! (Strongest)";
+                    return "Magic Grass GO! (strongest)";
                 case CmdType.OkusuriHappaY5:
-                    return "Magic Grass GO! (Paper)";
+                    return "Magic Grass GO! (weakest)";
                 case CmdType.OkusuriPsyche:
                     return "Magic Paper GO!";
                 case CmdType.InternetPoketterF0Y12:

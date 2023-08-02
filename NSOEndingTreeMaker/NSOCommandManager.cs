@@ -53,29 +53,29 @@ namespace NSOEndingTreeMaker
         public static CommandAction hangoutHighLove = new CommandAction("Hang Out: ***", "Have Chem***", 0, -25, 20, 6, 1, 1, 0, 0, 0, 0, 0, 0, 2);
 
         public static CommandAction sleepDusk = new CommandAction("Sleep", "Sleep Until Dusk", 0, -3, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 1);
-        public static CommandAction sleepNightOne = new CommandAction("Sleep", "Sleep Until Night", 0, -9, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 2);
-        public static CommandAction sleepNightTwo = new CommandAction("Sleep", "Sleep Until Night", 0, -3, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 1);
-        public static CommandAction sleepTomOne = new CommandAction("Sleep", "Sleep Until Tomorrow", 0, -18, 0, -4, 0, 0, 0, 0, 0, 0, 0, 0, 3);
-        public static CommandAction sleepTomTwo = new CommandAction("Sleep", "Sleep Until Tomorrow", 0, -9, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 2);
-        public static CommandAction sleepTomThree = new CommandAction("Sleep", "Sleep Until Tomorrow", 0, -6, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+        public static CommandAction sleepNightOne = new CommandAction("Sleep", "Sleep Until Night (Noon)", 0, -9, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 2);
+        public static CommandAction sleepNightTwo = new CommandAction("Sleep", "Sleep Until Night (Dusk)", 0, -3, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+        public static CommandAction sleepTomOne = new CommandAction("Sleep", "Sleep Until Tomorrow (Noon)", 0, -18, 0, -4, 0, 0, 0, 0, 0, 0, 0, 0, 3);
+        public static CommandAction sleepTomTwo = new CommandAction("Sleep", "Sleep Until Tomorrow (Dusk)", 0, -9, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 2);
+        public static CommandAction sleepTomThree = new CommandAction("Sleep", "Sleep Until Tomorrow (Night)", 0, -6, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
         public static CommandAction depazNormal = new CommandAction("Medication", "Prescription (recommended dose)", 0, -1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 1);
-        public static CommandAction depazODOne = new CommandAction("Medication", "Prescription GO!", 0, -12, 0, 6, 1, 0, 0, 0, 0, 0, 0, 0, 2);
-        public static CommandAction depazODTwo = new CommandAction("Medication", "Prescription GO!", 0, -4, 0, 6, 1, 0, 0, 0, 0, 0, 0, 0, 2);
-        public static CommandAction depazODThree = new CommandAction("Medication", "Prescription GO!", 0, -2, 0, 6, 1, 0, 0, 0, 0, 0, 0, 0, 2);
-        public static CommandAction depazODFour = new CommandAction("Medication", "Prescription GO!", 0, -1, 0, 6, 1, 0, 0, 0, 0, 0, 0, 0, 2);
+        public static CommandAction depazODOne = new CommandAction("Medication", "Prescription GO! (strongest)", 0, -12, 0, 6, 1, 0, 0, 0, 0, 0, 0, 0, 2);
+        public static CommandAction depazODTwo = new CommandAction("Medication", "Prescription GO! (OTC)", 0, -4, 0, 6, 1, 0, 0, 0, 0, 0, 0, 0, 2);
+        public static CommandAction depazODThree = new CommandAction("Medication", "Prescription GO! (Embian)", 0, -2, 0, 6, 1, 0, 0, 0, 0, 0, 0, 0, 2);
+        public static CommandAction depazODFour = new CommandAction("Medication", "Prescription GO! (weakest)", 0, -1, 0, 6, 1, 0, 0, 0, 0, 0, 0, 0, 2);
 
         public static CommandAction dylsemNormal = new CommandAction("Medication", "OTC (recommended dose)", 0, -1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 1);
-        public static CommandAction dylsemODOne = new CommandAction("Medication", "OTC GO!", 0, -12, 0, 6, 1, 0, 0, 0, 0, 0, 0, 0, 2);
-        public static CommandAction dylsemODTwo = new CommandAction("Medication", "OTC GO!", 0, -4, 0, 6, 1, 0, 0, 0, 0, 0, 0, 0, 2);
-        public static CommandAction dylsemODThree = new CommandAction("Medication", "OTC GO!", 0, -2, 0, 6, 1, 0, 0, 0, 0, 0, 0, 0, 2);
+        public static CommandAction dylsemODOne = new CommandAction("Medication", "OTC GO! (strongest)", 0, -12, 0, 6, 1, 0, 0, 0, 0, 0, 0, 0, 2);
+        public static CommandAction dylsemODTwo = new CommandAction("Medication", "OTC GO! (Embian)", 0, -4, 0, 6, 1, 0, 0, 0, 0, 0, 0, 0, 2);
+        public static CommandAction dylsemODThree = new CommandAction("Medication", "OTC GO! (weakest)", 0, -2, 0, 6, 1, 0, 0, 0, 0, 0, 0, 0, 2);
 
         public static CommandAction embianNormal = new CommandAction("Medication", "Sleeping Pills (recommended dose)!", 0, -1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 1);
-        public static CommandAction embianODOne = new CommandAction("Medication", "Sleeping Pills GO!", 0, -12, 0, 6, 1, 0, 0, 0, 0, 0, 0, 0, 2);
-        public static CommandAction embianODTwo = new CommandAction("Medication", "Sleeping Pills GO!", 0, -4, 0, 6, 1, 0, 0, 0, 0, 0, 0, 0, 2);
+        public static CommandAction embianODOne = new CommandAction("Medication", "Sleeping Pills GO! (strongest)", 0, -12, 0, 6, 1, 0, 0, 0, 0, 0, 0, 0, 2);
+        public static CommandAction embianODTwo = new CommandAction("Medication", "Sleeping Pills GO! (weakest)", 0, -4, 0, 6, 1, 0, 0, 0, 0, 0, 0, 0, 2);
 
-        public static CommandAction weedOne = new CommandAction("Medication", "Magic Grass", 0, -18, 0, 8, 1, 0, 0, 0, 0, 0, 0, 0, 2);
-        public static CommandAction weedTwo = new CommandAction("Medication", "Magic Grass", 0, -12, 0, 8, 1, 0, 0, 0, 0, 0, 0, 0, 2);
+        public static CommandAction weedOne = new CommandAction("Medication", "Magic Grass (strongest)", 0, -18, 0, 8, 1, 0, 0, 0, 0, 0, 0, 0, 2);
+        public static CommandAction weedTwo = new CommandAction("Medication", "Magic Grass (weakest)", 0, -12, 0, 8, 1, 0, 0, 0, 0, 0, 0, 0, 2);
 
         public static CommandAction paperOne = new CommandAction("Medication", "Magic Paper", 0, -18, 0, 8, 1, 0, 0, 0, 0, 0, 0, 0, 2);
 

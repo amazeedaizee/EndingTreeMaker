@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using static NSOEndingTreeMaker.EndingBranchSubData;
 
@@ -282,6 +283,7 @@ namespace NSOEndingTreeMaker
                 if (i == 0 && !(MainForm.CurrentEndingTree.isDay2Exp && ActionList[i].TargetAction.DayIndex == 2 && ActionList[i].TargetAction.DayPart == -1)) 
                         continue;
                 if (i > 0) pastAction = ActionList[i - 1];
+                ChangePresentCmdBasedOnPastStats(pastAction, ActionList[i]);
                 if (ActionList[i].TargetAction.DayPart != 3) ActionList[i].CommandResult = NSOCommandManager.CmdTypeToCommand(ActionList[i].Command);
                 NSOCommandManager.CalculateStats(pastAction, ActionList[i]);
                 if (ActionList[i].Followers > 9999999) { ActionList[i].Followers = 9999999; }
@@ -623,46 +625,27 @@ namespace NSOEndingTreeMaker
                 case 1:
                     actionOptions.Add("Play Game");
                     actionOptions.Add("Spend Time Together");
-                    actionOptions.Add("Spend Time Together - Cuddle");
-                    actionOptions.Add("Spend Time Together - Pity Party");
-                    actionOptions.Add("*** - ***");
-                    actionOptions.Add("*** - Have Chem***");
+                    actionOptions.Add("***");
                     break;
                 case 2:
                     actionOptions.Add("Sleep To Dusk");
-                    actionOptions.Add("Sleep To Night (Noon)");
-                    actionOptions.Add("Sleep To Night (Dusk)");
-                    actionOptions.Add("Sleep To Tomorrow (Noon)");
-                    actionOptions.Add("Sleep To Tomorrow (Dusk)");
-                    actionOptions.Add("Sleep To Tomorrow (Night)");
+                    actionOptions.Add("Sleep To Night");
+                    actionOptions.Add("Sleep To Tomorrow");
                     break;
                 case 3:
                     actionOptions.Add("Prescription (normal dose)");
-                    actionOptions.Add("Prescription GO! (Strongest)");
-                    actionOptions.Add("Prescription GO! (Dylsem)");
-                    actionOptions.Add("Prescription GO! (Embian)");
-                    actionOptions.Add("Prescription GO! (Grass/Paper)");
+                    actionOptions.Add("Prescription GO!");
                     actionOptions.Add("OTC (normal dose)");
-                    actionOptions.Add("OTC GO! (Strongest)");
-                    actionOptions.Add("OTC GO! (Embian)");
-                    actionOptions.Add("OTC GO! (Grass/Paper)");
-                    actionOptions.Add("Sleeping Pills GO! (Strongest)");
-                    actionOptions.Add("Sleeping Pills GO! (Grass/Paper)");
-                    actionOptions.Add("Magic Grass GO! (Strongest)");
-                    actionOptions.Add("Magic Grass GO! (Paper)");
+                    actionOptions.Add("OTC GO!");
+                    actionOptions.Add("Sleeping Pills GO!");
+                    actionOptions.Add("Magic Grass GO!");
                     actionOptions.Add("Magic Paper GO!");
                     break;
                 case 4:
-                    actionOptions.Add("Social Media - Daily Tweet");
-                    actionOptions.Add("Social Media - Send Business Tweet");
-                    actionOptions.Add("Social Media - Muse");
-                    actionOptions.Add("Social Media - Vent On Main");
-                    actionOptions.Add("Social Media - Bash Others");
+                    actionOptions.Add("Social Media");
                     actionOptions.Add("Vanity Search");
                     actionOptions.Add("Video Streaming");
-                    actionOptions.Add("/st/ - Search Opinions");
-                    actionOptions.Add("/st/ - Go Undercover");
-                    actionOptions.Add("/st/ - Stir Shit");
+                    actionOptions.Add("/st/");
                     actionOptions.Add("Dinder");
                     break;
                 case 5:
@@ -693,6 +676,335 @@ namespace NSOEndingTreeMaker
 
             }
 
+        }
+
+        private void ChangePresentCmdBasedOnPastStats(TargetActionData pastAction, TargetActionData presentAction)
+        {
+            var a = presentAction.TargetAction.Action;
+            if (presentAction.TargetAction.DayPart == 3) return;
+            if (a == ActionType.PlayIchatuku)
+            {
+                if (pastAction.Affection < 40)
+                    presentAction.Command = CmdType.PlayIchatukuTalk;
+                else if (pastAction.Affection >= 80)
+                    presentAction.Command = CmdType.PlayIchatukuKizu;
+                else 
+                    presentAction.Command = CmdType.PlayIchatukuIchatuku;
+            }
+            if (a == ActionType.PlayMakeLove)
+            {
+                if (pastAction.TargetAction.DayPart == 0 && (pastAction.TargetAction.Action.ToString().Contains("Overdose") || pastAction.TargetAction.Action == ActionType.OkusuriHappa || pastAction.TargetAction.Action == ActionType.OkusuriPsyche))
+                    presentAction.Command = CmdType.PlayKimeLove;
+                else 
+                    presentAction.Command = CmdType.PlayMakeLove;
+            }
+            if (a == ActionType.SleepToNight)
+            {
+                if (presentAction.TargetAction.DayPart == 0)
+                    presentAction.Command = CmdType.SleepToNight2;
+                else 
+                    presentAction.Command = CmdType.SleepToNight1;
+            }
+            if (a == ActionType.SleepToTomorrow)
+            {
+                if (DayPart_Dropdown.SelectedIndex == 0)
+                    presentAction.Command = CmdType.SleepToTomorrow3;
+                else if (DayPart_Dropdown.SelectedIndex == 1)
+                    presentAction.Command = CmdType.SleepToTomorrow2;
+                else 
+                    presentAction.Command = CmdType.SleepToTomorrow1;
+            }
+            if (a == ActionType.OkusuriDaypassOverdose)
+            {
+                if (pastAction.Darkness < 20)
+                    presentAction.Command = CmdType.OkusuriDaypassOverdoseY1;
+                else if (pastAction.Darkness >= 20 && pastAction.Darkness < 40)
+                    presentAction.Command = CmdType.OkusuriDaypassOverdoseY2;
+                else if (pastAction.Darkness >= 40 && pastAction.Darkness < 60)
+                    presentAction.Command = CmdType.OkusuriDaypassOverdoseY3;
+                else presentAction.Command = CmdType.OkusuriDaypassOverdoseY4;
+            }
+            if (a == ActionType.OkusuriPuronOverdose)
+            {
+                if (pastAction.Darkness < 40)
+                    presentAction.Command = CmdType.OkusuriPuronOverdoseY2;
+                else if (pastAction.Darkness >= 40 && pastAction.Darkness < 60)
+                    presentAction.Command = CmdType.OkusuriPuronOverdoseY3;
+                else 
+                    presentAction.Command = CmdType.OkusuriPuronOverdoseY4;
+            }
+            if (a == ActionType.OkusuriHiPuronOverdose)
+            {
+                if (pastAction.Darkness < 60)
+                    presentAction.Command = CmdType.OkusuriHiPuronOverdoseY3;
+                else 
+                    presentAction.Command = CmdType.OkusuriHiPuronOverdoseY4;
+            }
+            if (a == ActionType.OkusuriHappa)
+            {
+                if (pastAction.Darkness < 80)
+                    presentAction.Command = CmdType.OkusuriHappaY4;
+                else presentAction.Command = CmdType.OkusuriHappaY5;
+            }
+            if (a == ActionType.InternetPoketter)
+            {
+                if (pastAction.Followers < 10000 && pastAction.Darkness < 20)
+                    presentAction.Command = CmdType.InternetPoketterF0Y12;
+                else if ((pastAction.Followers < 10000 && pastAction.Darkness >= 20) || (pastAction.Followers < 100000 && pastAction.Followers >= 10000 && pastAction.Darkness >= 40 && pastAction.Darkness < 60))
+                    presentAction.Command = CmdType.InternetPoketterF0Y45;
+                else if (pastAction.Followers < 100000 && pastAction.Followers >= 10000 && pastAction.Darkness < 40)
+                    presentAction.Command = CmdType.InternetPoketterF1Y12;
+                else if (pastAction.Followers >= 10000 && pastAction.Followers < 100000 && pastAction.Darkness >= 60)
+                    presentAction.Command = CmdType.InternetPoketterF1Y45;
+                else presentAction.Command = CmdType.InternetPoketterPoem;
+            }
+            if (a == ActionType.Internet2ch)
+            {
+                if (pastAction.Darkness < 40)
+                    presentAction.Command = CmdType.Internet2chY12;
+                else if (pastAction.Darkness >= 40 && pastAction.Darkness < 60)
+                    presentAction.Command = CmdType.Internet2chY3;
+                else presentAction.Command = CmdType.Internet2chY45;
+            }                 
+            presentAction.CommandResult = NSOCommandManager.CmdTypeToCommand(presentAction.Command);
+            presentAction.ActionName = NSODataManager.CmdName(presentAction.Command);
+        }
+
+        private CmdType ConvertActionChoiceToCmd(TargetActionData pastAction)
+        {
+            if (ParentAction_Dropdown.SelectedIndex > 0)
+                TargetActionButton.Enabled = true; 
+            switch (ParentAction_Dropdown.SelectedIndex)
+            {
+                case -1:
+                    break;
+                case 0:
+                    if (StreamTopic_Dropdown.SelectedIndex == -1 || StreamLevelNumeric.Value == -1)
+                        break;
+                    if (ParentAction_Dropdown.SelectedIndex == 0 && !(StreamTopic_Dropdown.SelectedIndex == NSODataManager.StreamTopicList.IndexOf(AlphaType.Imbouron) && StreamLevelNumeric.Value == 6))
+                        return (CmdType)Enum.Parse(typeof(CmdType), $"{NSODataManager.StreamTopicList[StreamTopic_Dropdown.SelectedIndex]}_{StreamLevelNumeric.Value}");
+                    else return CmdType.Error;
+                case 1:
+                    switch (Action_Dropdown.SelectedIndex)
+                    {
+                        case -1:
+                            break;
+                        case 0:
+                            return CmdType.EntameGame;
+                        case 1:
+                            if (pastAction.Affection < 40)
+                                return CmdType.PlayIchatukuTalk;
+                            if (pastAction.Affection >= 80) 
+                                return CmdType.PlayIchatukuKizu;
+                            return CmdType.PlayIchatukuIchatuku;
+                        case 2:
+                            if (pastAction.TargetAction.DayPart == 0 && (pastAction.TargetAction.Action.ToString().Contains("Overdose") || pastAction.TargetAction.Action == ActionType.OkusuriHappa || pastAction.TargetAction.Action == ActionType.OkusuriPsyche))
+                                return CmdType.PlayKimeLove;
+                            return CmdType.PlayMakeLove;
+                    }
+                    break;
+                case 2:
+                    switch (Action_Dropdown.SelectedIndex)
+                    {
+                        case -1:
+                            break;
+                        case 0:
+                            if (DayPart_Dropdown.SelectedIndex != 0)
+                            {
+                                TargetActionButton.Enabled = false;
+                                return CmdType.None;
+                            }
+                            return CmdType.SleepToTwilight1;
+                        case 1:
+                            if (DayPart_Dropdown.SelectedIndex == 2)
+                            {
+                                TargetActionButton.Enabled = false;
+                                return CmdType.None;
+                            }
+                            if (DayPart_Dropdown.SelectedIndex == 0)
+                                return CmdType.SleepToNight2;
+                            return CmdType.SleepToNight1;
+                        case 2:
+                            if (DayPart_Dropdown.SelectedIndex == 0)
+                                return CmdType.SleepToTomorrow3;
+                            if (DayPart_Dropdown.SelectedIndex == 1)
+                                return CmdType.SleepToTomorrow2;
+                            return CmdType.SleepToTomorrow1;
+                    }
+                    break;
+                case 3:
+                    switch (Action_Dropdown.SelectedIndex)
+                    {
+                        case -1:
+                            break;
+                        case 0:
+                            return CmdType.OkusuriDaypassModerate;
+                        case 1:
+                            if (pastAction.Darkness < 20)
+                                return CmdType.OkusuriDaypassOverdoseY1;
+                            if (pastAction.Darkness >= 20 && pastAction.Darkness < 40)
+                                return CmdType.OkusuriDaypassOverdoseY2;
+                            if (pastAction.Darkness >= 40 && pastAction.Darkness < 60)
+                                return CmdType.OkusuriDaypassOverdoseY3;
+                            return CmdType.OkusuriDaypassOverdoseY4;
+                        case 2:
+                            if (pastAction.Darkness < 20)
+                            {
+                                TargetActionButton.Enabled = false;
+                                return CmdType.None;
+                            }
+                            return CmdType.OkusuriPuronModerate;
+                        case 3:
+                            if (pastAction.Darkness < 20)
+                            {
+                                TargetActionButton.Enabled = false;
+                                return CmdType.None;
+                            }
+                            if (pastAction.Darkness < 40)
+                                return CmdType.OkusuriPuronOverdoseY2;
+                            if (pastAction.Darkness >= 40 && pastAction.Darkness < 60)
+                                return CmdType.OkusuriPuronOverdoseY3;
+                            return CmdType.OkusuriPuronOverdoseY4;
+                        case 4:
+                            if (pastAction.Darkness < 40)
+                            {
+                                TargetActionButton.Enabled = false;
+                                return CmdType.None;
+                            }
+                            if (pastAction.Darkness < 60)
+                                return CmdType.OkusuriHiPuronOverdoseY3;
+                            return CmdType.OkusuriHiPuronOverdoseY4;
+                        case 5:
+                            if (pastAction.Darkness < 60)
+                            {
+                                TargetActionButton.Enabled = false;
+                                return CmdType.None;
+                            }
+                            if (pastAction.Darkness < 80)
+                                return CmdType.OkusuriHappaY4;
+                            return CmdType.OkusuriHappaY5;
+                        case 6:
+                            if (pastAction.Darkness < 80)
+                            {
+                                TargetActionButton.Enabled = false;
+                                return CmdType.None;
+                            }
+                            return CmdType.OkusuriPsyche;
+                    }
+                    break;
+                case 4:
+                    switch (Action_Dropdown.SelectedIndex)
+                    {
+                        case -1:
+                            break;
+                        case 0:
+                            if (pastAction.Followers < 10000 && pastAction.Darkness < 20)
+                                return CmdType.InternetPoketterF0Y12;
+                            if ((pastAction.Followers < 10000 && pastAction.Darkness >= 20) || (pastAction.Followers < 100000 && pastAction.Followers >= 10000 && pastAction.Darkness >= 40 && pastAction.Darkness < 60))
+                                return CmdType.InternetPoketterF0Y45;
+                            if (pastAction.Followers < 100000 && pastAction.Followers >= 10000 && pastAction.Darkness < 40)
+                                return CmdType.InternetPoketterF1Y12;
+                            if (pastAction.Followers >= 10000 && pastAction.Followers < 100000 && pastAction.Darkness >= 60)
+                                return CmdType.InternetPoketterF1Y45;
+                            return CmdType.InternetPoketterPoem;
+                        case 1:
+                            return CmdType.InternetPoketterF0Y3;
+                        case 2:
+                            return CmdType.InternetYoutube;
+                        case 3:
+                            if (pastAction.Darkness < 40)
+                                return CmdType.Internet2chY12;
+                            if (pastAction.Darkness >= 40 && pastAction.Darkness < 60)
+                                return CmdType.Internet2chY3;
+                            return CmdType.Internet2chY45;
+                        case 4:
+                            return CmdType.InternetDeai2;
+                    }
+                    break;
+                case 5:
+                    return NSODataManager.OutsideList[Action_Dropdown.SelectedIndex];
+
+                case 6:
+                    return NSODataManager.DarknessList[Action_Dropdown.SelectedIndex];
+            }
+            return CmdType.None;
+        }
+
+        private void ConvertActionChoiceNames(TargetActionData pastAction = null)
+        {
+            if (pastAction == null)
+                pastAction = ActionList[ActionList.FindLastIndex(a => (a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart < DayPart_Dropdown.SelectedIndex) || a.TargetAction.DayIndex < DayIndexNumeric.Value)];
+            switch (ParentAction_Dropdown.SelectedIndex)
+            {
+                case -1:
+                case 0:
+                    return;
+                case 1:
+                    if (pastAction.Affection < 40)
+                        Action_Dropdown.Items[1] = "Spend Time Together";
+                    else if (pastAction.Affection >= 80)
+                        Action_Dropdown.Items[1] = "Spend Time Together (Pity Party)";
+                    else Action_Dropdown.Items[1] = "Spend Time Together (Cuddle)";
+
+                    if (pastAction.TargetAction.DayPart == 0 && (pastAction.TargetAction.Action.ToString().Contains("Overdose") || pastAction.TargetAction.Action == ActionType.OkusuriHappa || pastAction.TargetAction.Action == ActionType.OkusuriPsyche))
+                        Action_Dropdown.Items[2] = "*** (Have Chem***)";
+                    else Action_Dropdown.Items[2] = "***";
+                    break;
+                case 2:
+                    if (DayPart_Dropdown.SelectedIndex == 0)
+                        Action_Dropdown.Items[1] = "Sleep To Night (Noon)";
+                    else Action_Dropdown.Items[1] = "Sleep To Night (Dusk)";
+                    if (DayPart_Dropdown.SelectedIndex == 0)
+                        Action_Dropdown.Items[2] = "Sleep To Tomorrow (Noon)";
+                    else if (DayPart_Dropdown.SelectedIndex == 1)
+                        Action_Dropdown.Items[2] = "Sleep To Tomorrow (Dusk)";
+                    else Action_Dropdown.Items[2] = "Sleep To Tomorrow (Night)";            
+                    break;
+                case 3:
+                   
+                    if (pastAction.Darkness < 20)
+                        Action_Dropdown.Items[1] = "Prescription GO! (strongest)";
+                    else if (pastAction.Darkness >= 20 && pastAction.Darkness < 40)
+                        Action_Dropdown.Items[1] = "Prescription GO! (OTC)";
+                    else if (pastAction.Darkness >= 40 && pastAction.Darkness < 60)
+                        Action_Dropdown.Items[1] = "Prescription GO! (Embian)";
+                    else Action_Dropdown.Items[1] = "Prescription GO! (weakest)";
+
+                    if (pastAction.Darkness < 40)
+                        Action_Dropdown.Items[3] = "OTC GO! (strongest)";
+                    else if (pastAction.Darkness >= 40 && pastAction.Darkness < 60)
+                        Action_Dropdown.Items[3] = "OTC GO! (Embian)";
+                    else Action_Dropdown.Items[3] = "OTC GO! (weakest)";
+
+                    if (pastAction.Darkness < 60)
+                        Action_Dropdown.Items[4]= "Sleeping Pills GO! (strongest)";
+                    else Action_Dropdown.Items[4] = "Sleeping Pills GO! (weakest)";
+
+                    if (pastAction.Darkness < 80)
+                        Action_Dropdown.Items[5] ="Magic Grass GO! (strongest)";
+                    else Action_Dropdown.Items[5] = "Magic Grass GO! (weakest)";
+                    
+                    break;
+                case 4:
+
+                            if (pastAction.Followers < 10000 && pastAction.Darkness < 20)
+                                Action_Dropdown.Items[0]= "Social Media (Daily Tweet)";
+                            else if ((pastAction.Followers < 10000 && pastAction.Darkness >= 20) || (pastAction.Followers < 100000 && pastAction.Followers >= 10000 && pastAction.Darkness >= 40 && pastAction.Darkness < 60))
+                                Action_Dropdown.Items[0] = "Social Media (Vent On Main)";
+                            else if (pastAction.Followers < 100000 && pastAction.Followers >= 10000 && pastAction.Darkness < 40)
+                                Action_Dropdown.Items[0] = "Social Media (Make Business Tweet)";
+                            else if (pastAction.Followers >= 10000 && pastAction.Followers < 100000 && pastAction.Darkness >= 60)
+                                Action_Dropdown.Items[0] = "Social Media (Bash Others)";
+                            else Action_Dropdown.Items[0] = "Social Media (Muse)";
+
+                            if (pastAction.Darkness < 40)
+                                Action_Dropdown.Items.Insert(3, "/st/ (Search Opinions)");
+                            else if (pastAction.Darkness >= 40 && pastAction.Darkness < 60)
+                                Action_Dropdown.Items[3] = "/st/ (Go Undercover)";
+                            else Action_Dropdown.Items[3] = "/st/ (Stir Shit)";
+                    
+                    break;
+            }
         }
 
         private void ChangeActionEnableBool(bool isEnabled)
@@ -745,6 +1057,7 @@ namespace NSOEndingTreeMaker
                         ClearStatPreview();
                         return;
                     }
+                    SetStreamStatusPreview();
                     break;
                 default:
                     if (Action_Dropdown.SelectedIndex == -1)
@@ -754,7 +1067,6 @@ namespace NSOEndingTreeMaker
                     }
                     break;
             }
-
             try
             {
                 TargetActionData pastAction = null;
@@ -764,7 +1076,7 @@ namespace NSOEndingTreeMaker
                     pastAction.CommandResult = new();
                 }
                 else pastAction = ActionList[ActionList.FindLastIndex(a => (a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart < DayPart_Dropdown.SelectedIndex) || a.TargetAction.DayIndex < DayIndexNumeric.Value)];
-                CommandAction command = NSOCommandManager.CmdTypeToCommand(ConvertChoicesToCmdType());
+                CommandAction command = NSOCommandManager.CmdTypeToCommand(ConvertActionChoiceToCmd(pastAction));
                 CmdType stream = CmdType.Error;
                 if (ParentAction_Dropdown.SelectedIndex == 0 && !(StreamTopic_Dropdown.SelectedIndex == NSODataManager.StreamTopicList.IndexOf(AlphaType.Imbouron) && StreamLevelNumeric.Value == 6)) 
                     stream = (CmdType)Enum.Parse(typeof(CmdType), $"{NSODataManager.StreamTopicList[StreamTopic_Dropdown.SelectedIndex]}_{StreamLevelNumeric.Value}");
@@ -804,10 +1116,49 @@ namespace NSOEndingTreeMaker
                 SetStreamIdeaPreview(pastAction);
                 SetHiatusText();
                 SetBonuses(command, pastAction);
+               
             }
             catch
             {
                 ClearStatPreview();
+            }
+
+            void SetStreamStatusPreview()
+            {
+                if (ParentAction_Dropdown.SelectedIndex != 0) return;
+                CmdType stream = CmdType.Error;
+                if (ParentAction_Dropdown.SelectedIndex == 0 && !(StreamTopic_Dropdown.SelectedIndex == NSODataManager.StreamTopicList.IndexOf(AlphaType.Imbouron) && StreamLevelNumeric.Value == 6))
+                    stream = (CmdType)Enum.Parse(typeof(CmdType), $"{NSODataManager.StreamTopicList[StreamTopic_Dropdown.SelectedIndex]}_{StreamLevelNumeric.Value}");
+                var streamIdea = UnsavedEndingBranchData.StreamIdeaList.FirstOrDefault(i => i.Idea == stream);
+                var streamUsed = UnsavedEndingBranchData.StreamUsedList.FirstOrDefault(i => i.UsedStream == stream);
+                var breakdownThree = UnsavedEndingBranchData.StreamUsedList.FirstOrDefault(u => u.UsedStream == CmdType.Yamihaishin_3);
+
+                if (breakdownThree != null && DayIndexNumeric.Value > breakdownThree.DayIndex && DayIndexNumeric.Value <= (breakdownThree.DayIndex + 2))
+                {
+                    StreamIdea_Label.Text = $"Can't stream now.";
+                    TargetActionButton.Enabled = false;
+                }
+                else if (streamUsed != null && streamUsed.DayIndex > DayIndexNumeric.Value)
+                {
+                    StreamIdea_Label.Text = $"You have already streamed this on Day {streamUsed.DayIndex}.";
+                    TargetActionButton.Enabled = false;
+                }
+                else if (streamIdea != null && streamUsed == null)
+                {
+                    StreamIdea_Label.Text = $"You can stream this.";
+                    TargetActionButton.Enabled = true;
+                }
+                else if (streamIdea == null)
+                {
+                    StreamIdea_Label.Text = $"You haven't found this idea yet.";
+                    TargetActionButton.Enabled = false;
+                }
+                else StreamIdea_Label.Text = $"";
+                if (DayPart_Dropdown.SelectedIndex != 2)
+                {
+                    StreamIdea_Label.Text = $"You can only stream at night.";
+                    TargetActionButton.Enabled = false;
+                }
             }
             void SetFollowersTooltip(int followersCalculation, TargetActionData pastAction, CommandAction streamCmd)
             {
@@ -831,8 +1182,9 @@ namespace NSOEndingTreeMaker
 
             void SetStreamIdeaPreview(TargetActionData pastAction)
             {
+                if (ParentAction_Dropdown.SelectedIndex == 0) return;
                 var ideaAction = new TargetActionData((int)DayIndexNumeric.Value, DayPart_Dropdown.SelectedIndex, CmdType.None, IgnoreDMCheck.Checked);
-                ideaAction.Command = ConvertChoicesToCmdType();
+                ideaAction.Command = ConvertActionChoiceToCmd(pastAction);
                 ideaAction.TargetAction.Action = NSODataManager.CmdToActionConverter(ideaAction.Command);
                 var (DayIndex, DayPart, Idea) = NSODataManager.ActionToStreamIdea(pastAction, ideaAction, UnsavedEndingBranchData);
 
@@ -885,6 +1237,7 @@ namespace NSOEndingTreeMaker
             }
         }
 
+
         private CmdType ConvertChoicesToCmdType()
         {
             switch (ParentAction_Dropdown.SelectedIndex)
@@ -927,6 +1280,7 @@ namespace NSOEndingTreeMaker
             StreamLevel_Label.Visible = false;
             StreamTopic_Label.Visible = false;
             StreamTopic_Dropdown.Visible = false;
+            TargetActionButton.Enabled = false;
             SetDayMinimum();
             int listCount = ActionList.Count;
             for (int i = 0; i < listCount; i++)
@@ -941,6 +1295,7 @@ namespace NSOEndingTreeMaker
             //ActionListView.EndUpdate();
             EndingToGet_Dropdown.SelectedIndex = NSODataManager.EndingsList.IndexOf(UnsavedEndingBranchData.EndingBranch.EndingToGet);
             StressfulBreakdown_Check.Checked = UnsavedEndingBranchData.EndingBranch.IsStressfulBressdown;
+            IgnoreNightEnding_Label.Checked = UnsavedEndingBranchData.IgnoreNightEndings;
 
         }
 
@@ -954,6 +1309,7 @@ namespace NSOEndingTreeMaker
         {
             CmdType command = CmdType.None;
             var selectedActions = ActionListView.SelectedIndices;
+            var pastAction = ActionList[ActionList.FindLastIndex(a => (a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart < DayPart_Dropdown.SelectedIndex) || a.TargetAction.DayIndex < DayIndexNumeric.Value)];
             if (DayPart_Dropdown.SelectedIndex == -1 && (selectedActions.Count == 0 || (selectedActions.Count == 1 && ActionListView.SelectedIndices[0] != 0 && !(MainForm.CurrentEndingTree.isDay2Exp && selectedActions.Count == 1 && ActionList[selectedActions[0]].TargetAction.DayIndex == 2 && ActionList[selectedActions[0]].TargetAction.DayPart == -1))))
             {
                 MessageBox.Show("Time of Day cannot be empty.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -964,44 +1320,7 @@ namespace NSOEndingTreeMaker
                 MessageBox.Show("Action cannot be empty.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            switch (ParentAction_Dropdown.SelectedIndex)
-            {
-                case -1:
-                    if (selectedActions.Count > 0 && ActionListView.SelectedIndices[0] == 0) break; 
-                    MessageBox.Show("Parent action cannot be empty.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                case 0:
-                    if (StreamTopic_Dropdown.SelectedIndex == -1)
-                    {
-                        MessageBox.Show("Stream topic cannot be empty.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    if (StreamTopic_Dropdown.SelectedIndex == NSODataManager.StreamTopicList.IndexOf(AlphaType.Imbouron) && StreamLevelNumeric.Value == 6)
-                    {
-                        command = CmdType.Error;
-                        break;
-                    }
-                    command = (CmdType)Enum.Parse(typeof(CmdType), $"{NSODataManager.StreamTopicList[StreamTopic_Dropdown.SelectedIndex]}_{StreamLevelNumeric.Value}");
-                    break;
-                case 1:
-                    command = NSODataManager.HangOutList[Action_Dropdown.SelectedIndex];
-                    break;
-                case 2:
-                    command = NSODataManager.SleepList[Action_Dropdown.SelectedIndex];
-                    break;
-                case 3:
-                    command = NSODataManager.DrugList[Action_Dropdown.SelectedIndex];
-                    break;
-                case 4:
-                    command = NSODataManager.InternetList[Action_Dropdown.SelectedIndex];
-                    break;
-                case 5:
-                    command = NSODataManager.OutsideList[Action_Dropdown.SelectedIndex];
-                    break;
-                case 6:
-                    command = NSODataManager.DarknessList[Action_Dropdown.SelectedIndex];
-                    break;
-            }
+            command = ConvertActionChoiceToCmd(pastAction);
             if (SelectedAction != null)
             {
                 if (selectedActions.Count == 1 && selectedActions[0] == 0 && !(MainForm.CurrentEndingTree.isDay2Exp && SelectedAction.TargetAction.DayIndex == 2 && SelectedAction.TargetAction.DayPart == -1))
@@ -1119,9 +1438,11 @@ namespace NSOEndingTreeMaker
                     nextDay++;
                     DayIndexNumeric.Value = nextDay;
                     DayPart_Dropdown.SelectedIndex = 0;
+                    ConvertActionChoiceNames();
                     return;
                 }
                 DayPart_Dropdown.SelectedIndex = nextDayPart;
+                ConvertActionChoiceNames();
             }
 
             bool InitializeSelectedStartDay()
@@ -1182,8 +1503,16 @@ namespace NSOEndingTreeMaker
 
         private void ParentAction_DropdownOnSelectedIndexChanged(object sender, EventArgs e)
         {
+            var pastAction = ActionList[ActionList.FindLastIndex(a => (a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart < DayPart_Dropdown.SelectedIndex) || a.TargetAction.DayIndex < DayIndexNumeric.Value)];
             Action_Dropdown.SelectedIndex = -1;
+            if (ParentAction_Dropdown.SelectedIndex != -1)
+                TargetActionButton.Enabled = false;
             ChangeActionOptionsByParent();
+            ConvertActionChoiceNames(pastAction);
+            if (ParentAction_Dropdown.SelectedIndex == 0)
+            {
+                SetStreamNumericBasedOnIdea();
+            }
             if (SelectedAction == null)
             {
                 NewActionParentIndex = ParentAction_Dropdown.SelectedIndex;
@@ -1209,20 +1538,23 @@ namespace NSOEndingTreeMaker
                             UpdateEditFieldsWithSelectedAction();
                             DayIndexNumeric.Enabled = false;
                             DayPart_Dropdown.Enabled = false;
-                            // IgnoreDMCheck.Enabled = false;
+                            ConvertActionChoiceNames();
                             return;
                         }
                         if (SelectedAction.TargetAction.DayIndex == UnsavedEndingBranchData.EndingBranch.StartingDay && (UnsavedEndingBranchData.EndingBranch.StartingDay == 1 || SelectedAction.TargetAction.DayPart == -1))
                         {
                             OnlyDayIndexEditableIfFirstDaySelected();
+                            ConvertActionChoiceNames();
                             return;
                         }
                         if (SelectedAction.TargetAction.DayIndex == 15 && SelectedAction.TargetAction.DayPart == 3)
                         {
                             NoEditingBreakdownDay();
+                            ConvertActionChoiceNames();
                             return;
                         }
                         UpdateEditFieldsWithSelectedAction();
+                        ConvertActionChoiceNames();
                     }
                 }
                 catch (ArgumentOutOfRangeException) { return; }
@@ -1231,9 +1563,11 @@ namespace NSOEndingTreeMaker
             if (selectedActions.Count > 1)
             {
                 OnlyActionEditableIfMultiSelected();
+                ConvertActionChoiceNames();
                 return;
             }
             UpdateEditFieldsWithNewAction();
+            ConvertActionChoiceNames();
 
             void NoEditingBreakdownDay()
             {
@@ -1321,16 +1655,16 @@ namespace NSOEndingTreeMaker
                         catch { StreamLevelNumeric.Value = 1; }
                         break;
                     case 1:
-                        Action_Dropdown.SelectedIndex = NSODataManager.HangOutList.IndexOf(SelectedAction.Command);
+                        Action_Dropdown.SelectedIndex = NSODataManager.HangOutActionList.IndexOf(SelectedAction.TargetAction.Action);
                         break;
                     case 2:
-                        Action_Dropdown.SelectedIndex = NSODataManager.SleepList.IndexOf(SelectedAction.Command);
+                        Action_Dropdown.SelectedIndex = NSODataManager.SleepActionList.IndexOf(SelectedAction.TargetAction.Action);
                         break;
                     case 3:
-                        Action_Dropdown.SelectedIndex = NSODataManager.DrugList.IndexOf(SelectedAction.Command);
+                        Action_Dropdown.SelectedIndex = NSODataManager.DrugActionList.IndexOf(SelectedAction.TargetAction.Action);
                         break;
                     case 4:
-                        Action_Dropdown.SelectedIndex = NSODataManager.InternetList.IndexOf(SelectedAction.Command);
+                        Action_Dropdown.SelectedIndex = NSODataManager.InternetActionList.IndexOf(SelectedAction.TargetAction.Action);
                         break;
                     case 5:
                         Action_Dropdown.SelectedIndex = NSODataManager.OutsideList.IndexOf(SelectedAction.Command);
@@ -1388,16 +1722,16 @@ namespace NSOEndingTreeMaker
                         StreamTopic_Dropdown.Visible = true;
                         break;
                     case 1:
-                        Action_Dropdown.SelectedIndex = NSODataManager.HangOutList.IndexOf(NewAction.Command);
+                        Action_Dropdown.SelectedIndex = NSODataManager.HangOutActionList.IndexOf(NewAction.TargetAction.Action);
                         break;
                     case 2:
-                        Action_Dropdown.SelectedIndex = NSODataManager.SleepList.IndexOf(NewAction.Command);
+                        Action_Dropdown.SelectedIndex = NSODataManager.SleepActionList.IndexOf(NewAction.TargetAction.Action);
                         break;
                     case 3:
-                        Action_Dropdown.SelectedIndex = NSODataManager.DrugList.IndexOf(NewAction.Command);
+                        Action_Dropdown.SelectedIndex = NSODataManager.DrugActionList.IndexOf(NewAction.TargetAction.Action);
                         break;
                     case 4:
-                        Action_Dropdown.SelectedIndex = NSODataManager.InternetList.IndexOf(NewAction.Command);
+                        Action_Dropdown.SelectedIndex = NSODataManager.InternetActionList.IndexOf(NewAction.TargetAction.Action);
                         break;
                     case 5:
                         Action_Dropdown.SelectedIndex = NSODataManager.OutsideList.IndexOf(NewAction.Command);
@@ -1428,6 +1762,7 @@ namespace NSOEndingTreeMaker
                 ActionListView.SelectedIndices.Add(index);
             }
             SetStatChangePreview();
+            ConvertActionChoiceNames();
         }
 
         private void SaveEndingBranchButtonOnClick(object sender, EventArgs e)
@@ -1605,35 +1940,12 @@ namespace NSOEndingTreeMaker
 
         private void Action_DropdownOnSelectedValueChanged(object sender, EventArgs e)
         {
+            if (Action_Dropdown.SelectedIndex == -1)
+                TargetActionButton.Enabled = false;
+            var pastAction = ActionList[ActionList.FindLastIndex(a => (a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart < DayPart_Dropdown.SelectedIndex) || a.TargetAction.DayIndex < DayIndexNumeric.Value)];
             if (SelectedAction == null)
             {
-                if (Action_Dropdown.SelectedIndex == -1) { return; }
-                switch (ParentAction_Dropdown.SelectedIndex)
-                {
-                    case -1:
-                        NewAction.Command = CmdType.None;
-                        break;
-                    case 0:
-                        break;
-                    case 1:
-                        NewAction.Command = NSODataManager.HangOutList[Action_Dropdown.SelectedIndex];
-                        break;
-                    case 2:
-                        NewAction.Command = NSODataManager.SleepList[Action_Dropdown.SelectedIndex];
-                        break;
-                    case 3:
-                        NewAction.Command = NSODataManager.DrugList[Action_Dropdown.SelectedIndex];
-                        break;
-                    case 4:
-                        NewAction.Command = NSODataManager.InternetList[Action_Dropdown.SelectedIndex];
-                        break;
-                    case 5:
-                        NewAction.Command = NSODataManager.OutsideList[Action_Dropdown.SelectedIndex];
-                        break;
-                    case 6:
-                        NewAction.Command = NSODataManager.DarknessList[Action_Dropdown.SelectedIndex];
-                        break;
-                }
+                NewAction.Command = ConvertActionChoiceToCmd(pastAction);
             }
             SetStatChangePreview();
         }
@@ -1650,13 +1962,14 @@ namespace NSOEndingTreeMaker
                 if (StreamLevelNumeric.Value == 6) { StreamLevelNumeric.Value = 5; }
                 StreamLevelNumeric.Maximum = 5;
             }
+            if (index == -1)
+            {
+                SetStatChangePreview();
+                return;
+            }
+            SetStreamNumericBasedOnIdea();
             if (SelectedAction == null)
             {
-                if (index == -1)
-                {
-                    SetStatChangePreview();
-                    return;
-                }
                 AlphaType streamTopic = NSODataManager.StreamTopicList[index];
                 int streamLevel = (int)StreamLevelNumeric.Value;
                 if (index == NSODataManager.StreamTopicList.IndexOf(AlphaType.Imbouron) && streamLevel == 6)
@@ -1666,6 +1979,25 @@ namespace NSOEndingTreeMaker
                 else { NewAction.Command = (CmdType)Enum.Parse(typeof(CmdType), $"{streamTopic}_{streamLevel}"); }
             }
             SetStatChangePreview();
+        }
+
+        void SetStreamNumericBasedOnIdea()
+        {          
+            int index = StreamTopic_Dropdown.SelectedIndex;
+            if (index == -1 || StreamLevelNumeric.Value == -1) 
+                return;
+            var ideas = UnsavedEndingBranchData.StreamIdeaList;
+            AlphaType streamTopic = NSODataManager.StreamTopicList[index];
+            StreamIdeaObj idea = ideas.LastOrDefault(i => i.Idea.ToString().Contains(streamTopic.ToString()) && ((i.DayIndex == DayIndexNumeric.Value && i.DayPart < DayPart_Dropdown.SelectedIndex) || i.DayIndex < DayIndexNumeric.Value));
+            if (streamTopic == AlphaType.Imbouron && ideas.Exists(i => i.Idea == CmdType.Error && ((i.DayIndex == DayIndexNumeric.Value && i.DayPart < DayPart_Dropdown.SelectedIndex) || i.DayIndex < DayIndexNumeric.Value)))
+            {
+                StreamLevelNumeric.Value = 6;
+            }
+            else if (idea != null)
+            {
+                var streamLevel = int.Parse(idea.Idea.ToString().Split('_')[1]);
+                StreamLevelNumeric.Value = streamLevel;
+            }
         }
         private void StreamLevelNumericOnValueChanged(object sender, EventArgs e)
         {
@@ -1679,7 +2011,7 @@ namespace NSOEndingTreeMaker
                 }
                 AlphaType streamTopic = NSODataManager.StreamTopicList[index];
                 int streamLevel = (int)StreamLevelNumeric.Value;
-                if (index == NSODataManager.StreamTopicList.IndexOf(AlphaType.Imbouron) && streamLevel == 6)
+                if (streamTopic == AlphaType.Imbouron && streamLevel == 6)
                 {
                     NewAction.Command = CmdType.Error;
                 }

@@ -12,7 +12,7 @@ namespace NSOEndingTreeMaker
     public class EndingBranchData
     {
         public EndingBranch_Stub EndingBranch;
-        public (int, int, EndingType) ExpectedDayOfEnd;
+        public (int, int, EndingType) ExpectedDayOfEnd = new(0,0,EndingType.Ending_None);
         public List<StreamIdeaObj> StreamIdeaList = new();
         public List<StreamUsedObj> StreamUsedList = new();
         public EventCounter hasGalacticRail = new(0, false);
