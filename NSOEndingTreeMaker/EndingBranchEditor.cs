@@ -1282,6 +1282,9 @@ namespace NSOEndingTreeMaker
             StreamTopic_Dropdown.Visible = false;
             TargetActionButton.Enabled = false;
             SetDayMinimum();
+            EndingToGet_Dropdown.SelectedIndex = NSODataManager.EndingsList.IndexOf(UnsavedEndingBranchData.EndingBranch.EndingToGet);
+            StressfulBreakdown_Check.Checked = UnsavedEndingBranchData.EndingBranch.IsStressfulBressdown;
+            IgnoreNightEnding_Label.Checked = UnsavedEndingBranchData.IgnoreNightEndings;
             int listCount = ActionList.Count;
             for (int i = 0; i < listCount; i++)
             {
@@ -1293,9 +1296,7 @@ namespace NSOEndingTreeMaker
             }
             if (ActionList.Count == 1) { DayPart_Dropdown.SelectedIndex = 0; }
             //ActionListView.EndUpdate();
-            EndingToGet_Dropdown.SelectedIndex = NSODataManager.EndingsList.IndexOf(UnsavedEndingBranchData.EndingBranch.EndingToGet);
-            StressfulBreakdown_Check.Checked = UnsavedEndingBranchData.EndingBranch.IsStressfulBressdown;
-            IgnoreNightEnding_Label.Checked = UnsavedEndingBranchData.IgnoreNightEndings;
+
 
         }
 
