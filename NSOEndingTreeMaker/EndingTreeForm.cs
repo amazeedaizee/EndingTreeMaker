@@ -59,6 +59,20 @@ namespace NSOEndingTreeMaker
             return gamePath;
         }
 
+        private string InitializeValidSteamPath()
+        {
+            string steamPath;
+            if (Environment.Is64BitOperatingSystem)
+            {
+                steamPath = (string)RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry64).OpenSubKey(@"SOFTWARE\Valve\Steam", false).GetValue("SteamExe");
+            }
+            else
+            {
+                steamPath = (string)RegistryKey.OpenBaseKey(RegistryHive.CurrentUser, RegistryView.Registry32).OpenSubKey(@"SOFTWARE\Valve\Steam", false).GetValue("SteamExe");
+            }
+            return steamPath;
+        }
+
         private string PathToGameModOrDocuments()
         {
             string gameModPath = InitializeValidGamePath() + "\\BepInEx\\plugins\\EndingTreeSimulator";
@@ -897,7 +911,9 @@ namespace NSOEndingTreeMaker
         {
             try
             {
-                Process.Start(InitializeValidGamePath() + @"\Windose.exe");
+                if (InitializeValidSteamPath() != null)
+                    Process.Start(InitializeValidSteamPath(), @"steam://rungameid/1451940");
+                else Process.Start(InitializeValidGamePath() + @"\Windose.exe");
             }
             catch { MessageBox.Show("Could not open the game from the Steam path: either the game doesn't exist, has been moved to another location, or is corrupted.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
@@ -936,11 +952,19 @@ namespace NSOEndingTreeMaker
                 LoadPathFromSlot(4);
             else if (e.KeyCode == Keys.F5)
                 LoadPathFromSlot(5);
+            else if (e.KeyCode == Keys.P && e.Shift && e.Control)
+            {
+                try
+                {
+                    Process.Start(InitializeValidSteamPath(), @"steam://rungameid/1451940");
+                }
+                catch { MessageBox.Show("Could not open the game from the Steam path: either the game doesn't exist, has been moved to another location, or is corrupted.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            }
             else if (e.KeyCode == Keys.P && e.Shift && e.Control && e.Alt)
             {
                 try
                 {
-                    Process.Start(InitializeValidGamePath() + @"\Windose.exe");
+                   Process.Start(InitializeValidGamePath() + @"\Windose.exe");
                 }
                 catch { MessageBox.Show("Could not open the game from the Steam path: either the game doesn't exist, has been moved to another location, or is corrupted.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
             }
@@ -1027,6 +1051,16 @@ namespace NSOEndingTreeMaker
             if (_currentExp != CurrentEndingTree.isDay2Exp) _isExpEdited = true;
             else _isExpEdited = false;
             Day2ExtraAction();
+        }
+
+        private void OpenSteamNSO(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(InitializeValidSteamPath(), @"steam://rungameid/1451940");
+            }
+            catch { MessageBox.Show("Could not open the game from the Steam path: either the game doesn't exist, has been moved to another location, or is corrupted.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+
         }
     }
 }

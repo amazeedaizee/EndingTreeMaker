@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EndingTreeForm));
             this.AddEndingButton = new System.Windows.Forms.Button();
             this.CurrentEndingTree_Group = new System.Windows.Forms.GroupBox();
+            this.Day2Exp_Check = new System.Windows.Forms.CheckBox();
             this.Notes_Title = new System.Windows.Forms.Label();
             this.Notes = new System.Windows.Forms.TextBox();
             this.EditEndingBranch = new System.Windows.Forms.Button();
@@ -91,7 +92,7 @@
             this.openSimulationLogsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PlayGame_Button = new System.Windows.Forms.ToolStripMenuItem();
             this.illegalBranches_Label = new System.Windows.Forms.Label();
-            this.Day2Exp_Check = new System.Windows.Forms.CheckBox();
+            this.openNEEDYSTREAMEROVERLOADThroughSteamToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CurrentEndingTree_Group.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -119,6 +120,19 @@
             this.CurrentEndingTree_Group.Size = new System.Drawing.Size(260, 445);
             this.CurrentEndingTree_Group.TabIndex = 9;
             this.CurrentEndingTree_Group.TabStop = false;
+            // 
+            // Day2Exp_Check
+            // 
+            this.Day2Exp_Check.AutoSize = true;
+            this.Day2Exp_Check.Location = new System.Drawing.Point(19, 415);
+            this.Day2Exp_Check.Name = "Day2Exp_Check";
+            this.Day2Exp_Check.Size = new System.Drawing.Size(213, 17);
+            this.Day2Exp_Check.TabIndex = 12;
+            this.Day2Exp_Check.Text = "Add Day 2 Extra Action To Ending Tree";
+            this.Day2Exp_Check.UseVisualStyleBackColor = true;
+            this.Day2Exp_Check.Visible = false;
+            this.Day2Exp_Check.CheckedChanged += new System.EventHandler(this.Day2Exp_CheckedChanged);
+            this.Day2Exp_Check.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Day2Exp_Check_MouseClick);
             // 
             // Notes_Title
             // 
@@ -329,7 +343,7 @@
             this.saveTreeToSlot1ToolStripMenuItem,
             this.loadTreeFromSlot1ToolStripMenuItem});
             this.slot1ToolStripMenuItem.Name = "slot1ToolStripMenuItem";
-            this.slot1ToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.slot1ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.slot1ToolStripMenuItem.Text = "Slot 1";
             // 
             // Slot1_Name
@@ -368,7 +382,7 @@
             this.saveTreeToSlot2ToolStripMenuItem,
             this.loadTreeFromSlot2ToolStripMenuItem});
             this.slot2ToolStripMenuItem.Name = "slot2ToolStripMenuItem";
-            this.slot2ToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.slot2ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.slot2ToolStripMenuItem.Text = "Slot 2";
             // 
             // Slot2_Name
@@ -407,7 +421,7 @@
             this.saveTreeToSlot3ToolStripMenuItem,
             this.loadTreeFromSlot3ToolStripMenuItem});
             this.slot3ToolStripMenuItem.Name = "slot3ToolStripMenuItem";
-            this.slot3ToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.slot3ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.slot3ToolStripMenuItem.Text = "Slot 3";
             // 
             // Slot3_Name
@@ -446,7 +460,7 @@
             this.saveTreeToSlot5ToolStripMenuItem,
             this.loadTreeFromSlot4ToolStripMenuItem});
             this.slot4ToolStripMenuItem.Name = "slot4ToolStripMenuItem";
-            this.slot4ToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.slot4ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.slot4ToolStripMenuItem.Text = "Slot 4";
             // 
             // Slot4_Name
@@ -485,7 +499,7 @@
             this.saveTreeToSlot5ToolStripMenuItem1,
             this.loadTreeFromSlot5ToolStripMenuItem});
             this.slot5ToolStripMenuItem.Name = "slot5ToolStripMenuItem";
-            this.slot5ToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.slot5ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.slot5ToolStripMenuItem.Text = "Slot 5";
             // 
             // Slot5_Name
@@ -528,6 +542,7 @@
             this.setSlot5TreeAsMainSimulationToolStripMenuItem,
             this.toolStripSeparator3,
             this.openSimulationLogsToolStripMenuItem,
+            this.openNEEDYSTREAMEROVERLOADThroughSteamToolStripMenuItem,
             this.PlayGame_Button});
             this.EndingSim_MenuItem.Name = "EndingSim_MenuItem";
             this.EndingSim_MenuItem.Size = new System.Drawing.Size(134, 20);
@@ -536,59 +551,59 @@
             // setCurrentTreeAsMainSimulationToolStripMenuItem
             // 
             this.setCurrentTreeAsMainSimulationToolStripMenuItem.Name = "setCurrentTreeAsMainSimulationToolStripMenuItem";
-            this.setCurrentTreeAsMainSimulationToolStripMenuItem.Size = new System.Drawing.Size(361, 22);
+            this.setCurrentTreeAsMainSimulationToolStripMenuItem.Size = new System.Drawing.Size(441, 22);
             this.setCurrentTreeAsMainSimulationToolStripMenuItem.Text = "Set Current Tree as Main Simulation";
             this.setCurrentTreeAsMainSimulationToolStripMenuItem.Click += new System.EventHandler(this.setCurrentTreeAsMainSimulationToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(358, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(438, 6);
             // 
             // setSlot1TreeAsMainSimulationToolStripMenuItem
             // 
             this.setSlot1TreeAsMainSimulationToolStripMenuItem.Name = "setSlot1TreeAsMainSimulationToolStripMenuItem";
-            this.setSlot1TreeAsMainSimulationToolStripMenuItem.Size = new System.Drawing.Size(361, 22);
+            this.setSlot1TreeAsMainSimulationToolStripMenuItem.Size = new System.Drawing.Size(441, 22);
             this.setSlot1TreeAsMainSimulationToolStripMenuItem.Text = "Set Slot 1 Tree as Main Simulation";
             this.setSlot1TreeAsMainSimulationToolStripMenuItem.Click += new System.EventHandler(this.setSlot1TreeAsMainSimulationToolStripMenuItem_Click);
             // 
             // setSlot2TreeAsMainSimulationToolStripMenuItem
             // 
             this.setSlot2TreeAsMainSimulationToolStripMenuItem.Name = "setSlot2TreeAsMainSimulationToolStripMenuItem";
-            this.setSlot2TreeAsMainSimulationToolStripMenuItem.Size = new System.Drawing.Size(361, 22);
+            this.setSlot2TreeAsMainSimulationToolStripMenuItem.Size = new System.Drawing.Size(441, 22);
             this.setSlot2TreeAsMainSimulationToolStripMenuItem.Text = "Set Slot 2 Tree as Main Simulation";
             this.setSlot2TreeAsMainSimulationToolStripMenuItem.Click += new System.EventHandler(this.setSlot2TreeAsMainSimulationToolStripMenuItem_Click);
             // 
             // setSlot3TreeAsMainSimulationToolStripMenuItem
             // 
             this.setSlot3TreeAsMainSimulationToolStripMenuItem.Name = "setSlot3TreeAsMainSimulationToolStripMenuItem";
-            this.setSlot3TreeAsMainSimulationToolStripMenuItem.Size = new System.Drawing.Size(361, 22);
+            this.setSlot3TreeAsMainSimulationToolStripMenuItem.Size = new System.Drawing.Size(441, 22);
             this.setSlot3TreeAsMainSimulationToolStripMenuItem.Text = "Set Slot 3 Tree as Main Simulation";
             this.setSlot3TreeAsMainSimulationToolStripMenuItem.Click += new System.EventHandler(this.setSlot3TreeAsMainSimulationToolStripMenuItem_Click);
             // 
             // setSlot4TreeAsMainSimulationToolStripMenuItem
             // 
             this.setSlot4TreeAsMainSimulationToolStripMenuItem.Name = "setSlot4TreeAsMainSimulationToolStripMenuItem";
-            this.setSlot4TreeAsMainSimulationToolStripMenuItem.Size = new System.Drawing.Size(361, 22);
+            this.setSlot4TreeAsMainSimulationToolStripMenuItem.Size = new System.Drawing.Size(441, 22);
             this.setSlot4TreeAsMainSimulationToolStripMenuItem.Text = "Set Slot 4 Tree as Main Simulation";
             this.setSlot4TreeAsMainSimulationToolStripMenuItem.Click += new System.EventHandler(this.setSlot4TreeAsMToolStripMenuItem_Click);
             // 
             // setSlot5TreeAsMainSimulationToolStripMenuItem
             // 
             this.setSlot5TreeAsMainSimulationToolStripMenuItem.Name = "setSlot5TreeAsMainSimulationToolStripMenuItem";
-            this.setSlot5TreeAsMainSimulationToolStripMenuItem.Size = new System.Drawing.Size(361, 22);
+            this.setSlot5TreeAsMainSimulationToolStripMenuItem.Size = new System.Drawing.Size(441, 22);
             this.setSlot5TreeAsMainSimulationToolStripMenuItem.Text = "Set Slot 5 Tree as Main Simulation";
             this.setSlot5TreeAsMainSimulationToolStripMenuItem.Click += new System.EventHandler(this.setSlot5TreeAsMainSimulationToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(358, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(438, 6);
             // 
             // openSimulationLogsToolStripMenuItem
             // 
             this.openSimulationLogsToolStripMenuItem.Name = "openSimulationLogsToolStripMenuItem";
-            this.openSimulationLogsToolStripMenuItem.Size = new System.Drawing.Size(361, 22);
+            this.openSimulationLogsToolStripMenuItem.Size = new System.Drawing.Size(441, 22);
             this.openSimulationLogsToolStripMenuItem.Text = "Open Simulation Logs";
             this.openSimulationLogsToolStripMenuItem.Click += new System.EventHandler(this.openSimulationLogsToolStripMenuItem_Click);
             // 
@@ -598,8 +613,8 @@
             this.PlayGame_Button.ShortcutKeys = ((System.Windows.Forms.Keys)((((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
             | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.P)));
-            this.PlayGame_Button.Size = new System.Drawing.Size(361, 22);
-            this.PlayGame_Button.Text = "Open NEEDY STREAMER OVERLOAD";
+            this.PlayGame_Button.Size = new System.Drawing.Size(441, 22);
+            this.PlayGame_Button.Text = "Open NEEDY STREAMER OVERLOAD without Steam";
             this.PlayGame_Button.Click += new System.EventHandler(this.PlayGame_Button_Click);
             // 
             // illegalBranches_Label
@@ -612,18 +627,14 @@
             this.illegalBranches_Label.Text = "Unvalidated Ending Branches Detected";
             this.illegalBranches_Label.VisibleChanged += new System.EventHandler(this.illegalBranches_Label_VisibleChanged);
             // 
-            // Day2Exp_Check
+            // openNEEDYSTREAMEROVERLOADThroughSteamToolStripMenuItem
             // 
-            this.Day2Exp_Check.AutoSize = true;
-            this.Day2Exp_Check.Location = new System.Drawing.Point(19, 415);
-            this.Day2Exp_Check.Name = "Day2Exp_Check";
-            this.Day2Exp_Check.Size = new System.Drawing.Size(213, 17);
-            this.Day2Exp_Check.TabIndex = 12;
-            this.Day2Exp_Check.Text = "Add Day 2 Extra Action To Ending Tree";
-            this.Day2Exp_Check.UseVisualStyleBackColor = true;
-            this.Day2Exp_Check.Visible = false;
-            this.Day2Exp_Check.CheckedChanged += new System.EventHandler(this.Day2Exp_CheckedChanged);
-            this.Day2Exp_Check.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Day2Exp_Check_MouseClick);
+            this.openNEEDYSTREAMEROVERLOADThroughSteamToolStripMenuItem.Name = "openNEEDYSTREAMEROVERLOADThroughSteamToolStripMenuItem";
+            this.openNEEDYSTREAMEROVERLOADThroughSteamToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.P)));
+            this.openNEEDYSTREAMEROVERLOADThroughSteamToolStripMenuItem.Size = new System.Drawing.Size(441, 22);
+            this.openNEEDYSTREAMEROVERLOADThroughSteamToolStripMenuItem.Text = "Open NEEDY STREAMER OVERLOAD with Steam";
+            this.openNEEDYSTREAMEROVERLOADThroughSteamToolStripMenuItem.Click += new System.EventHandler(this.OpenSteamNSO);
             // 
             // EndingTreeForm
             // 
@@ -717,6 +728,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
         private System.Windows.Forms.Label illegalBranches_Label;
         private System.Windows.Forms.CheckBox Day2Exp_Check;
+        private System.Windows.Forms.ToolStripMenuItem openNEEDYSTREAMEROVERLOADThroughSteamToolStripMenuItem;
     }
 }
 
