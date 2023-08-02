@@ -56,6 +56,7 @@ namespace NSOEndingTreeMaker
             LoveCounter = SetActionCountersFromExistingBranch(endingBranch.LoveCounter);
             PsycheCounter = SetActionCountersFromExistingBranch(endingBranch.PsycheCounter);
             IgnoreCounter = SetActionCountersFromExistingBranch(endingBranch.IgnoreCounter);
+            IgnoreNightEndings = endingBranch.IgnoreNightEndings;
 
         }
         public EndingBranchData(int startDay, EndingType ending, List<TargetActionData> actions, bool isStressBreakdown = false)
