@@ -135,7 +135,7 @@
             this.Notes.Multiline = true;
             this.Notes.Name = "Notes";
             this.Notes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.Notes.Size = new System.Drawing.Size(218, 179);
+            this.Notes.Size = new System.Drawing.Size(218, 213);
             this.Notes.TabIndex = 7;
             this.Notes.TextChanged += new System.EventHandler(this.Notes_TextChanged);
             // 
@@ -615,7 +615,7 @@
             // Day2Exp_Check
             // 
             this.Day2Exp_Check.AutoSize = true;
-            this.Day2Exp_Check.Location = new System.Drawing.Point(19, 390);
+            this.Day2Exp_Check.Location = new System.Drawing.Point(19, 415);
             this.Day2Exp_Check.Name = "Day2Exp_Check";
             this.Day2Exp_Check.Size = new System.Drawing.Size(213, 17);
             this.Day2Exp_Check.TabIndex = 12;
