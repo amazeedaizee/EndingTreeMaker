@@ -130,7 +130,7 @@ namespace NSOEndingTreeMaker
                     
                     ValidatePreviousDay(EndingBranch.AllActions[i - 1], EndingBranch.AllActions[i], errorList, branchName);
                     ValidateIgnoreDm(EndingBranch.AllActions[i - 1], EndingBranch.AllActions[i], errorList, branchName);
-                    ValidateNightEvents(EndingBranch.AllActions[i], errorList, branchName);
+                    ValidateNightEvents(EndingBranch.AllActions[i - 1],EndingBranch.AllActions[i], errorList, branchName);
                 }
                 ValidateNextDay(EndingBranch.AllActions[i], EndingBranch.AllActions[i + 1], errorList, branchName);
                 LookForMissingDays(EndingBranch.AllActions[i], EndingBranch.AllActions[i + 1], errorList, branchName);
@@ -796,7 +796,7 @@ namespace NSOEndingTreeMaker
             }
         }
 
-        public void ValidateNightEvents(TargetActionData action, List<(string branch, string action, string errorMsg)> errorList, string branchName)
+        public void ValidateNightEvents(TargetActionData pastAction, TargetActionData action, List<(string branch, string action, string errorMsg)> errorList, string branchName)
         {
             bool isVeryVeryStressed = false;
             bool isVeryLove = false;
@@ -811,34 +811,34 @@ namespace NSOEndingTreeMaker
             if (isReallyLove.isEventing && isReallyLove.DayIndex <= action.TargetAction.DayIndex)
                 isVeryLove = true;
             if (!IgnoreNightEndings) return;
-            if (action.TargetAction.DayPart + action.CommandResult.daypart == 2 && action.Command != CmdType.DarknessS1 && action.Command != CmdType.DarknessS2)
+            if (pastAction.TargetAction.DayPart + pastAction.CommandResult.daypart == 2 && pastAction.Command != CmdType.DarknessS1 && pastAction.Command != CmdType.DarknessS2)
             {
-                if (isVeryVeryStressed && action.Stress == 120)
+                if (isVeryVeryStressed && pastAction.Stress == 120)
                 {
                     errorList.Add(new(branchName, $"Day {action.TargetAction.DayIndex}, {NSODataManager.DayPartNames[action.TargetAction.DayPart]}: {NSODataManager.CmdName(action.Command)}", $"Can't ignore DM in this action since this will trigger Bomber Girl, and Ignore Night Endings is enabled."));
                     return;
                 }
 
                 //return (action.TargetAction.DayIndex, 2, EndingType.Ending_Stressful);
-                if (action.Darkness == 0)
+                if (pastAction.Darkness == 0)
                 {
                     errorList.Add(new(branchName, $"Day {action.TargetAction.DayIndex}, {NSODataManager.DayPartNames[action.TargetAction.DayPart]}: {NSODataManager.CmdName(action.Command)}", $"Can't ignore DM in this action since this will trigger Normie Life, and Ignore Night Endings is enabled."));
                     return;
                 }
                 //return (action.TargetAction.DayIndex, 2, EndingType.Ending_Healthy);
-                if ((!isVeryLove && action.Affection == 100) || (isVeryLove && action.Affection == 120))
+                if ((!isVeryLove && pastAction.Affection == 100) || (isVeryLove && pastAction.Affection == 120))
                 {
                     errorList.Add(new(branchName, $"Day {action.TargetAction.DayIndex}, {NSODataManager.DayPartNames[action.TargetAction.DayPart]}: {NSODataManager.CmdName(action.Command)}", $"Can't ignore DM in this action since this will trigger Ground Control To Psychoelectric Angel, and Ignore Night Endings is enabled."));
                     return;
                 }
                 //return (action.TargetAction.DayIndex, 2, EndingType.Ending_Sukisuki);
-                if (action.Affection == 0)
+                if (pastAction.Affection == 0)
                 {
                     errorList.Add(new(branchName, $"Day {action.TargetAction.DayIndex}, {NSODataManager.DayPartNames[action.TargetAction.DayPart]}: {NSODataManager.CmdName(action.Command)}", $"Can't ignore DM in this action since this will trigger Bomber Girl, and Ignore Night Endings is enabled."));
                     return;
                 }
                 //return (action.TargetAction.DayIndex, 2, EndingType.Ending_Ntr);
-                if (paperDay.DayIndex != 30 && action.TargetAction.DayIndex == paperDay.DayIndex && action.TargetAction.DayPart == paperDay.DayPart)
+                if (paperDay.DayIndex != 30 && pastAction.TargetAction.DayIndex == paperDay.DayIndex && pastAction.TargetAction.DayPart == paperDay.DayPart)
                 {
                     errorList.Add(new(branchName, $"Day {action.TargetAction.DayIndex}, {NSODataManager.DayPartNames[action.TargetAction.DayPart]}: {NSODataManager.CmdName(action.Command)}", $"Can't ignore DM in this action since this will trigger Bomber Girl, and Ignore Night Endings is enabled."));
                     return;
