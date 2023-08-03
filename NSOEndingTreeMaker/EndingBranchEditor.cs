@@ -705,9 +705,9 @@ namespace NSOEndingTreeMaker
             }
             if (a == ActionType.SleepToTomorrow)
             {
-                if (DayPart_Dropdown.SelectedIndex == 0)
+                if (presentAction.TargetAction.DayPart == 0)
                     presentAction.Command = CmdType.SleepToTomorrow3;
-                else if (DayPart_Dropdown.SelectedIndex == 1)
+                else if (presentAction.TargetAction.DayPart == 1)
                     presentAction.Command = CmdType.SleepToTomorrow2;
                 else 
                     presentAction.Command = CmdType.SleepToTomorrow1;
