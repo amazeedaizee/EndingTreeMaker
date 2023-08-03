@@ -472,6 +472,10 @@ namespace NSOEndingTreeMaker
             {
                 return Enum.TryParse(cmdName, out ActionType action) ? action : ActionType.None;
             }
+            if (cmd == CmdType.DarknessS1 || cmd == CmdType.DarknessS2)
+            {
+                return ActionType.Darkness;
+            }
             return ActionType.None;
         }
 

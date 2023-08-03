@@ -996,7 +996,7 @@ namespace NSOEndingTreeMaker
                             else Action_Dropdown.Items[0] = "Social Media (Muse)";
 
                             if (pastAction.Darkness < 40)
-                                Action_Dropdown.Items.Insert(3, "/st/ (Search Opinions)");
+                                Action_Dropdown.Items[3] = "/st/ (Search Opinions)";
                             else if (pastAction.Darkness >= 40 && pastAction.Darkness < 60)
                                 Action_Dropdown.Items[3] = "/st/ (Go Undercover)";
                             else Action_Dropdown.Items[3] = "/st/ (Stir Shit)";
@@ -1034,6 +1034,7 @@ namespace NSOEndingTreeMaker
         {
             if (ActionListView.SelectedIndices.Count > 1)
             {
+                PreventEditForCertainActionsWhenMultiSelect();
                 ClearStatPreview();
                 return;
             }
@@ -1123,6 +1124,7 @@ namespace NSOEndingTreeMaker
 
             void SetStreamStatusPreview()
             {
+                var pastAction = ActionList[ActionList.FindLastIndex(a => (a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart < DayPart_Dropdown.SelectedIndex) || a.TargetAction.DayIndex < DayIndexNumeric.Value)];
                 if (ParentAction_Dropdown.SelectedIndex != 0) return;
                 CmdType stream = CmdType.Error;
                 if (ParentAction_Dropdown.SelectedIndex == 0 && !(StreamTopic_Dropdown.SelectedIndex == NSODataManager.StreamTopicList.IndexOf(AlphaType.Imbouron) && StreamLevelNumeric.Value == 6))
@@ -1130,7 +1132,30 @@ namespace NSOEndingTreeMaker
                 var streamIdea = UnsavedEndingBranchData.StreamIdeaList.FirstOrDefault(i => i.Idea == stream);
                 var streamUsed = UnsavedEndingBranchData.StreamUsedList.FirstOrDefault(i => i.UsedStream == stream);
                 var breakdownThree = UnsavedEndingBranchData.StreamUsedList.FirstOrDefault(u => u.UsedStream == CmdType.Yamihaishin_3);
-
+                if (StreamTopic_Dropdown.SelectedIndex == NSODataManager.StreamTopicList.IndexOf(AlphaType.Darkness))
+                {
+                    if (pastAction.Command != CmdType.DarknessS1 && stream == CmdType.Darkness_1)
+                    {
+                        StreamIdea_Label.Text = $"Can't stream this.";
+                        TargetActionButton.Enabled = false;
+                    }
+                    else if (pastAction.Command == CmdType.DarknessS1 && stream == CmdType.Darkness_1)
+                    {
+                        StreamIdea_Label.Text = $"What are you waiting for?";
+                        TargetActionButton.Enabled = true;
+                    }
+                    if (pastAction.Command != CmdType.DarknessS2 && stream == CmdType.Darkness_2)
+                    {
+                        StreamIdea_Label.Text = $"Can't stream this.";
+                        TargetActionButton.Enabled = false;
+                    }
+                    else if (pastAction.Command == CmdType.DarknessS2 && stream == CmdType.Darkness_2)
+                    {
+                        StreamIdea_Label.Text = $"What are you waiting for?";
+                        TargetActionButton.Enabled = true;
+                    }
+                    return;
+                }
                 if (breakdownThree != null && DayIndexNumeric.Value > breakdownThree.DayIndex && DayIndexNumeric.Value <= (breakdownThree.DayIndex + 2))
                 {
                     StreamIdea_Label.Text = $"Can't stream now.";
@@ -1151,7 +1176,11 @@ namespace NSOEndingTreeMaker
                     StreamIdea_Label.Text = $"You haven't found this idea yet.";
                     TargetActionButton.Enabled = false;
                 }
-                else StreamIdea_Label.Text = $"";
+                else
+                {
+                    StreamIdea_Label.Text = $"";
+                    TargetActionButton.Enabled = true;
+                }
                 if (DayPart_Dropdown.SelectedIndex != 2)
                 {
                     StreamIdea_Label.Text = $"You can only stream at night.";
@@ -1180,12 +1209,14 @@ namespace NSOEndingTreeMaker
 
             void SetStreamIdeaPreview(TargetActionData pastAction)
             {
+                TargetActionButton.Enabled = true;
                 if (ParentAction_Dropdown.SelectedIndex == 0) return;
+                var b = UnsavedEndingBranchData;
                 var ideaAction = new TargetActionData((int)DayIndexNumeric.Value, DayPart_Dropdown.SelectedIndex, CmdType.None, IgnoreDMCheck.Checked);
                 ideaAction.Command = ConvertActionChoiceToCmd(pastAction);
                 ideaAction.TargetAction.Action = NSODataManager.CmdToActionConverter(ideaAction.Command);
                 var (DayIndex, DayPart, Idea) = NSODataManager.ActionToStreamIdea(pastAction, ideaAction, UnsavedEndingBranchData);
-
+                var mandatoryEvents = new List<CmdType>() { CmdType.DarknessS1, CmdType.DarknessS2, CmdType.OdekakeOdaiba, CmdType.OdekakeZikka };
 
                 if (SelectedAction != null && (SelectedAction.Command != ideaAction.Command && SelectedAction.StreamIdea != Idea && SelectedAction.StreamIdea != CmdType.None && Idea != CmdType.None))
                 {
@@ -1201,6 +1232,43 @@ namespace NSOEndingTreeMaker
 
                 }
                 else { StreamIdea_Label.Text = ""; }
+
+                if (ideaAction.Command == CmdType.DarknessS1)
+                {
+                    if (!b.isStressed.isEventing || !(ideaAction.TargetAction.DayIndex == b.isStressed.DayIndex && ideaAction.TargetAction.DayPart == 0))
+                    {
+                        StreamIdea_Label.Text = $"Cannot do this action yet.";
+                        TargetActionButton.Enabled = false;
+                    }
+                    else StreamIdea_Label.Text = $"She's stressed.";
+                }
+                else if (ideaAction.Command == CmdType.DarknessS2)
+                {
+                    if (!b.isReallyStressed.isEventing || !(ideaAction.TargetAction.DayIndex == b.isReallyStressed.DayIndex && ideaAction.TargetAction.DayPart == 0))
+                    {
+                        StreamIdea_Label.Text = $"Cannot do this action yet.";
+                        TargetActionButton.Enabled = false;
+                    }
+                    else StreamIdea_Label.Text = $"You've really done it now.";
+                }
+                else if (ideaAction.Command == CmdType.OdekakeZikka)
+                {
+                    if (!b.isReallyLove.isEventing || !(ideaAction.TargetAction.DayIndex == b.isReallyLove.DayIndex && ideaAction.TargetAction.DayPart == 0))
+                    {
+                        StreamIdea_Label.Text = $"Cannot do this action yet.";
+                        TargetActionButton.Enabled = false;
+                    }
+                    else StreamIdea_Label.Text = $"Aww, she really loves you!";
+                }
+                else if (ideaAction.Command == CmdType.OdekakeOdaiba)
+                {
+                    if (!b.isVideo.isEventing || !(ideaAction.TargetAction.DayIndex == b.isVideo.DayIndex && ideaAction.TargetAction.DayPart == 0))
+                    {
+                        StreamIdea_Label.Text = $"Cannot do this action yet.";
+                        TargetActionButton.Enabled = false;
+                    }
+                    else StreamIdea_Label.Text = $"Music video unlocked!";
+                }
             }
             void SetBonuses(CommandAction command, TargetActionData pastAction)
             {
@@ -1425,6 +1493,7 @@ namespace NSOEndingTreeMaker
                 }
                 DayPart_Dropdown.SelectedIndex = nextDayPart;
                 ConvertActionChoiceNames();
+          
             }
 
             bool InitializeSelectedStartDay()
@@ -1471,6 +1540,106 @@ namespace NSOEndingTreeMaker
             }
         }
 
+        private void ForceMandatoryEvents()
+        {
+            var stress = UnsavedEndingBranchData.isStressed;
+            var veryStress = UnsavedEndingBranchData.isReallyStressed;
+            var veryLove = UnsavedEndingBranchData.isReallyLove;
+            var musicVideo = UnsavedEndingBranchData.isVideo;
+            if (stress.isEventing && DayIndexNumeric.Value == stress.DayIndex)
+            {
+                if (DayPart_Dropdown.SelectedIndex == 1 || DayPart_Dropdown.SelectedIndex == -1)
+                    DayPart_Dropdown.SelectedIndex = 0;
+                if (DayPart_Dropdown.SelectedIndex == 0)
+                {
+                    StreamIdea_Label.Text = $"She's stressed.";
+                    ParentAction_Dropdown.SelectedIndex = 6;
+                    Action_Dropdown.SelectedIndex = 0;
+                    IgnoreDMCheck.Enabled = true;
+                }
+                if (DayPart_Dropdown.SelectedIndex == 2)
+                {
+                    ParentAction_Dropdown.SelectedIndex = 0;
+                    StreamTopic_Dropdown.SelectedIndex = 12;
+                    StreamLevelNumeric.Value = 1;
+                    IgnoreDMCheck.Enabled = false;
+                }
+                DayPart_Dropdown.Enabled = false;
+                ParentAction_Dropdown.Enabled = false;
+                Action_Dropdown.Enabled = false;
+                StreamLevelNumeric.Enabled = false;
+                StreamTopic_Dropdown.Enabled = false;
+                return;
+            }
+            if (veryStress.isEventing && DayIndexNumeric.Value == veryStress.DayIndex)
+            {
+                if (DayPart_Dropdown.SelectedIndex == 1 || DayPart_Dropdown.SelectedIndex == -1)
+                    DayPart_Dropdown.SelectedIndex = 0;
+                if (DayPart_Dropdown.SelectedIndex == 0)
+                {
+                    StreamIdea_Label.Text = $"You really did it now.";
+                    ParentAction_Dropdown.SelectedIndex = 6;
+                    Action_Dropdown.SelectedIndex = 1;
+                    IgnoreDMCheck.Enabled = false;
+                }
+                if (DayPart_Dropdown.SelectedIndex == 2)
+                {
+                    ParentAction_Dropdown.SelectedIndex = 0;
+                    StreamTopic_Dropdown.SelectedIndex = 12;
+                    StreamLevelNumeric.Value = 2;
+                    IgnoreDMCheck.Enabled = false;
+                }
+                DayPart_Dropdown.Enabled = false;
+                ParentAction_Dropdown.Enabled = false;
+                Action_Dropdown.Enabled = false;
+                StreamLevelNumeric.Enabled = false;
+                StreamTopic_Dropdown.Enabled = false;
+                return;
+            }
+            if (veryLove.isEventing && DayIndexNumeric.Value == veryLove.DayIndex)
+            {
+                if (DayPart_Dropdown.SelectedIndex == 1 || DayPart_Dropdown.SelectedIndex == -1)
+                    DayPart_Dropdown.SelectedIndex = 0;
+                if (DayPart_Dropdown.SelectedIndex == 0)
+                {
+                    StreamIdea_Label.Text = $"Aww, she really loves you!";
+                    ParentAction_Dropdown.SelectedIndex = 5;
+                    Action_Dropdown.SelectedIndex = 16;
+                    IgnoreDMCheck.Enabled = false;
+                    DayPart_Dropdown.Enabled = false;
+                    ParentAction_Dropdown.Enabled = false;
+                    Action_Dropdown.Enabled = false;
+                    StreamLevelNumeric.Enabled = false;
+                    StreamTopic_Dropdown.Enabled = false;
+                    return;
+                }
+
+            }
+            if (musicVideo.isEventing && DayIndexNumeric.Value == musicVideo.DayIndex)
+            {
+                if (DayPart_Dropdown.SelectedIndex == 1 || DayPart_Dropdown.SelectedIndex == -1)
+                    DayPart_Dropdown.SelectedIndex = 0;
+                if (DayPart_Dropdown.SelectedIndex == 0)
+                {
+                    StreamIdea_Label.Text = $"Music video unlocked!";
+                    ParentAction_Dropdown.SelectedIndex = 5;
+                    Action_Dropdown.SelectedIndex = 17;
+                    IgnoreDMCheck.Enabled = false;
+                    DayPart_Dropdown.Enabled = false;
+                    ParentAction_Dropdown.Enabled = false;
+                    Action_Dropdown.Enabled = false;
+                    StreamLevelNumeric.Enabled = false;
+                    StreamTopic_Dropdown.Enabled = false;
+                    return;
+                }
+            }
+            DayPart_Dropdown.Enabled = true;
+            ParentAction_Dropdown.Enabled = true;
+            Action_Dropdown.Enabled = true;
+            StreamLevelNumeric.Enabled = true;
+            StreamTopic_Dropdown.Enabled = true;
+            IgnoreDMCheck.Enabled = true;
+        }
         private void EndingToGetOnSelectedIndexChanged(object sender, EventArgs e)
         {
             UnsavedEndingBranchData.EndingBranch.EndingToGet = NSODataManager.EndingsList[EndingToGet_Dropdown.SelectedIndex];
@@ -1482,6 +1651,14 @@ namespace NSOEndingTreeMaker
             InitializeBreakdown();
         }
 
+        private void PreventEditForCertainActionsWhenMultiSelect()
+        {           
+            if (ParentAction_Dropdown.SelectedIndex == 0 || ParentAction_Dropdown.SelectedIndex == 6)
+                TargetActionButton.Enabled = false;
+            else if (ParentAction_Dropdown.SelectedIndex == 5 && Action_Dropdown.SelectedIndex >= 16)
+                TargetActionButton.Enabled = false;
+            else { TargetActionButton.Enabled = true;}
+        }
 
         private void ParentAction_DropdownOnSelectedIndexChanged(object sender, EventArgs e)
         {
@@ -1505,6 +1682,7 @@ namespace NSOEndingTreeMaker
 
         private void ActionListViewOnSelectedIndexChanged(object sender, EventArgs e)
         {
+            ChangeActionOptionsByParent();
             TargetActionButton.Enabled = true;
             IgnoreDMCheck.Enabled = true;
             var selectedActions = ActionListView.SelectedIndices;
@@ -1521,22 +1699,26 @@ namespace NSOEndingTreeMaker
                             DayIndexNumeric.Enabled = false;
                             DayPart_Dropdown.Enabled = false;
                             ConvertActionChoiceNames();
+
                             return;
                         }
                         if (SelectedAction.TargetAction.DayIndex == UnsavedEndingBranchData.EndingBranch.StartingDay && (UnsavedEndingBranchData.EndingBranch.StartingDay == 1 || SelectedAction.TargetAction.DayPart == -1))
                         {
                             OnlyDayIndexEditableIfFirstDaySelected();
                             ConvertActionChoiceNames();
+
                             return;
                         }
                         if (SelectedAction.TargetAction.DayIndex == 15 && SelectedAction.TargetAction.DayPart == 3)
                         {
                             NoEditingBreakdownDay();
                             ConvertActionChoiceNames();
+
                             return;
                         }
                         UpdateEditFieldsWithSelectedAction();
                         ConvertActionChoiceNames();
+
                     }
                 }
                 catch (ArgumentOutOfRangeException) { return; }
@@ -1546,10 +1728,12 @@ namespace NSOEndingTreeMaker
             {
                 OnlyActionEditableIfMultiSelected();
                 ConvertActionChoiceNames();
+
                 return;
             }
             UpdateEditFieldsWithNewAction();
             ConvertActionChoiceNames();
+
 
             void NoEditingBreakdownDay()
             {
@@ -1635,6 +1819,7 @@ namespace NSOEndingTreeMaker
                             else StreamLevelNumeric.Value = int.Parse(SelectedAction.Command.ToString().Split('_')[1]);
                         }
                         catch { StreamLevelNumeric.Value = 1; }
+
                         break;
                     case 1:
                         Action_Dropdown.SelectedIndex = NSODataManager.HangOutActionList.IndexOf(SelectedAction.TargetAction.Action);
@@ -1657,6 +1842,7 @@ namespace NSOEndingTreeMaker
 
                 }
                 IgnoreDMCheck.Checked = SelectedAction.TargetAction.IgnoreDM;
+                ForceMandatoryEvents();
                 SetStatChangePreview();
             }
 
@@ -1696,6 +1882,7 @@ namespace NSOEndingTreeMaker
                             else StreamLevelNumeric.Value = int.Parse(NewAction.Command.ToString().Split('_')[1]);
                         }
                         catch { StreamLevelNumeric.Value = 1; }
+                        ForceMandatoryEvents();
                         Action_Label.Visible = false;
                         Action_Dropdown.Visible = false;
                         StreamLevelNumeric.Visible = true;
@@ -1720,8 +1907,10 @@ namespace NSOEndingTreeMaker
                         break;
                     case 6:
                         Action_Dropdown.SelectedIndex = NSODataManager.DarknessList.IndexOf(NewAction.Command);
+                        ForceMandatoryEvents();
                         break;
                 }
+                ForceMandatoryEvents();
                 SetStatChangePreview();
             }
         }
@@ -1733,6 +1922,7 @@ namespace NSOEndingTreeMaker
                 int index = ActionList.FindIndex(a => a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart == DayPart_Dropdown.SelectedIndex);
                 ActionListView.SelectedIndices.Add(index);
             }
+            ForceMandatoryEvents();
             SetStatChangePreview();
 
         }
