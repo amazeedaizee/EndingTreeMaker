@@ -834,13 +834,13 @@ namespace NSOEndingTreeMaker
                 //return (action.TargetAction.DayIndex, 2, EndingType.Ending_Sukisuki);
                 if (pastAction.Affection == 0)
                 {
-                    errorList.Add(new(branchName, $"Day {action.TargetAction.DayIndex}, {NSODataManager.DayPartNames[action.TargetAction.DayPart]}: {NSODataManager.CmdName(action.Command)}", $"Can't ignore DM in this action since this will trigger Bomber Girl, and Ignore Night Endings is enabled."));
+                    errorList.Add(new(branchName, $"Day {action.TargetAction.DayIndex}, {NSODataManager.DayPartNames[action.TargetAction.DayPart]}: {NSODataManager.CmdName(action.Command)}", $"Can't ignore DM in this action since this will trigger Cucked, and Ignore Night Endings is enabled."));
                     return;
                 }
                 //return (action.TargetAction.DayIndex, 2, EndingType.Ending_Ntr);
                 if (paperDay.DayIndex != 30 && pastAction.TargetAction.DayIndex == paperDay.DayIndex && pastAction.TargetAction.DayPart == paperDay.DayPart)
                 {
-                    errorList.Add(new(branchName, $"Day {action.TargetAction.DayIndex}, {NSODataManager.DayPartNames[action.TargetAction.DayPart]}: {NSODataManager.CmdName(action.Command)}", $"Can't ignore DM in this action since this will trigger Bomber Girl, and Ignore Night Endings is enabled."));
+                    errorList.Add(new(branchName, $"Day {action.TargetAction.DayIndex}, {NSODataManager.DayPartNames[action.TargetAction.DayPart]}: {NSODataManager.CmdName(action.Command)}", $"Can't ignore DM in this action since this will trigger Rainbow Girl, and Ignore Night Endings is enabled."));
                     return;
                 }
                 // return (action.TargetAction.DayIndex, 2, EndingType.Ending_Meta);
