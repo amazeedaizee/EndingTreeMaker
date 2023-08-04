@@ -317,7 +317,7 @@
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.label1 = new System.Windows.Forms.Label();
+            this.SortBy_Label = new System.Windows.Forms.Label();
             this.Topic_RadioButt = new System.Windows.Forms.RadioButton();
             this.Idea_RadioButt = new System.Windows.Forms.RadioButton();
             this.SuspendLayout();
@@ -734,14 +734,14 @@
             this.columnHeader3.Text = "";
             this.columnHeader3.Width = 137;
             // 
-            // label1
+            // SortBy_Label
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 14);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(43, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Sort by:";
+            this.SortBy_Label.AutoSize = true;
+            this.SortBy_Label.Location = new System.Drawing.Point(13, 14);
+            this.SortBy_Label.Name = "SortBy_Label";
+            this.SortBy_Label.Size = new System.Drawing.Size(43, 13);
+            this.SortBy_Label.TabIndex = 1;
+            this.SortBy_Label.Text = "Sort by:";
             // 
             // Topic_RadioButt
             // 
@@ -775,7 +775,7 @@
             this.ClientSize = new System.Drawing.Size(376, 513);
             this.Controls.Add(this.Idea_RadioButt);
             this.Controls.Add(this.Topic_RadioButt);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.SortBy_Label);
             this.Controls.Add(this.StreamTopic_ListView);
             this.Controls.Add(this.StreamIdeas_ListView);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -800,7 +800,7 @@
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader3;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label SortBy_Label;
         private System.Windows.Forms.RadioButton Topic_RadioButt;
         private System.Windows.Forms.RadioButton Idea_RadioButt;
     }

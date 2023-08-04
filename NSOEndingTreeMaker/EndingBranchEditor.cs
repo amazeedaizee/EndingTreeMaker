@@ -29,6 +29,8 @@ namespace NSOEndingTreeMaker
         public EditHistory EditHistory = new();
 
         private bool isDeleting;
+        private bool isReseting;
+        private bool isSaving;
         private bool isChanged;
 
         private string MilestoneTooltipText;
@@ -213,6 +215,7 @@ namespace NSOEndingTreeMaker
                     AddActionVisualData(newBreakdown, true);
                 }
                 InitializeActionStatsAndView(UnsavedEndingBranchData.IgnoreNightEndings);
+                ToggleBranchLabelIfUnsaved();
                 return;
             }
             if (breakdown != null)
@@ -224,6 +227,7 @@ namespace NSOEndingTreeMaker
                     ActionList.RemoveAt(index);
                     ActionListView.Items.RemoveAt(index);
                     InitializeActionStatsAndView(UnsavedEndingBranchData.IgnoreNightEndings);
+                    ToggleBranchLabelIfUnsaved();
                     return;
                 }
                 TargetActionData dayBeforeBreak = ActionList.Find(a => a.TargetAction.DayIndex == 15 && a.TargetAction.DayPart != 3 && a.TargetAction.DayPart + a.CommandResult.daypart >= 3 && a.TargetAction.DayPart != 3);
@@ -245,6 +249,13 @@ namespace NSOEndingTreeMaker
                 EditActionVisualData(breakdown);
             }
             InitializeActionStatsAndView(UnsavedEndingBranchData.IgnoreNightEndings);
+            ToggleBranchLabelIfUnsaved();
+        }
+
+        private void ToggleBranchLabelIfUnsaved()
+        {
+            bool changed = isChanged || UnsavedEndingBranchData.EndingBranch.IsStressfulBressdown != SelectedEndingBranch.EndingBranch.IsStressfulBressdown || UnsavedEndingBranchData.IgnoreNightEndings != SelectedEndingBranch.IgnoreNightEndings;
+            ToolStrip_Branch.Text = changed ? "Branch*" : "Branch";
         }
         private void InitializeActionStatsAndView(bool isSkipNightEndingCheck = false)
         {
@@ -931,7 +942,16 @@ namespace NSOEndingTreeMaker
         private void ConvertActionChoiceNames(TargetActionData pastAction = null)
         {
             if (pastAction == null)
-                pastAction = ActionList[ActionList.FindLastIndex(a => (a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart < DayPart_Dropdown.SelectedIndex) || a.TargetAction.DayIndex < DayIndexNumeric.Value)];
+            {
+                try
+                {
+                    pastAction = ActionList[ActionList.FindLastIndex(a => (a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart < DayPart_Dropdown.SelectedIndex) || a.TargetAction.DayIndex < DayIndexNumeric.Value)];
+                }
+                catch
+                {
+                    return;
+                }
+            }
             switch (ParentAction_Dropdown.SelectedIndex)
             {
                 case -1:
@@ -1124,7 +1144,13 @@ namespace NSOEndingTreeMaker
 
             void SetStreamStatusPreview()
             {
-                var pastAction = ActionList[ActionList.FindLastIndex(a => (a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart < DayPart_Dropdown.SelectedIndex) || a.TargetAction.DayIndex < DayIndexNumeric.Value)];
+                int lastIndex = ActionList.FindLastIndex(a => (a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart < DayPart_Dropdown.SelectedIndex) || a.TargetAction.DayIndex < DayIndexNumeric.Value);
+                if (lastIndex < 0)
+                {
+                    ClearStatPreview();
+                    return;
+                }
+                var pastAction = ActionList[lastIndex];
                 if (ParentAction_Dropdown.SelectedIndex != 0) return;
                 CmdType stream = CmdType.Error;
                 if (ParentAction_Dropdown.SelectedIndex == 0 && !(StreamTopic_Dropdown.SelectedIndex == NSODataManager.StreamTopicList.IndexOf(AlphaType.Imbouron) && StreamLevelNumeric.Value == 6))
@@ -1303,36 +1329,6 @@ namespace NSOEndingTreeMaker
             }
         }
 
-
-        private CmdType ConvertChoicesToCmdType()
-        {
-            switch (ParentAction_Dropdown.SelectedIndex)
-            {
-                case 0:
-                    if (ParentAction_Dropdown.SelectedIndex == 0 && !(StreamTopic_Dropdown.SelectedIndex == NSODataManager.StreamTopicList.IndexOf(AlphaType.Imbouron) && StreamLevelNumeric.Value == 6))
-                        return (CmdType)Enum.Parse(typeof(CmdType), $"{NSODataManager.StreamTopicList[StreamTopic_Dropdown.SelectedIndex]}_{StreamLevelNumeric.Value}");
-                    else return CmdType.Error;
-                case 1:
-                     return NSODataManager.HangOutList[Action_Dropdown.SelectedIndex];
-                    
-                case 2:
-                     return NSODataManager.SleepList[Action_Dropdown.SelectedIndex];
-                    
-                case 3:
-                     return NSODataManager.DrugList[Action_Dropdown.SelectedIndex];
-                    
-                case 4:
-                     return NSODataManager.InternetList[Action_Dropdown.SelectedIndex];
-                    
-                case 5:
-                     return NSODataManager.OutsideList[Action_Dropdown.SelectedIndex];
-                    
-                case 6:
-                     return NSODataManager.DarknessList[Action_Dropdown.SelectedIndex];               
-                default: return CmdType.None;
-
-            }
-        }
         private void EndingBranchEditorOnLoad(object sender, EventArgs e)
         {
             ToolStrip_Branch.DropDown = Branch_ContextMenuStrip;
@@ -1662,12 +1658,11 @@ namespace NSOEndingTreeMaker
 
         private void ParentAction_DropdownOnSelectedIndexChanged(object sender, EventArgs e)
         {
-            var pastAction = ActionList[ActionList.FindLastIndex(a => (a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart < DayPart_Dropdown.SelectedIndex) || a.TargetAction.DayIndex < DayIndexNumeric.Value)];
             Action_Dropdown.SelectedIndex = -1;
             if (ParentAction_Dropdown.SelectedIndex != -1)
                 TargetActionButton.Enabled = false;
             ChangeActionOptionsByParent();
-            ConvertActionChoiceNames(pastAction);
+            ConvertActionChoiceNames();
             if (ParentAction_Dropdown.SelectedIndex == 0)
             {
                 SetStreamNumericBasedOnIdea();
@@ -1917,6 +1912,7 @@ namespace NSOEndingTreeMaker
 
         private void DayIndexNumericOnValueChanged(object sender, EventArgs e)
         {
+            if (isReseting) return;
             if (ActionList.Exists(a => a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart == DayPart_Dropdown.SelectedIndex) && DayPart_Dropdown.SelectedIndex != -1 && ActionListView.SelectedIndices.Count == 0)
             {
                 int index = ActionList.FindIndex(a => a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart == DayPart_Dropdown.SelectedIndex);
@@ -1928,6 +1924,7 @@ namespace NSOEndingTreeMaker
         }
         private void DayPart_DropdownOnSelectedIndexChanged(object sender, EventArgs e)
         {
+            if (isReseting) return;
             if (ActionList.Exists(a => a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart == DayPart_Dropdown.SelectedIndex) && DayPart_Dropdown.SelectedIndex != -1 && ActionListView.SelectedIndices.Count == 0)
             {
                 int index = ActionList.FindIndex(a => a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart == DayPart_Dropdown.SelectedIndex);
@@ -1943,7 +1940,7 @@ namespace NSOEndingTreeMaker
 
         }
 
-        private void SaveEndingBranch()
+        private bool SaveEndingBranch(bool closeAfter = true)
         {
             UnsavedEndingBranchData.EndingBranch.AllActions = ActionList;
             List<(string, string, string)> errorList = new();
@@ -1957,14 +1954,17 @@ namespace NSOEndingTreeMaker
             if (errorList.Count > 0)
             {
                 BranchErrorDetails errorWindow = new(errorList, true);
-                if (errorWindow.ShowDialog() == DialogResult.Yes)  
+                if (errorWindow.ShowDialog() == DialogResult.Yes)
+                {
                     ConfirmSaveEndingBranch();
-                return;                         
+                    return true;
+                }                  
+                return false;                         
             }
             if (branchConflicts.Item2 && isChanged)
             {
                 var msgHasFutureBranchStartDays = MessageBox.Show($"Some future branches rely on this branch for stats, stream ideas, etc. By changing this branch, some of those future branches might become broken.\n\nAre you sure you want to proceed?", "Caution", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-                if (msgHasFutureBranchStartDays == DialogResult.No) return;
+                if (msgHasFutureBranchStartDays == DialogResult.No) return false;
             }
             (int, int, EndingType) checkEnding = UnsavedEndingBranchData.ExpectedDayOfEnd;
             switch (checkEnding.Item3)
@@ -1977,7 +1977,7 @@ namespace NSOEndingTreeMaker
                         UnsavedEndingBranchData.EndingBranch.EndingToGet = EndingType.Ending_None;
                         break;
                     }
-                    return;
+                    return false;
                 default:
                     if (checkEnding.Item3 != UnsavedEndingBranchData.EndingBranch.EndingToGet && NSODataManager.IsNightEnding(checkEnding.Item3))
                     {
@@ -1993,12 +1993,12 @@ namespace NSOEndingTreeMaker
                         {
                             case DialogResult.Yes:
                                 ConfirmSaveEndingBranch();
-                                return;
+                                return true;
                             case DialogResult.No:
                                 InitializeActionStatsAndView(true);
                                 checkEnding = UnsavedEndingBranchData.ExpectedDayOfEnd;
                                 break;
-                            default: return;
+                            default: return false;
                         }
                     }
                     if (checkEnding.Item3 != UnsavedEndingBranchData.EndingBranch.EndingToGet)
@@ -2017,7 +2017,7 @@ namespace NSOEndingTreeMaker
                                 UnsavedEndingBranchData.EndingBranch.EndingToGet = checkEnding.Item3;
                                 EndingToGet_Dropdown.SelectedIndex = NSODataManager.EndingsList.IndexOf(UnsavedEndingBranchData.EndingBranch.EndingToGet); ;
                                 break;
-                            default: return;
+                            default: return false;
                         }
                     }
                     break;
@@ -2046,38 +2046,64 @@ namespace NSOEndingTreeMaker
                 }
             }
             */
-            ConfirmSaveEndingBranch();
+            ConfirmSaveEndingBranch(closeAfter);
+            return true;
         }
 
-        private void ConfirmSaveEndingBranch()
+        private void ConfirmSaveEndingBranch(bool closeAfter = true)
         {
+            isSaving = true;
             int index = MainForm.CurrentEndingTree.EndingsList.IndexOf(SelectedEndingBranch);
             UnsavedEndingBranchData.EndingBranch.AllActions = ActionList;
             MainForm.CurrentEndingTree.EndingsList[index] = UnsavedEndingBranchData;
-            if (isChanged && !MainForm.isBranchEdited) MainForm.isBranchEdited = true;
-            MainForm.SelectedEnding = null;
+            ActionList = new();
+            bool changed = isChanged || UnsavedEndingBranchData.EndingBranch.IsStressfulBressdown != SelectedEndingBranch.EndingBranch.IsStressfulBressdown || UnsavedEndingBranchData.IgnoreNightEndings != SelectedEndingBranch.IgnoreNightEndings;
+            if (changed && !MainForm.isBranchEdited) MainForm.isBranchEdited = true;
             MainForm.SetEndingListViewData();
-            Close();
+            isChanged = false;
+            if (closeAfter)
+            {
+                MainForm.SelectedEnding = null;
+                Close();
+            }
+            isSaving = false;
         }
 
-        private void ResetEndingBranch()
+        private bool MsgIfBranchUnsaved(bool closeAfter = true)
         {
-            var confirm = MessageBox.Show($"Are you sure you want to reset this ending branch? \nThis will reset it back to before you edited it.\nThis action can't be undone.", "Confirm Reset", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-            if (confirm == DialogResult.No) return;
+            
+            var confirm = MessageBox.Show($"You have unsaved changes in this ending branch. \nDo you want to save this branch?.", "Unsaved changes detected!", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
+            if (confirm == DialogResult.Yes)
+            {
+                return SaveEndingBranch(closeAfter);
+            }
+            return confirm != DialogResult.Cancel;
+        }
+
+        private void ResetEndingBranch(bool showMsg = true)
+        {
+            if (showMsg)
+            {
+                var confirm = MessageBox.Show($"Are you sure you want to reset this ending branch? \nThis will reset it back to before you edited it.\nThis action can't be undone.", "Confirm Reset", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (confirm == DialogResult.No) return;
+            }
+            isReseting = true;
             EditHistory.undoActions.Clear();
             EditHistory.redoActions.Clear();
-            ActionList.Clear();
             ActionListView.Items.Clear();
+            ActionList.Clear();
             UnsavedEndingBranchData = new EndingBranchData(SelectedEndingBranch);
             ActionList = UnsavedEndingBranchData.EndingBranch.AllActions;
-            SetImportedBaseBranchData();          
+            DayIndexNumeric.Minimum = UnsavedEndingBranchData.EndingBranch.StartingDay;
+            SetImportedBaseBranchData();
+            isReseting = false;
         }
 
         private void SetImportedBaseBranchData()
         {
             SetDayMinimum();
-            NewAction = new TargetActionData(ActionList[ActionList.Count - 1].TargetAction.DayIndex, -1, CmdType.None);
             int listCount = ActionList.Count;
+            NewAction = new TargetActionData(ActionList[listCount - 1].TargetAction.DayIndex, -1, CmdType.None);
             for (int i = 0; i < listCount; i++)
             {
                 AddActionVisualData(ActionList[i], false);
@@ -2093,6 +2119,7 @@ namespace NSOEndingTreeMaker
             EndingToGet_Dropdown.SelectedIndex = NSODataManager.EndingsList.IndexOf(UnsavedEndingBranchData.EndingBranch.EndingToGet);
             StressfulBreakdown_Check.Checked = UnsavedEndingBranchData.EndingBranch.IsStressfulBressdown;
             IgnoreNightEnding_Label.Checked = UnsavedEndingBranchData.IgnoreNightEndings;
+            isChanged = false;
         }
         private void StreamIdeasButtonOnClick(object sender, EventArgs e)
         {
@@ -2203,9 +2230,19 @@ namespace NSOEndingTreeMaker
 
         private void EndingBranchEditor_FormClosing(object sender, FormClosingEventArgs e)
         {
+            bool changed = isChanged || UnsavedEndingBranchData.EndingBranch.IsStressfulBressdown != SelectedEndingBranch.EndingBranch.IsStressfulBressdown || UnsavedEndingBranchData.IgnoreNightEndings != SelectedEndingBranch.IgnoreNightEndings;
+            if (changed && !isSaving)
+            {
+                var confirm = MsgIfBranchUnsaved();
+                if (!confirm)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
             MainForm.SetEndingListViewData(true);
-            if (ideasWindow != null) { ideasWindow.Close(); }
-            if (usedWindow != null) { usedWindow.Close(); }
+            ideasWindow?.Close();
+            usedWindow?.Close();
             Dispose();
         }
 
@@ -2237,41 +2274,13 @@ namespace NSOEndingTreeMaker
                 }
                 return;
             }
-            if (e.KeyCode == Keys.X && !e.Shift)
+            else if (e.KeyCode == Keys.X && !e.Shift)
             {
                 if (ActionListView.SelectedIndices.Count > 0)
                 {
                     CutActions();
                 }
                 return;
-            }
-            if (e.KeyCode == Keys.V && !e.Shift)
-            {
-                PasteCopiedActions();
-                return;
-            }
-            else if (e.KeyCode == Keys.V)
-            {
-                PasteAsNewActions();
-                return;
-            }
-            if (e.Control && e.Shift && e.Alt && e.KeyCode == Keys.Z)
-            {
-                ResetEndingBranch();
-            }
-            if ((e.Control && e.Shift && e.KeyCode == Keys.Z) || e.KeyCode == Keys.Y && !e.Shift)
-            {
-                RedoActionEdit();
-                return;
-            }
-            else if (!e.Shift && e.KeyCode == Keys.Z)
-            {
-                UndoActionEdit();
-                return;
-            }
-            if (e.KeyCode == Keys.S && !e.Shift)
-            {
-                SaveEndingBranch();
             }
         }
         void CopyActions()
@@ -2500,6 +2509,41 @@ namespace NSOEndingTreeMaker
 
         }
 
+        private void SwitchToOtherEndingBranch(int branchIndex)
+        {
+            if (isChanged ||
+                UnsavedEndingBranchData.EndingBranch.IsStressfulBressdown != SelectedEndingBranch.EndingBranch.IsStressfulBressdown ||
+                UnsavedEndingBranchData.IgnoreNightEndings != SelectedEndingBranch.IgnoreNightEndings)
+                {
+                var confirm = MsgIfBranchUnsaved(false);
+                if (!confirm)
+                {
+                    return;
+                }
+            }
+            SelectedEndingBranch = MainForm.CurrentEndingTree.EndingsList[branchIndex];
+            ResetEndingBranch(false);
+            ActionListView.SelectedIndices.Clear();
+        }
+
+        private void SwitchToPreviousBranch()
+        {
+            var tree = MainForm.CurrentEndingTree;
+            int index = tree.EndingsList.IndexOf(SelectedEndingBranch);
+            if (index == 0)
+                return;
+            SwitchToOtherEndingBranch(index - 1);
+        }
+
+        private void SwitchToNextBranch()
+        {
+            var tree = MainForm.CurrentEndingTree;
+            int index = tree.EndingsList.IndexOf(SelectedEndingBranch);
+            if (index == tree.EndingsList.Count -1)
+                return;
+            SwitchToOtherEndingBranch(index + 1);
+        }
+
         private void FollowersDiff_DoubleClick(object sender, EventArgs e)
         {
             var followerString = FollowersDiff.Text.Split(' ');
@@ -2586,12 +2630,12 @@ namespace NSOEndingTreeMaker
             PasteAsNewActions();
         }
 
-        private void resetEndingBranchToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ResetBranch_MenuItemClick(object sender, EventArgs e)
         {
             ResetEndingBranch();
         }
 
-        private void saveEndingBranchToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveBranch_MenuItemClick(object sender, EventArgs e)
         {
             SaveEndingBranch();
         }
@@ -2599,7 +2643,79 @@ namespace NSOEndingTreeMaker
         private void IgnoreNightEnding_Label_CheckedChanged(object sender, EventArgs e)
         {
             UnsavedEndingBranchData.IgnoreNightEndings = IgnoreNightEnding_Label.Checked;
-            InitializeActionStatsAndView(UnsavedEndingBranchData.IgnoreNightEndings);
+            InitializeBreakdown();
+        }
+
+        private void NextEnding_MenuItem_Click(object sender, EventArgs e)
+        {
+            SwitchToNextBranch();
+        }
+
+        private void PreviousBranch_MenuItem_Click(object sender, EventArgs e)
+        {
+            SwitchToPreviousBranch();
+        }
+
+        private void EndingBranchEditor_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (!e.Control) return;
+            if (e.KeyCode == Keys.S && !e.Shift)
+            {
+                SaveEndingBranch(false);
+            }
+            else if ((e.KeyCode == Keys.Left || e.KeyCode == Keys.Up) && !e.Shift)
+            {
+                SwitchToPreviousBranch();
+            }
+            else if ((e.KeyCode == Keys.Right || e.KeyCode == Keys.Down) && !e.Shift)
+            {
+                SwitchToNextBranch();
+            }
+            else if (e.KeyCode == Keys.V && !e.Shift)
+            {
+                PasteCopiedActions();
+                return;
+            }
+            else if (e.KeyCode == Keys.V)
+            {
+                PasteAsNewActions();
+                return;
+            }
+            else if ((e.Control && e.Shift && e.KeyCode == Keys.Z) || e.KeyCode == Keys.Y && !e.Shift)
+            {
+                RedoActionEdit();
+                return;
+            }
+            else if (!e.Shift && e.KeyCode == Keys.Z)
+            {
+                UndoActionEdit();
+                return;
+            }
+        }
+
+        private void Branch_ContextMenuStrip_Opening(object sender, CancelEventArgs e)
+        {
+            int index = MainForm.CurrentEndingTree.EndingsList.IndexOf(SelectedEndingBranch);
+            if (MainForm.CurrentEndingTree.EndingsList.Count ==1)
+            {
+                PreviousBranch_MenuItem.Enabled = false;
+                NextBranch_MenuItem.Enabled = false;
+            }
+            else if (index == 0)
+            {
+                PreviousBranch_MenuItem.Enabled = false;
+                NextBranch_MenuItem.Enabled = true;
+            }
+            else if (index == MainForm.CurrentEndingTree.EndingsList.Count - 1)
+            {
+                NextBranch_MenuItem.Enabled = false;
+                PreviousBranch_MenuItem.Enabled = true;
+            }
+            else
+            {
+                PreviousBranch_MenuItem.Enabled = true;
+                NextBranch_MenuItem.Enabled = true;
+            }
         }
     }
 }

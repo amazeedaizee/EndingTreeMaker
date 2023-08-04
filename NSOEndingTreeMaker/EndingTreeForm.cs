@@ -123,8 +123,8 @@ namespace NSOEndingTreeMaker
             }
 
 
-            if (errorList.Count > 0) illegalBranches_Label.Visible = true;
-            else illegalBranches_Label.Visible = false;
+            if (errorList.Count > 0) UnvalidBranches_Label.Visible = true;
+            else UnvalidBranches_Label.Visible = false;
             Notes.Text = CurrentEndingTree.Notes;
             Day2Exp_Check.Checked = CurrentEndingTree.isDay2Exp;
             return errorList;
@@ -340,7 +340,8 @@ namespace NSOEndingTreeMaker
             bool isValidated = true;
             string errorMsg = "";
             List<string> endings = new List<string>();
-            int oldLatestDay = CurrentEndingTree.EndingsList[index].EndingBranch.AllActions[CurrentEndingTree.EndingsList[index].EndingBranch.AllActions.Count - 1].TargetAction.DayIndex;
+            int oldLatestIndex = CurrentEndingTree.EndingsList[index].EndingBranch.AllActions.Count - 1;
+            int oldLatestDay = CurrentEndingTree.EndingsList[index].EndingBranch.AllActions[oldLatestIndex].TargetAction.DayIndex;
             for (int i = index; i < CurrentEndingTree.EndingsList.Count; i++)
             {
                 if (i == 0) continue;
@@ -392,7 +393,7 @@ namespace NSOEndingTreeMaker
             _currentNotes = CurrentEndingTree.Notes;
             DeleteEndingBranch.Enabled = false;
             EditEndingBranch.Enabled = false;
-            openRecentEndingTreeToolStripMenuItem.Text += $" {Path.GetFileName(_recentlyClosed)}";
+            OpenRecent_MenuItem.Text += $" {Path.GetFileName(_recentlyClosed)}";
             string gameModPath = InitializeValidGamePath() + @"\BepInEx\plugins\EndingTreeSimulator";
             EndingSim_MenuItem.Visible = Directory.Exists(gameModPath) && File.Exists(gameModPath + @"\EndingTreeSimulator.dll");
             SetEnableBoolForMenuOptions();
@@ -653,17 +654,17 @@ namespace NSOEndingTreeMaker
 
         private void SetEnableBoolForMenuOptions()
         {
-            loadTreeFromSlot1ToolStripMenuItem.Enabled = !string.IsNullOrEmpty(_slots[1]);
-            loadTreeFromSlot2ToolStripMenuItem.Enabled = !string.IsNullOrEmpty(_slots[2]);
-            loadTreeFromSlot3ToolStripMenuItem.Enabled = !string.IsNullOrEmpty(_slots[3]);
-            loadTreeFromSlot4ToolStripMenuItem.Enabled = !string.IsNullOrEmpty(_slots[4]);
-            loadTreeFromSlot5ToolStripMenuItem.Enabled = !string.IsNullOrEmpty(_slots[5]);
+            loadTreeFromSlot1_MenuItem.Enabled = !string.IsNullOrEmpty(_slots[1]);
+            loadTreeFromSlot2_MenuItem.Enabled = !string.IsNullOrEmpty(_slots[2]);
+            loadTreeFromSlot3_MenuItem.Enabled = !string.IsNullOrEmpty(_slots[3]);
+            loadTreeFromSlot4_MenuItem.Enabled = !string.IsNullOrEmpty(_slots[4]);
+            loadTreeFromSlot5_MenuItem.Enabled = !string.IsNullOrEmpty(_slots[5]);
 
-            setSlot1TreeAsMainSimulationToolStripMenuItem.Enabled = !string.IsNullOrEmpty(_slots[1]);
-            setSlot2TreeAsMainSimulationToolStripMenuItem.Enabled = !string.IsNullOrEmpty(_slots[2]);
-            setSlot3TreeAsMainSimulationToolStripMenuItem.Enabled = !string.IsNullOrEmpty(_slots[3]);
-            setSlot4TreeAsMainSimulationToolStripMenuItem.Enabled = !string.IsNullOrEmpty(_slots[4]);
-            setSlot5TreeAsMainSimulationToolStripMenuItem.Enabled = !string.IsNullOrEmpty(_slots[5]);
+            SetSlotOne_MenuItem.Enabled = !string.IsNullOrEmpty(_slots[1]);
+            SetSlotTwo_MenuItem.Enabled = !string.IsNullOrEmpty(_slots[2]);
+            SetSlotThree_MenuItem.Enabled = !string.IsNullOrEmpty(_slots[3]);
+            SetSlotFour_MenuItem.Enabled = !string.IsNullOrEmpty(_slots[4]);
+            SetSlotFive_MenuItem.Enabled = !string.IsNullOrEmpty(_slots[5]);
 
             Slot1_Name.Text = !string.IsNullOrEmpty(_slots[1]) ? Path.GetFileName(_slots[1]): "(none)" ;
             Slot2_Name.Text = !string.IsNullOrEmpty(_slots[2]) ? Path.GetFileName(_slots[2]): "(none)" ;
@@ -791,57 +792,57 @@ namespace NSOEndingTreeMaker
             catch { MessageBox.Show("Could not open the Simulation Logs folder: either the folder doesn't exist, has been moved to another location, or is corrupted.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
 
-        private void saveTreeToSlot1ToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveToSLot1(object sender, EventArgs e)
         {
             SavePathToSlot(1);
         }
 
-        private void loadTreeFromSlot1ToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LoadToSlot1(object sender, EventArgs e)
         {
             LoadPathFromSlot(1);
         }
 
-        private void saveTreeToSlot2ToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveToSlot2(object sender, EventArgs e)
         {
             SavePathToSlot(2);
         }
 
-        private void loadTreeFromSlot2ToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LoadToSlot2(object sender, EventArgs e)
         {
             LoadPathFromSlot(2);
         }
 
-        private void saveTreeToSlot3ToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveToSlot3(object sender, EventArgs e)
         {
             SavePathToSlot(3);
         }
 
-        private void loadTreeToSlot3ToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LoadToSlot3(object sender, EventArgs e)
         {
             LoadPathFromSlot(3);
         }
 
-        private void saveTreeToSlot5ToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SaveToSlot4(object sender, EventArgs e)
         {
             SavePathToSlot(4);
         }
 
-        private void loadTreeFromSlot5ToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LoadToSLot4(object sender, EventArgs e)
         {
             LoadPathFromSlot(4);
         }
 
-        private void saveTreeToSlot5ToolStripMenuItem1_Click(object sender, EventArgs e)
+        private void SaveToSlot5(object sender, EventArgs e)
         {
             SavePathToSlot(5);
         }
 
-        private void loadTreeFromSlot5ToolStripMenuItem1_Click(object sender, EventArgs e)
+        private void LoadToSlot5(object sender, EventArgs e)
         {
             LoadPathFromSlot(5);
         }
 
-        private void resetEndingTreeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void ResetEndingTree_MenuCLick(object sender, EventArgs e)
         {
             ReloadEndingTree();
         }
@@ -877,32 +878,32 @@ namespace NSOEndingTreeMaker
             }
         }
 
-        private void setCurrentTreeAsMainSimulationToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SetCurrent_MenuItem_Click(object sender, EventArgs e)
         {
             SetTreeAsSimulation(0);
         }
 
-        private void setSlot1TreeAsMainSimulationToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SetSlot1_MenuItem_Click(object sender, EventArgs e)
         {
             SetTreeAsSimulation(1);
         }
 
-        private void setSlot2TreeAsMainSimulationToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SetSlot2_MenuItem_Click(object sender, EventArgs e)
         {
             SetTreeAsSimulation(2);
         }
 
-        private void setSlot3TreeAsMainSimulationToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SetSlot3_MenuItem_Click(object sender, EventArgs e)
         {
             SetTreeAsSimulation(3);
         }
 
-        private void setSlot4TreeAsMToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SetSlot4_MenuItem_Click(object sender, EventArgs e)
         {
             SetTreeAsSimulation(4);
         }
 
-        private void setSlot5TreeAsMainSimulationToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SetSlot5_MenuItem_Click(object sender, EventArgs e)
         {
             SetTreeAsSimulation(5);
         }
@@ -968,19 +969,19 @@ namespace NSOEndingTreeMaker
             }
         }
 
-        private void newEndingTreeToolStripMenuItem_Click(object sender, EventArgs e)
+        private void NewTree_MenuItem(object sender, EventArgs e)
         {
             CreateNewEndingTree();
         }
 
-        private void illegalBranches_Label_VisibleChanged(object sender, EventArgs e)
+        private void UnvalidBranch_LabelToggle(object sender, EventArgs e)
         {
             if (CurrentEndingTree == null)
             {
-                illegalBranches_Label.Visible = false;
+                UnvalidBranches_Label.Visible = false;
                 return;
             }
-            CurrentEndingTree.isBroken = illegalBranches_Label.Visible;
+            CurrentEndingTree.isBroken = UnvalidBranches_Label.Visible;
         }
 
         private void Day2ExtraAction()
@@ -1032,9 +1033,6 @@ namespace NSOEndingTreeMaker
             }
             SetEndingListViewData();
             
-        }
-        private void Day2Exp_CheckedChanged(object sender, EventArgs e)
-        {
         }
 
         private void Day2Exp_Check_MouseClick(object sender, MouseEventArgs e)
