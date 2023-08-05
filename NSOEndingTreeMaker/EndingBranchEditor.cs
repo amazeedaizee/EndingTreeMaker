@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using static NSOEndingTreeMaker.EndingBranchSubData;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
 
 namespace NSOEndingTreeMaker
 {
@@ -52,7 +53,7 @@ namespace NSOEndingTreeMaker
             NewAction = new TargetActionData(ActionList[ActionList.Count - 1].TargetAction.DayIndex, dayPartStart, CmdType.None);
         }
 
-        private void AddActionVisualData(TargetActionData action, bool addAlsoToActionList)
+        internal void AddActionVisualData(TargetActionData action, bool addAlsoToActionList)
         {
             ListViewItem item = new ListViewItem(action.TargetAction.DayIndex.ToString());
             item.SubItems.Add(NSODataManager.DayPartNames[action.TargetAction.DayPart]);
@@ -78,7 +79,7 @@ namespace NSOEndingTreeMaker
             InitializeListView(item, action);
         }
 
-        private void EditActionVisualData(TargetActionData action)
+        internal void EditActionVisualData(TargetActionData action)
         {
             Console.WriteLine(ActionList.Count);
             ListViewItem item = ActionListView.Items[ActionList.IndexOf(action)];
@@ -191,9 +192,9 @@ namespace NSOEndingTreeMaker
             }
         }
 
-        private void InitializeBreakdown()
+        internal void InitializeBreakdown()
         {
-            InitializeActionStatsAndView(UnsavedEndingBranchData.IgnoreNightEndings);
+            UnsavedEndingBranchData.InitializeActionStats(this);
             TargetActionData breakdown = ActionList.FirstOrDefault(a => a.TargetAction.DayIndex == 15 && a.TargetAction.DayPart == 3);
             if (breakdown == null)
             {
@@ -214,7 +215,7 @@ namespace NSOEndingTreeMaker
                     else { newBreakdown.CommandResult.stress = -8; }
                     AddActionVisualData(newBreakdown, true);
                 }
-                InitializeActionStatsAndView(UnsavedEndingBranchData.IgnoreNightEndings);
+                UnsavedEndingBranchData.InitializeActionStats(this);
                 ToggleBranchLabelIfUnsaved();
                 return;
             }
@@ -226,7 +227,7 @@ namespace NSOEndingTreeMaker
                     int index = ActionList.IndexOf(breakdown);
                     ActionList.RemoveAt(index);
                     ActionListView.Items.RemoveAt(index);
-                    InitializeActionStatsAndView(UnsavedEndingBranchData.IgnoreNightEndings);
+                    UnsavedEndingBranchData.InitializeActionStats(this);
                     ToggleBranchLabelIfUnsaved();
                     return;
                 }
@@ -248,7 +249,7 @@ namespace NSOEndingTreeMaker
                 }
                 EditActionVisualData(breakdown);
             }
-            InitializeActionStatsAndView(UnsavedEndingBranchData.IgnoreNightEndings);
+            UnsavedEndingBranchData.InitializeActionStats(this);
             ToggleBranchLabelIfUnsaved();
         }
 
@@ -257,353 +258,144 @@ namespace NSOEndingTreeMaker
             bool changed = isChanged || UnsavedEndingBranchData.EndingBranch.IsStressfulBressdown != SelectedEndingBranch.EndingBranch.IsStressfulBressdown || UnsavedEndingBranchData.IgnoreNightEndings != SelectedEndingBranch.IgnoreNightEndings;
             ToolStrip_Branch.Text = changed ? "Branch*" : "Branch";
         }
-        private void InitializeActionStatsAndView(bool isSkipNightEndingCheck = false)
+        internal void SetEventInfo(EndingBranchData branch)
         {
-            var branch = UnsavedEndingBranchData;
-            int startingDay = branch.EndingBranch.StartingDay;
-            int latestDay = ActionList[ActionList.Count - 1].TargetAction.DayIndex;
-            int startIdeaReset = branch.StreamIdeaList.RemoveAll(u => u.DayIndex >= startingDay);
-            int startUsedReset = branch.StreamUsedList.RemoveAll(u => u.DayIndex >= startingDay);
-            int startSexCountReset = branch.LoveCounter.RemoveAll(u => u.DayIndex >= startingDay);
-            int startPaperCountReset = branch.PsycheCounter.RemoveAll(u => u.DayIndex >= startingDay);
-            int startIgnoreCountReset = branch.IgnoreCounter.RemoveAll(u => u.DayIndex >= startingDay);
-            bool aboutToStress = false;
-            bool isDarkAngel = false;
-            (int, int, EndingType) expectedEnding = (0, 0, EndingType.Ending_None);
-            (int, bool) HasGalaxy = (0, false);
-            (int, bool) NoMeds = (0, false);
-            (int, bool) Stressed = (0, false);
-            (int, bool) ReallyStressed = (0, false);
-            (int, bool) VisitParents = (0, false);
-            (int, bool) Trauma = (0, false);
-            (int, bool) MusicVideo = (0, false);
-            (int, bool) Horror = (0, false);
-            (int, bool) is150M = (0, false);
-            (int, bool) is300M = (0, false);
-            (int, bool) is500M = (0, false);
-            (int, bool) isMaxFollowers = (0, false);
 
-            if (!branch.StreamIdeaList.Exists(i => i.Idea == CmdType.Zatudan_1))
-                branch.StreamIdeaList.Insert(0, new(1, 2, CmdType.Zatudan_1));
-
-
-            for (int i = 0; i < ActionList.Count; i++)
+            GalacticRail_Bool.Checked = branch.hasGalacticRail.isEventing;
+            switch (GalacticRail_Bool.Checked)
             {
-                var pastAction = new TargetActionData(1, 2, CmdType.None);
-                if (i == 0 && !(MainForm.CurrentEndingTree.isDay2Exp && ActionList[i].TargetAction.DayIndex == 2 && ActionList[i].TargetAction.DayPart == -1)) 
-                        continue;
-                if (i > 0) pastAction = ActionList[i - 1];
-                ChangePresentCmdBasedOnPastStats(pastAction, ActionList[i]);
-                if (ActionList[i].TargetAction.DayPart != 3) ActionList[i].CommandResult = NSOCommandManager.CmdTypeToCommand(ActionList[i].Command);
-                NSOCommandManager.CalculateStats(pastAction, ActionList[i]);
-                if (ActionList[i].Followers > 9999999) { ActionList[i].Followers = 9999999; }
-                if (ActionList[i].Stress >= 100)
-                {
-                    if (ActionList[i].Stress >= 120 && branch.isStressed.isEventing && branch.isReallyStressed.isEventing && ActionList[i].TargetAction.DayIndex >= branch.isReallyStressed.DayIndex)
-                    {
-                        ActionList[i].Stress = 120;
-                    }
-                    else if (!branch.isReallyStressed.isEventing || (branch.isReallyStressed.isEventing && ActionList[i].TargetAction.DayIndex < branch.isReallyStressed.DayIndex))
-                        ActionList[i].Stress = 100;
-                }
-                if (ActionList[i].Affection >= 100)
-                {
-                    if (ActionList[i].Affection >= 120 && branch.isReallyLove.isEventing && ActionList[i].TargetAction.DayIndex >= branch.isReallyLove.DayIndex)
-                    {
-                        ActionList[i].Affection = 120;
-                    }
-                    else if (!branch.isReallyLove.isEventing || (branch.isReallyLove.isEventing && ActionList[i].TargetAction.DayIndex < branch.isReallyLove.DayIndex)) { ActionList[i].Affection = 100; }
-                }
-                if (ActionList[i].Darkness > 100) { ActionList[i].Darkness = 100; }
-                if (ActionList[i].TargetAction.Action == ActionType.Haishin)
-                {
-                    if (!branch.StreamUsedList.Exists(u => u.UsedStream == ActionList[i].Command))
-                        branch.StreamUsedList.Add(new(ActionList[i].TargetAction.DayIndex, ActionList[i].Command));
-                }
-                else
-                {
-                    var idea = NSODataManager.ActionToStreamIdea(pastAction, ActionList[i], branch);
-                    if (idea != (0, 0, CmdType.None))
-                    {
-                        branch.StreamIdeaList.Add(new(idea.DayIndex, idea.DayPart, idea.Idea));
-                    }
-                    ActionList[i].StreamIdea = idea.Idea;
-                    if (ActionList[i].TargetAction.DayPart == 2 || (ActionList[i].TargetAction.DayPart < 2 && ActionList[i].TargetAction.DayPart + ActionList[i].CommandResult.daypart >= 3))
-                        ActionList[i].StreamStreak = 0;
-                }
-                if (ActionList[i].TargetAction.Action == ActionType.PlayMakeLove)
-                {
-                    branch.LoveCounter.Add(new(ActionList[i].TargetAction.DayIndex, ActionList[i].TargetAction.DayPart));
-                }
-                if (ActionList[i].TargetAction.Action == ActionType.OkusuriPsyche)
-                {
-                    branch.PsycheCounter.Add(new(ActionList[i].TargetAction.DayIndex, ActionList[i].TargetAction.DayPart));
-                }
-                if (ActionList[i].TargetAction.DayIndex == 15 && ActionList[i].TargetAction.DayPart == 3)
-                {
-                    if (pastAction.Affection >= 60 && pastAction.Darkness >= 60 && !Trauma.Item2)
-                    {
-                        Trauma.Item1 = ActionList[i].TargetAction.DayIndex + 1;
-                        Trauma.Item2 = true;
-                    }
-                }
-                if (ActionList[i].TargetAction.DayIndex == 23 && ActionList[i].TargetAction.DayPart + ActionList[i].CommandResult.daypart >= 3 && ActionList[i].Affection >= 80 && !VisitParents.Item2)
-                {
-
-                    VisitParents.Item1 = ActionList[i].TargetAction.DayIndex + 1;
-                    VisitParents.Item2 = true;
-
-                }
-                if (ActionList[i].TargetAction.DayIndex == 26 && ActionList[i].TargetAction.DayPart + ActionList[i].CommandResult.daypart >= 3)
-                {
-                    if (ActionList[i].Followers >= 500000 && !MusicVideo.Item2)
-                    {
-                        MusicVideo.Item1 = ActionList[i].TargetAction.DayIndex + 1;
-                        MusicVideo.Item2 = true;
-                    }
-                }
-                if (branch.StreamUsedList.Exists(s => s.DayIndex >= ActionList[i].TargetAction.DayIndex && s.UsedStream == CmdType.Kaidan_5) && branch.IsNotMidnightEvents(ActionList[i], HasGalaxy, is150M, is300M, is500M) && !HasGalaxy.Item2)
-                {
-                    HasGalaxy.Item1 = ActionList[i].TargetAction.DayIndex + 1;
-                    if (branch.IsNotMidnightEvents(ActionList[i], HasGalaxy, is150M, is300M, is500M))
-                    {
-                        HasGalaxy.Item2 = true;
-                    }
-                }
-                if (ActionList[i].Followers >= 1500000 && !is150M.Item2 && branch.IsNotMidnightEvents(ActionList[i], HasGalaxy, is150M, is300M, is500M))
-                {
-                    is150M.Item1 = ActionList[i].TargetAction.DayIndex + 1;
-                    is150M.Item2 = true;
-                }
-                if (ActionList[i].Followers >= 3000000 && !is300M.Item2 && branch.IsNotMidnightEvents(ActionList[i], HasGalaxy, is150M, is300M, is500M))
-                {
-                    is300M.Item1 = ActionList[i].TargetAction.DayIndex + 1;
-                    is300M.Item2 = true;
-                }
-                if (ActionList[i].Followers >= 5000000 && !is500M.Item2 && branch.IsNotMidnightEvents(ActionList[i], HasGalaxy, is150M, is300M, is500M))
-                {
-                    is500M.Item1 = ActionList[i].TargetAction.DayIndex + 1;
-                    is500M.Item2 = true;
-                }
-                if (ActionList[i].Followers >= 9999999 && branch.IsNotMidnightEvents(ActionList[i], HasGalaxy, is150M, is300M, is500M))
-                {
-                    isMaxFollowers.Item1 = ActionList[i].TargetAction.DayIndex;
-                    isMaxFollowers.Item2 = true;
-                }
-                if (ActionList[i].TargetAction.DayIndex == 24 && (ActionList[i].TargetAction.DayPart + ActionList[i].CommandResult.daypart) >= 3)
-                {
-                    if (ActionList[i].Stress >= 80 && branch.isStressed.isEventing && branch.isReallyStressed.isEventing && !Horror.Item2)
-                    {
-                        Horror.Item1 = 25;
-                        Horror.Item2 = true;
-                    }
-                }
-                if (ActionList[i].Stress >= 100 && ((ActionList[i].TargetAction.DayIndex != 15 && (ActionList[i].TargetAction.DayPart + ActionList[i].CommandResult.daypart) >= 3) || (ActionList[i].TargetAction.DayIndex == 15 && ActionList[i].TargetAction.DayPart == 3)) && Stressed.Item2 && !ReallyStressed.Item2 && branch.IsNotFixedEvents(ActionList[i], Trauma.Item2, VisitParents.Item2, MusicVideo.Item2))
-                {
-                    ReallyStressed.Item1 = ActionList[i].TargetAction.DayIndex + 1;
-                    ReallyStressed.Item2 = true;
-                }
-                if (ActionList[i].Stress >= 80 && !Stressed.Item2 && ((ActionList[i].TargetAction.DayIndex != 15 && (ActionList[i].TargetAction.DayPart + ActionList[i].CommandResult.daypart) >= 3) || (ActionList[i].TargetAction.DayIndex == 15 && ActionList[i].TargetAction.DayPart == 3)) && branch.IsNotFixedEvents(ActionList[i], Trauma.Item2, VisitParents.Item2, MusicVideo.Item2))
-                {
-                    if (aboutToStress)
-                    {
-                        Stressed.Item1 = ActionList[i].TargetAction.DayIndex + 1;
-                        Stressed.Item2 = true;
-                    }
-                    else { aboutToStress = true; }
-                }
-                if (ActionList[i].Stress < 80 && ((ActionList[i].TargetAction.DayIndex != 15 && ActionList[i].TargetAction.DayPart + ActionList[i].CommandResult.daypart >= 3) || (ActionList[i].TargetAction.DayIndex == 15 && ActionList[i].TargetAction.DayPart == 3)) && aboutToStress && !Stressed.Item2 && branch.IsNotFixedEvents(ActionList[i], Trauma.Item2, VisitParents.Item2, MusicVideo.Item2))
-                {
-                    aboutToStress = false;
-                }
-                if (branch.StreamUsedList.Exists(u => u.DayIndex <= ActionList[i].TargetAction.DayIndex && u.UsedStream == CmdType.Angel_5) && !ReallyStressed.Item2 && !NoMeds.Item2)
-                {
-                    NoMeds.Item1 = ActionList[i].TargetAction.DayIndex + 1;
-                    NoMeds.Item2 = true;
-                }
-                if (branch.IsNotFixedEvents(pastAction, Trauma.Item2, VisitParents.Item2, MusicVideo.Item2) && branch.IsNotStressEvents(pastAction, Stressed, ReallyStressed))
-                {
-                    if (ReallyStressed.Item2 && ActionList.Exists(a => a.Command == CmdType.DarknessS2 && a.TargetAction.DayIndex == ReallyStressed.Item1) && i > ReallyStressed.Item1) isDarkAngel = true;
-                    NSODataManager.InitializeMilestoneIdea(ActionList[i], branch, isDarkAngel);
-                }
-                if (ActionList[i].TargetAction.IgnoreDM)
-                {
-                    branch.IgnoreCounter.Add(new(ActionList[i].TargetAction.DayIndex, ActionList[i].TargetAction.DayPart));
-                    if (ActionList[i].Stress >= 120 && branch.isStressed.isEventing && branch.isReallyStressed.isEventing && ActionList[i].TargetAction.DayIndex >= branch.isReallyStressed.DayIndex) ActionList[i].Stress = 120;
-                    else if (ActionList[i].Stress >= 100 && (!branch.isReallyStressed.isEventing || (branch.isReallyStressed.isEventing && ActionList[i].TargetAction.DayIndex >= branch.isReallyStressed.DayIndex))) ActionList[i].Stress = 100;
-                    else ActionList[i].Stress += 4;
-                    if (ActionList[i].Affection <= 4) ActionList[i].Affection = 0;
-                    else ActionList[i].Affection -= 5;
-                }
-                if (expectedEnding.Item1 == 0)
-                    expectedEnding = branch.CheckIfEndingAchieved(pastAction, ActionList[i], ReallyStressed.Item2, Horror.Item2, VisitParents.Item2, NoMeds.Item2, isSkipNightEndingCheck);
-                if (i > 0) EditActionVisualData(pastAction);
-                EditActionVisualData(ActionList[i]);
-                ideasWindow?.UpdateFoundIdeas();
-                usedWindow?.UpdateUsed();
+                case true:
+                    GalacticRail_Tooltip.SetToolTip(GalacticRail_Bool, $"Only true if Ame recently did Netlore 5, and gained this idea at Midnight after without a fixed Midnight event. (Day 22, etc)\nGalactic Rail is available after the day this flag is achieved. \n\nAchieved this event flag on: Day {branch.hasGalacticRail.DayIndex - 1}");
+                    break;
+                default:
+                    GalacticRail_Tooltip.SetToolTip(GalacticRail_Bool, $"Only true if Ame recently did Netlore 5, and gained this idea at Midnight after without a fixed Midnight event. (Day 22, etc)\nGalactic Rail is available after the day this flag is achieved.");
+                    break;
             }
-
-            SetNewEventFlags();
-            SetEventInfo();
-            SetExtraMilestoneGraphic();
-            SetGuessedEnding();
-            SetActionCounterText();
-
-
-            void SetNewEventFlags()
+            Stressed_Bool.Checked = branch.isStressed.isEventing;
+            switch (Stressed_Bool.Checked)
             {
-                if (!(branch.hasGalacticRail.DayIndex <= startingDay && branch.hasGalacticRail.DayIndex > 0)) branch.hasGalacticRail = new(HasGalaxy.Item1, HasGalaxy.Item2);
-                if (!(branch.NoMeds.DayIndex <= startingDay && branch.NoMeds.DayIndex > 0)) branch.NoMeds = new(NoMeds.Item1, NoMeds.Item2);
-                if (!(branch.isReallyLove.DayIndex <= startingDay && branch.isReallyLove.DayIndex > 0)) branch.isReallyLove = new(VisitParents.Item1, VisitParents.Item2);
-                if (!(branch.isStressed.DayIndex <= startingDay && branch.isStressed.DayIndex > 0)) branch.isStressed = new(Stressed.Item1, Stressed.Item2);
-                if (!(branch.isReallyStressed.DayIndex <= startingDay && branch.isReallyStressed.DayIndex > 0)) branch.isReallyStressed = new(ReallyStressed.Item1, ReallyStressed.Item2);
-                if (!(branch.isHorror.DayIndex <= startingDay && branch.isHorror.DayIndex > 0)) branch.isHorror = new(Horror.Item1, Horror.Item2);
-                if (!(branch.isVideo.DayIndex <= startingDay && branch.isVideo.DayIndex > 0)) branch.isVideo = new(MusicVideo.Item1, MusicVideo.Item2);
-                if (!(branch.isTrauma.DayIndex <= startingDay && branch.isTrauma.DayIndex > 0)) branch.isTrauma = new(Trauma.Item1, Trauma.Item2);
-                if (!(branch.is150M.DayIndex <= startingDay && branch.is150M.DayIndex > 0)) branch.is150M = new(is150M.Item1, is150M.Item2);
-                if (!(branch.is300M.DayIndex <= startingDay && branch.is300M.DayIndex > 0)) branch.is300M = new(is300M.Item1, is300M.Item2);
-                if (!(branch.is500M.DayIndex <= startingDay && branch.is500M.DayIndex > 0)) branch.is500M = new(is500M.Item1, is500M.Item2);
-                if (!(branch.isMaxFollowers.DayIndex <= startingDay && branch.isMaxFollowers.DayIndex > 0)) branch.isMaxFollowers = new(isMaxFollowers.Item1, isMaxFollowers.Item2);
+                case true:
+                    StressedInfo_Tooltip.SetToolTip(Stressed_Bool, $"Only true if Ame self-harms on any day, after 2 days where she is at 80+ stress (save for fixed event days). \n\nAchieved this event flag on: Day {branch.isStressed.DayIndex}");
+                    break;
+                default:
+                    StressedInfo_Tooltip.SetToolTip(Stressed_Bool, $"Only true if Ame self-harms on any day, after 2 days where she is at 80+ stress (save for fixed event days).");
+                    break;
             }
-            void SetEventInfo()
+            ReallyStressed_Bool.Checked = branch.isReallyStressed.isEventing;
+            switch (ReallyStressed_Bool.Checked)
+            {
+                case true:
+                    ReallyStressed_ToolTip.SetToolTip(ReallyStressed_Bool, $"Only true if Ame goes crazy on any day, after her stress reaches 100, and if Stressed is true. Stress max increases to 120. \n\nAchieved this event flag on: Day {branch.isReallyStressed.DayIndex}");
+                    break;
+                default:
+                    ReallyStressed_ToolTip.SetToolTip(ReallyStressed_Bool, $"Only true if Ame goes crazy on any day, after her stress reaches 100, and if Stressed is true. Stress max increases to 120.");
+                    break;
+            }
+            Vomited_Bool.Checked = branch.isHorror.isEventing;
+            Vomited_ToolTip.SetToolTip(Vomited_Bool, "Only true if Ame vomits on Day 25, if on Day 24 she has 80+ stress, and her stress maximum (not current stress) is 120. ");
+            Trauma_Bool.Checked = branch.isTrauma.isEventing;
+            Trauma_Tooltip.SetToolTip(Trauma_Bool, "Only true if Ame trauma dumps on you on Day 15 instead of breaking down.");
+            Parents_Bool.Checked = branch.isReallyLove.isEventing;
+            Parents_Tooltip.SetToolTip(Parents_Bool, "Only true if Ame visits her parents on Day 24, if at the end of day 23 she has 80+ affection.");
+            MV_bool.Checked = branch.isVideo.isEventing;
+            MV_Tooltip.SetToolTip(MV_bool, "Only true if Ame goes out to record her MV on Day 27, if she has 500000 or more followers.");
+            NoMeds_Bool.Checked = branch.NoMeds.isEventing;
+            switch (ReallyStressed_Bool.Checked)
+            {
+                case true:
+                    NoMeds_Tooltip.SetToolTip(NoMeds_Bool, $"Only true if Internet Angel 5 has been done previously. \n\nStreamed Internet Angel 5 on: Day {branch.NoMeds.DayIndex}");
+                    break;
+                default:
+                    NoMeds_Tooltip.SetToolTip(NoMeds_Bool, "Only true if Internet Angel 5 has been done previously.");
+                    break;
+            }
+        }
+
+        internal void SetExtraMilestoneGraphic(EndingBranchData branch)
+        {
+
+            ExtraMilestones_Label.Text = "🤍 🤍 🤍";
+            var ExtraMilestoneTooltipText = "";
+            if (branch.is150M.isEventing)
+            {
+                ExtraMilestones_Label.Text = "🧡 🤍 🤍";
+                ExtraMilestoneTooltipText += $"Achieved 150 Million Followers on Day {branch.is150M.DayIndex - 1}!\n";
+            }
+            if (branch.is300M.isEventing)
+            {
+                ExtraMilestones_Label.Text = "🧡 🧡 🤍";
+                ExtraMilestoneTooltipText += $"Achieved 300 Million Followers on Day {branch.is300M.DayIndex - 1}!\n";
+            }
+            if (branch.is500M.isEventing)
+            {
+                ExtraMilestones_Label.Text = "🧡 🧡 🧡";
+                ExtraMilestoneTooltipText += $"Achieved 500 Million Followers on Day {branch.is500M.DayIndex - 1}!\n";
+            }
+            ExtraMilestoneTooltip.SetToolTip(ExtraMilestones_Label, ExtraMilestoneTooltipText);
+
+        }
+
+        internal void SetGuessedEnding(EndingBranchData branch, (int,int,EndingType) expectedEnding)
+        {
+
+            ExpectedEnding = expectedEnding;
+            int endedDay = ExpectedEnding.DayIndex;
+            int endedDayPart = ExpectedEnding.DayPart;
+            if (ExpectedEnding.ending == EndingType.Ending_KowaiInternet)
+            {
+                endedDay = 25;
+                endedDayPart = 0;
+            }
+            else if (ExpectedEnding.ending == EndingType.Ending_Grand ||
+                ExpectedEnding.ending == EndingType.Ending_Happy ||
+                ExpectedEnding.ending == EndingType.Ending_Normal ||
+                ExpectedEnding.ending == EndingType.Ending_Yarisute ||
+                ExpectedEnding.ending == EndingType.Ending_Needy ||
+                ExpectedEnding.ending == EndingType.Ending_Sucide ||
+                ExpectedEnding.ending == EndingType.Ending_Work ||
+                ExpectedEnding.ending == EndingType.Ending_Bad)
+            {
+                endedDay = 30;
+                endedDayPart = 0;
+            }
+            else if (ExpectedEnding.ending == EndingType.Ending_Stressful ||
+               ExpectedEnding.ending == EndingType.Ending_Healthy ||
+               ExpectedEnding.ending == EndingType.Ending_Sukisuki ||
+               ExpectedEnding.ending == EndingType.Ending_Ntr ||
+               ExpectedEnding.ending == EndingType.Ending_Meta)
             {
 
-                GalacticRail_Bool.Checked = branch.hasGalacticRail.isEventing;
-                switch (GalacticRail_Bool.Checked)
-                {
-                    case true:
-                        GalacticRail_Tooltip.SetToolTip(GalacticRail_Bool, $"Only true if Ame recently did Netlore 5, and gained this idea at Midnight after without a fixed Midnight event. (Day 22, etc)\nGalactic Rail is available after the day this flag is achieved. \n\nAchieved this event flag on: Day {branch.hasGalacticRail.DayIndex - 1}");
-                        break;
-                    default:
-                        GalacticRail_Tooltip.SetToolTip(GalacticRail_Bool, $"Only true if Ame recently did Netlore 5, and gained this idea at Midnight after without a fixed Midnight event. (Day 22, etc)\nGalactic Rail is available after the day this flag is achieved.");
-                        break;
-                }
-                Stressed_Bool.Checked = branch.isStressed.isEventing;
-                switch (Stressed_Bool.Checked)
-                {
-                    case true:
-                        StressedInfo_Tooltip.SetToolTip(Stressed_Bool, $"Only true if Ame self-harms on any day, after 2 days where she is at 80+ stress (save for fixed event days). \n\nAchieved this event flag on: Day {branch.isStressed.DayIndex}");
-                        break;
-                    default:
-                        StressedInfo_Tooltip.SetToolTip(Stressed_Bool, $"Only true if Ame self-harms on any day, after 2 days where she is at 80+ stress (save for fixed event days).");
-                        break;
-                }
-                ReallyStressed_Bool.Checked = branch.isReallyStressed.isEventing;
-                switch (ReallyStressed_Bool.Checked)
-                {
-                    case true:
-                        ReallyStressed_ToolTip.SetToolTip(ReallyStressed_Bool, $"Only true if Ame goes crazy on any day, after her stress reaches 100, and if Stressed is true. Stress max increases to 120. \n\nAchieved this event flag on: Day {branch.isReallyStressed.DayIndex}");
-                        break;
-                    default:
-                        ReallyStressed_ToolTip.SetToolTip(ReallyStressed_Bool, $"Only true if Ame goes crazy on any day, after her stress reaches 100, and if Stressed is true. Stress max increases to 120.");
-                        break;
-                }
-                Vomited_Bool.Checked = branch.isHorror.isEventing;
-                Vomited_ToolTip.SetToolTip(Vomited_Bool, "Only true if Ame vomits on Day 25, if on Day 24 she has 80+ stress, and her stress maximum (not current stress) is 120. ");
-                Trauma_Bool.Checked = branch.isTrauma.isEventing;
-                Trauma_Tooltip.SetToolTip(Trauma_Bool, "Only true if Ame trauma dumps on you on Day 15 instead of breaking down.");
-                Parents_Bool.Checked = branch.isReallyLove.isEventing;
-                Parents_Tooltip.SetToolTip(Parents_Bool, "Only true if Ame visits her parents on Day 24, if at the end of day 23 she has 80+ affection.");
-                MV_bool.Checked = branch.isVideo.isEventing;
-                MV_Tooltip.SetToolTip(MV_bool, "Only true if Ame goes out to record her MV on Day 27, if she has 500000 or more followers.");
-                NoMeds_Bool.Checked = branch.NoMeds.isEventing;
-                switch (ReallyStressed_Bool.Checked)
-                {
-                    case true:
-                        NoMeds_Tooltip.SetToolTip(NoMeds_Bool, $"Only true if Internet Angel 5 has been done previously. \n\nStreamed Internet Angel 5 on: Day {branch.NoMeds.DayIndex}");
-                        break;
-                    default:
-                        NoMeds_Tooltip.SetToolTip(NoMeds_Bool, "Only true if Internet Angel 5 has been done previously.");
-                        break;
-                }
+                endedDayPart = 2;
             }
-
-            void SetExtraMilestoneGraphic()
+            else if (ExpectedEnding.ending == EndingType.Ending_Jikka ||
+              ExpectedEnding.ending == EndingType.Ending_Ideon)
             {
-
-                ExtraMilestones_Label.Text = "🤍 🤍 🤍";
-                var ExtraMilestoneTooltipText = "";
-                if (branch.is150M.isEventing)
-                {
-                    ExtraMilestones_Label.Text = "🧡 🤍 🤍";
-                    ExtraMilestoneTooltipText += $"Achieved 150 Million Followers on Day {branch.is150M.DayIndex - 1}!\n";
-                }
-                if (branch.is300M.isEventing)
-                {
-                    ExtraMilestones_Label.Text = "🧡 🧡 🤍";
-                    ExtraMilestoneTooltipText += $"Achieved 300 Million Followers on Day {branch.is300M.DayIndex - 1}!\n";
-                }
-                if (branch.is500M.isEventing)
-                {
-                    ExtraMilestones_Label.Text = "🧡 🧡 🧡";
-                    ExtraMilestoneTooltipText += $"Achieved 500 Million Followers on Day {branch.is500M.DayIndex - 1}!\n";
-                }
-                ExtraMilestoneTooltip.SetToolTip(ExtraMilestones_Label, ExtraMilestoneTooltipText);
-
+                endedDayPart = 3;
             }
+            else endedDayPart -= 1;
+            EndingGuesser.Text = ExpectedEnding.ending == EndingType.Ending_None ? "Projected Ending : None" : $"Projected Ending : {NSODataManager.EndingNames[ExpectedEnding.ending]} on Day {endedDay}, {NSODataManager.DayPartNames[endedDayPart]}";
+            UnsavedEndingBranchData.ExpectedDayOfEnd = expectedEnding;
+        }
 
-            void SetGuessedEnding()
+        internal void SetActionCounterText(EndingBranchData branch)
+        {
+            LoveCount.Text = $"Love Counter: {branch.LoveCounter.Count}";
+            PaperCount.Text = $"Paper Counter: {branch.PsycheCounter.Count}";
+            IgnoredCount.Text = $"Ignored DM's: {branch.IgnoreCounter.Count}";
+            LoveCounter_Tooltip.SetToolTip(LoveCount, $"{(branch.LoveCounter.Count > 0 ? "Times you ***:" : "")}" + SetActionCounterListTooltip(branch.LoveCounter));
+            PsycheCounter_Tooltip.SetToolTip(PaperCount, $"{(branch.PsycheCounter.Count > 0 ? "Times you took Magic Paper:" : "")}" + SetActionCounterListTooltip(branch.PsycheCounter));
+            IgnoreCounter_Tooltip.SetToolTip(IgnoredCount, $"{(branch.IgnoreCounter.Count > 0 ? "Times you ignored a DM:" : "")}" + SetActionCounterListTooltip(branch.IgnoreCounter));
+        }
+
+        internal string SetActionCounterListTooltip(List<ActionCounter> countList)
+        {
+            var countString = "";
+            if (countList.Count == 0) return countString;
+            for (int i = 0; i < countList.Count; i++)
             {
-
-                ExpectedEnding = expectedEnding;
-                int endedDay = ExpectedEnding.DayIndex;
-                int endedDayPart = ExpectedEnding.DayPart;
-                if (ExpectedEnding.ending == EndingType.Ending_KowaiInternet)
-                {
-                    endedDay = 25;
-                    endedDayPart = 0;
-                }
-                else if (ExpectedEnding.ending == EndingType.Ending_Grand ||
-                    ExpectedEnding.ending == EndingType.Ending_Happy ||
-                    ExpectedEnding.ending == EndingType.Ending_Normal ||
-                    ExpectedEnding.ending == EndingType.Ending_Yarisute ||
-                    ExpectedEnding.ending == EndingType.Ending_Needy ||
-                    ExpectedEnding.ending == EndingType.Ending_Sucide ||
-                    ExpectedEnding.ending == EndingType.Ending_Work ||
-                    ExpectedEnding.ending == EndingType.Ending_Bad)
-                {
-                    endedDay = 30;
-                    endedDayPart = 0;
-                }
-                else if (ExpectedEnding.ending == EndingType.Ending_Stressful ||
-                   ExpectedEnding.ending == EndingType.Ending_Healthy ||
-                   ExpectedEnding.ending == EndingType.Ending_Sukisuki ||
-                   ExpectedEnding.ending == EndingType.Ending_Ntr ||
-                   ExpectedEnding.ending == EndingType.Ending_Meta)
-                {
-
-                    endedDayPart = 2;
-                }
-                else if (ExpectedEnding.ending == EndingType.Ending_Jikka ||
-                  ExpectedEnding.ending == EndingType.Ending_Ideon)
-                {
-                    endedDayPart = 3;
-                }
-                else endedDayPart -= 1;
-                EndingGuesser.Text = ExpectedEnding.ending == EndingType.Ending_None ? "Projected Ending : None" : $"Projected Ending : {NSODataManager.EndingNames[ExpectedEnding.ending]} on Day {endedDay}, {NSODataManager.DayPartNames[endedDayPart]}";
-                UnsavedEndingBranchData.ExpectedDayOfEnd = expectedEnding;
+                countString += $"\nDay {countList[i].DayIndex}, {NSODataManager.DayPartNames[countList[i].DayPart]}";
             }
-
-            void SetActionCounterText()
-            {
-                LoveCount.Text = $"Love Counter: {branch.LoveCounter.Count}";
-                PaperCount.Text = $"Paper Counter: {branch.PsycheCounter.Count}";
-                IgnoredCount.Text = $"Ignored DM's: {branch.IgnoreCounter.Count}";
-                LoveCounter_Tooltip.SetToolTip(LoveCount, $"{(branch.LoveCounter.Count > 0 ? "Times you ***:" : "")}" + SetActionCounterListTooltip(branch.LoveCounter));
-                PsycheCounter_Tooltip.SetToolTip(PaperCount, $"{(branch.PsycheCounter.Count > 0 ? "Times you took Magic Paper:" : "")}" + SetActionCounterListTooltip(branch.PsycheCounter));
-                IgnoreCounter_Tooltip.SetToolTip(IgnoredCount, $"{(branch.IgnoreCounter.Count > 0 ? "Times you ignored a DM:" : "")}" + SetActionCounterListTooltip(branch.IgnoreCounter));
-            }
-
-            string SetActionCounterListTooltip(List<ActionCounter> countList)
-            {
-                var countString = "";
-                if (countList.Count == 0) return countString;
-                for (int i = 0; i < countList.Count; i++)
-                {
-                    countString += $"\nDay {countList[i].DayIndex}, {NSODataManager.DayPartNames[countList[i].DayPart]}";
-                }
-                return countString;
-            }
+            return countString;
         }
 
         private void ChangeActionOptionsByParent()
@@ -685,98 +477,6 @@ namespace NSOEndingTreeMaker
 
             }
 
-        }
-
-        private void ChangePresentCmdBasedOnPastStats(TargetActionData pastAction, TargetActionData presentAction)
-        {
-            var a = presentAction.TargetAction.Action;
-            if (presentAction.TargetAction.DayPart == 3) return;
-            if (a == ActionType.PlayIchatuku)
-            {
-                if (pastAction.Affection < 40)
-                    presentAction.Command = CmdType.PlayIchatukuTalk;
-                else if (pastAction.Affection >= 80)
-                    presentAction.Command = CmdType.PlayIchatukuKizu;
-                else 
-                    presentAction.Command = CmdType.PlayIchatukuIchatuku;
-            }
-            if (a == ActionType.PlayMakeLove)
-            {
-                if (pastAction.TargetAction.DayPart == 0 && (pastAction.TargetAction.Action.ToString().Contains("Overdose") || pastAction.TargetAction.Action == ActionType.OkusuriHappa || pastAction.TargetAction.Action == ActionType.OkusuriPsyche))
-                    presentAction.Command = CmdType.PlayKimeLove;
-                else 
-                    presentAction.Command = CmdType.PlayMakeLove;
-            }
-            if (a == ActionType.SleepToNight)
-            {
-                if (presentAction.TargetAction.DayPart == 0)
-                    presentAction.Command = CmdType.SleepToNight2;
-                else 
-                    presentAction.Command = CmdType.SleepToNight1;
-            }
-            if (a == ActionType.SleepToTomorrow)
-            {
-                if (presentAction.TargetAction.DayPart == 0)
-                    presentAction.Command = CmdType.SleepToTomorrow3;
-                else if (presentAction.TargetAction.DayPart == 1)
-                    presentAction.Command = CmdType.SleepToTomorrow2;
-                else 
-                    presentAction.Command = CmdType.SleepToTomorrow1;
-            }
-            if (a == ActionType.OkusuriDaypassOverdose)
-            {
-                if (pastAction.Darkness < 20)
-                    presentAction.Command = CmdType.OkusuriDaypassOverdoseY1;
-                else if (pastAction.Darkness >= 20 && pastAction.Darkness < 40)
-                    presentAction.Command = CmdType.OkusuriDaypassOverdoseY2;
-                else if (pastAction.Darkness >= 40 && pastAction.Darkness < 60)
-                    presentAction.Command = CmdType.OkusuriDaypassOverdoseY3;
-                else presentAction.Command = CmdType.OkusuriDaypassOverdoseY4;
-            }
-            if (a == ActionType.OkusuriPuronOverdose)
-            {
-                if (pastAction.Darkness < 40)
-                    presentAction.Command = CmdType.OkusuriPuronOverdoseY2;
-                else if (pastAction.Darkness >= 40 && pastAction.Darkness < 60)
-                    presentAction.Command = CmdType.OkusuriPuronOverdoseY3;
-                else 
-                    presentAction.Command = CmdType.OkusuriPuronOverdoseY4;
-            }
-            if (a == ActionType.OkusuriHiPuronOverdose)
-            {
-                if (pastAction.Darkness < 60)
-                    presentAction.Command = CmdType.OkusuriHiPuronOverdoseY3;
-                else 
-                    presentAction.Command = CmdType.OkusuriHiPuronOverdoseY4;
-            }
-            if (a == ActionType.OkusuriHappa)
-            {
-                if (pastAction.Darkness < 80)
-                    presentAction.Command = CmdType.OkusuriHappaY4;
-                else presentAction.Command = CmdType.OkusuriHappaY5;
-            }
-            if (a == ActionType.InternetPoketter)
-            {
-                if (pastAction.Followers < 10000 && pastAction.Darkness < 20)
-                    presentAction.Command = CmdType.InternetPoketterF0Y12;
-                else if ((pastAction.Followers < 10000 && pastAction.Darkness >= 20) || (pastAction.Followers < 100000 && pastAction.Followers >= 10000 && pastAction.Darkness >= 40 && pastAction.Darkness < 60))
-                    presentAction.Command = CmdType.InternetPoketterF0Y45;
-                else if (pastAction.Followers < 100000 && pastAction.Followers >= 10000 && pastAction.Darkness < 40)
-                    presentAction.Command = CmdType.InternetPoketterF1Y12;
-                else if (pastAction.Followers >= 10000 && pastAction.Followers < 100000 && pastAction.Darkness >= 60)
-                    presentAction.Command = CmdType.InternetPoketterF1Y45;
-                else presentAction.Command = CmdType.InternetPoketterPoem;
-            }
-            if (a == ActionType.Internet2ch)
-            {
-                if (pastAction.Darkness < 40)
-                    presentAction.Command = CmdType.Internet2chY12;
-                else if (pastAction.Darkness >= 40 && pastAction.Darkness < 60)
-                    presentAction.Command = CmdType.Internet2chY3;
-                else presentAction.Command = CmdType.Internet2chY45;
-            }                 
-            presentAction.CommandResult = NSOCommandManager.CmdTypeToCommand(presentAction.Command);
-            presentAction.ActionName = NSODataManager.CmdName(presentAction.Command);
         }
 
         private CmdType ConvertActionChoiceToCmd(TargetActionData pastAction)
@@ -931,9 +631,11 @@ namespace NSOEndingTreeMaker
                     }
                     break;
                 case 5:
+                    if (Action_Dropdown.SelectedIndex == -1) break;
                     return NSODataManager.OutsideList[Action_Dropdown.SelectedIndex];
 
                 case 6:
+                    if (Action_Dropdown.SelectedIndex == -1) break;
                     return NSODataManager.DarknessList[Action_Dropdown.SelectedIndex];
             }
             return CmdType.None;
@@ -1088,6 +790,7 @@ namespace NSOEndingTreeMaker
             }
             try
             {
+                var branch = UnsavedEndingBranchData;
                 TargetActionData pastAction = null;
                 if (MainForm.CurrentEndingTree.isDay2Exp && SelectedAction.TargetAction.DayIndex == 2 && SelectedAction.TargetAction.DayPart == -1)
                 { 
@@ -1096,6 +799,7 @@ namespace NSOEndingTreeMaker
                 }
                 else pastAction = ActionList[ActionList.FindLastIndex(a => (a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart < DayPart_Dropdown.SelectedIndex) || a.TargetAction.DayIndex < DayIndexNumeric.Value)];
                 CommandAction command = NSOCommandManager.CmdTypeToCommand(ConvertActionChoiceToCmd(pastAction));
+                int addStress = command.stress;
                 CmdType stream = CmdType.Error;
                 if (ParentAction_Dropdown.SelectedIndex == 0 && !(StreamTopic_Dropdown.SelectedIndex == NSODataManager.StreamTopicList.IndexOf(AlphaType.Imbouron) && StreamLevelNumeric.Value == 6)) 
                     stream = (CmdType)Enum.Parse(typeof(CmdType), $"{NSODataManager.StreamTopicList[StreamTopic_Dropdown.SelectedIndex]}_{StreamLevelNumeric.Value}");
@@ -1107,7 +811,9 @@ namespace NSOEndingTreeMaker
                 }
                 int followerCalc = ParentAction_Dropdown.SelectedIndex == 0 || followerAction.TargetAction.Action == ActionType.InternetPoketter ? NSOCommandManager.CalculateFollowers(pastAction, followerAction) : 0;
                 int followerResult = pastAction.Followers + followerCalc;
-                int stressResult = pastAction.Stress + command.stress;
+                if (branch.NoMeds.isEventing && branch.NoMeds.DayIndex <= (int)DayIndexNumeric.Value && ParentAction_Dropdown.SelectedIndex == 0)
+                    addStress = 0;
+                int stressResult = pastAction.Stress + addStress;
                 if (IgnoreDMCheck.Checked) stressResult += 4;
                 int affectionResult = pastAction.Affection + command.affection;
                 int darknessResult = pastAction.Darkness + command.darkness;
@@ -1235,8 +941,8 @@ namespace NSOEndingTreeMaker
 
             void SetStreamIdeaPreview(TargetActionData pastAction)
             {
-                TargetActionButton.Enabled = true;
                 if (ParentAction_Dropdown.SelectedIndex == 0) return;
+                TargetActionButton.Enabled = true;
                 var b = UnsavedEndingBranchData;
                 var ideaAction = new TargetActionData((int)DayIndexNumeric.Value, DayPart_Dropdown.SelectedIndex, CmdType.None, IgnoreDMCheck.Checked);
                 ideaAction.Command = ConvertActionChoiceToCmd(pastAction);
@@ -1488,6 +1194,7 @@ namespace NSOEndingTreeMaker
                     return;
                 }
                 DayPart_Dropdown.SelectedIndex = nextDayPart;
+                ForceMandatoryEvents();
                 ConvertActionChoiceNames();
           
             }
@@ -1498,7 +1205,7 @@ namespace NSOEndingTreeMaker
                 {
                     TargetActionData dayOneAction = new(1, 2, CmdType.None);
                     ActionList[0] = dayOneAction;
-                    InitializeActionStatsAndView(UnsavedEndingBranchData.IgnoreNightEndings);
+                    UnsavedEndingBranchData.InitializeActionStats(this);   
                 }
                 else
                 {
@@ -1530,7 +1237,7 @@ namespace NSOEndingTreeMaker
                     ActionList[0] = newAction;
                     ActionList[selectedActions[0]].TargetAction.DayPart = -1;
                     EditActionVisualData(ActionList[0]);
-                    InitializeActionStatsAndView(UnsavedEndingBranchData.IgnoreNightEndings);
+                    UnsavedEndingBranchData.InitializeActionStats(this);
                 }
                 return true;
             }
@@ -1609,7 +1316,12 @@ namespace NSOEndingTreeMaker
                     StreamTopic_Dropdown.Enabled = false;
                     return;
                 }
-
+                else
+                {
+                    DayPart_Dropdown.Enabled = true;
+                    ParentAction_Dropdown.Enabled = true;
+                    Action_Dropdown.Enabled = true;
+                }
             }
             if (musicVideo.isEventing && DayIndexNumeric.Value == musicVideo.DayIndex)
             {
@@ -1627,6 +1339,12 @@ namespace NSOEndingTreeMaker
                     StreamLevelNumeric.Enabled = false;
                     StreamTopic_Dropdown.Enabled = false;
                     return;
+                }
+                else
+                {
+                    DayPart_Dropdown.Enabled = true;
+                    ParentAction_Dropdown.Enabled = true;
+                    Action_Dropdown.Enabled = true;
                 }
             }
             DayPart_Dropdown.Enabled = true;
@@ -1787,26 +1505,13 @@ namespace NSOEndingTreeMaker
                 ParentAction_Dropdown.SelectedIndex = NSODataManager.ParentActionIndex(SelectedAction.TargetAction.Action);
                 if (ParentAction_Dropdown.SelectedIndex != 0)
                 {
-                    Action_Label.Visible = true;
-                    Action_Dropdown.Visible = true;
-                    StreamLevelNumeric.Visible = false;
-                    StreamLevel_Label.Visible = false;
-                    StreamTopic_Label.Visible = false;
-                    StreamTopic_Dropdown.Visible = false;
-                    StreamTopic_Dropdown.SelectedIndex = -1;
-                    StreamLevelNumeric.Value = StreamLevelNumeric.Minimum;
+                    EnableActionOrStreamDropdown(false);
 
                 }
                 switch (ParentAction_Dropdown.SelectedIndex)
                 {
                     case 0:
-                        Action_Label.Visible = false;
-                        Action_Dropdown.Visible = false;
-                        StreamLevelNumeric.Visible = true;
-                        StreamLevel_Label.Visible = true;
-                        StreamTopic_Label.Visible = true;
-                        StreamTopic_Dropdown.Visible = true;
-                        Action_Dropdown.SelectedIndex = -1;
+                        EnableActionOrStreamDropdown(true);
                         StreamTopic_Dropdown.SelectedIndex = NSODataManager.StreamTopicList.IndexOf(SelectedAction.TargetAction.Stream);
                         try
                         {
@@ -1814,7 +1519,6 @@ namespace NSOEndingTreeMaker
                             else StreamLevelNumeric.Value = int.Parse(SelectedAction.Command.ToString().Split('_')[1]);
                         }
                         catch { StreamLevelNumeric.Value = 1; }
-
                         break;
                     case 1:
                         Action_Dropdown.SelectedIndex = NSODataManager.HangOutActionList.IndexOf(SelectedAction.TargetAction.Action);
@@ -1851,14 +1555,7 @@ namespace NSOEndingTreeMaker
                 ParentAction_Dropdown.SelectedIndex = NewActionParentIndex;
                 if (ParentAction_Dropdown.SelectedIndex != 0)
                 {
-                    StreamTopic_Dropdown.SelectedIndex = -1;
-                    StreamLevelNumeric.Value = StreamLevelNumeric.Minimum;
-                    Action_Label.Visible = true;
-                    Action_Dropdown.Visible = true;
-                    StreamLevelNumeric.Visible = false;
-                    StreamLevel_Label.Visible = false;
-                    StreamTopic_Label.Visible = false;
-                    StreamTopic_Dropdown.Visible = false;
+                    EnableActionOrStreamDropdown(false);
                 }
                 TargetActionButton.Text = "Add Action";
                 IgnoreDMCheck.Checked = NewAction.TargetAction.IgnoreDM;
@@ -1869,7 +1566,6 @@ namespace NSOEndingTreeMaker
                         Action_Dropdown.SelectedIndex = -1;
                         break;
                     case 0:
-                        Action_Dropdown.SelectedIndex = -1;
                         StreamTopic_Dropdown.SelectedIndex = NSODataManager.StreamTopicList.IndexOf(NewAction.TargetAction.Stream);
                         try
                         {
@@ -1878,12 +1574,7 @@ namespace NSOEndingTreeMaker
                         }
                         catch { StreamLevelNumeric.Value = 1; }
                         ForceMandatoryEvents();
-                        Action_Label.Visible = false;
-                        Action_Dropdown.Visible = false;
-                        StreamLevelNumeric.Visible = true;
-                        StreamLevel_Label.Visible = true;
-                        StreamTopic_Label.Visible = true;
-                        StreamTopic_Dropdown.Visible = true;
+                        EnableActionOrStreamDropdown(true);
                         break;
                     case 1:
                         Action_Dropdown.SelectedIndex = NSODataManager.HangOutActionList.IndexOf(NewAction.TargetAction.Action);
@@ -1908,6 +1599,32 @@ namespace NSOEndingTreeMaker
                 ForceMandatoryEvents();
                 SetStatChangePreview();
             }
+
+           void EnableActionOrStreamDropdown(bool enableStream)
+           {
+                switch (enableStream)
+                {
+                    case true:
+                        Action_Label.Visible = false;
+                        Action_Dropdown.Visible = false;
+                        StreamLevelNumeric.Visible = true;
+                        StreamLevel_Label.Visible = true;
+                        StreamTopic_Label.Visible = true;
+                        StreamTopic_Dropdown.Visible = true;
+                        Action_Dropdown.SelectedIndex = -1;
+                        break;
+                    default:
+                        StreamTopic_Dropdown.SelectedIndex = -1;
+                        StreamLevelNumeric.Value = StreamLevelNumeric.Minimum;
+                        Action_Label.Visible = true;
+                        Action_Dropdown.Visible = true;
+                        StreamLevelNumeric.Visible = false;
+                        StreamLevel_Label.Visible = false;
+                        StreamTopic_Label.Visible = false;
+                        StreamTopic_Dropdown.Visible = false;
+                        break;
+                }
+           }
         }
 
         private void DayIndexNumericOnValueChanged(object sender, EventArgs e)
@@ -1995,7 +1712,7 @@ namespace NSOEndingTreeMaker
                                 ConfirmSaveEndingBranch();
                                 return true;
                             case DialogResult.No:
-                                InitializeActionStatsAndView(true);
+                                UnsavedEndingBranchData.InitializeActionStats(this);
                                 checkEnding = UnsavedEndingBranchData.ExpectedDayOfEnd;
                                 break;
                             default: return false;

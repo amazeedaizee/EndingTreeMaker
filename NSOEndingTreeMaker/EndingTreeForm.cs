@@ -45,6 +45,12 @@ namespace NSOEndingTreeMaker
             InitializeComponent();
         }
 
+        private void ChangeFormTitle()
+        {
+            if (!string.IsNullOrEmpty(_currentFile))
+                Text = $"Main Ending Tree - {Path.GetFileName(_currentFile)}";
+            else Text = "Main Ending Tree";
+        }
         private string InitializeValidGamePath()
         {
             string gamePath;
@@ -420,6 +426,7 @@ namespace NSOEndingTreeMaker
                 isBranchEdited = false;
                 stream.Close();
                 MessageBox.Show("Successfully saved Ending Tree!", "Success", MessageBoxButtons.OK);
+                ChangeFormTitle();
                 return true;
             }
             return false;
@@ -449,6 +456,7 @@ namespace NSOEndingTreeMaker
                     isBranchEdited = false;
                     stream.Close();
                     MessageBox.Show("Successfully saved Ending Tree!", "Success", MessageBoxButtons.OK);
+                    ChangeFormTitle();
                     return true;
                 }
                 return false;
@@ -478,6 +486,7 @@ namespace NSOEndingTreeMaker
                     Day2ExtraAction();
                     _isNotesEdited = false;
                     isBranchEdited = false;
+                    ChangeFormTitle();
                     return true;
                     }
                 }
@@ -519,6 +528,7 @@ namespace NSOEndingTreeMaker
                         _isNotesEdited = false;
                         isBranchEdited = false;
                         openEndingTree.Dispose();
+                        ChangeFormTitle();
                         return true;
                     }
                 }
@@ -858,6 +868,7 @@ namespace NSOEndingTreeMaker
                 {
                     CurrentEndingTree = MakeFirstTree();
                     SetEndingListViewData();
+                    ChangeFormTitle();
                     return;
                 }
                 LoadExistingEndingTree(_currentFile);

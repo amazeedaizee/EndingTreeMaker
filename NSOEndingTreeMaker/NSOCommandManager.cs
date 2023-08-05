@@ -415,14 +415,17 @@ namespace NSOEndingTreeMaker
             return null;
         }
 
-        public static void CalculateStats(TargetActionData pastAction, TargetActionData presentAction)
+        public static void CalculateStats(EndingBranchData branch, TargetActionData pastAction, TargetActionData presentAction)
         {
             pastAction.CommandResult ??= new CommandAction();
             presentAction.CommandResult ??= new CommandAction();
+            var addStress = presentAction.CommandResult.stress;
             presentAction.Followers = pastAction.Followers + CalculateFollowers(pastAction, presentAction);
-            presentAction.Stress = (pastAction.Stress + presentAction.CommandResult.stress) < 0 ? 0 : pastAction.Stress + presentAction.CommandResult.stress;
-            presentAction.Affection = (pastAction.Affection + presentAction.CommandResult.affection) < 0 ? 0 : pastAction.Affection + presentAction.CommandResult.affection;
-            presentAction.Darkness = (pastAction.Darkness + presentAction.CommandResult.darkness) < 0 ? 0 : pastAction.Darkness + presentAction.CommandResult.darkness;
+            if (branch.NoMeds.isEventing && branch.NoMeds.DayIndex <= presentAction.TargetAction.DayIndex && presentAction.TargetAction.Action == ActionType.Haishin)
+                addStress = 0;
+            presentAction.Stress = pastAction.Stress + addStress;
+            presentAction.Affection =pastAction.Affection + presentAction.CommandResult.affection;
+            presentAction.Darkness = pastAction.Darkness + presentAction.CommandResult.darkness;
             if (pastAction.TargetAction.DayIndex != presentAction.TargetAction.DayIndex && presentAction.TargetAction.Action != ActionType.InternetPoketter)
             {
                 presentAction.PreAlertBonus = false;

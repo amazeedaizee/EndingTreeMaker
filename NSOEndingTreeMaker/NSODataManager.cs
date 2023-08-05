@@ -318,6 +318,7 @@ namespace NSOEndingTreeMaker
             CmdType.Imbouron_4,
             CmdType.Imbouron_5,
             CmdType.Error,
+            CmdType.Kaisetu_5,
             CmdType.Zatudan_4,
             CmdType.Zatudan_5,
             CmdType.Gamejikkyou_3,
@@ -620,123 +621,17 @@ namespace NSOEndingTreeMaker
             return "";
         }
 
-        /*
-        public static bool StreamIdeaToActionChecker(CmdType idea, ActionType action)
+        public static bool IsOverdoseAction(TargetActionData action)
         {
-            switch (idea)
-            {
-                case CmdType.Zatudan_1:
-                    return true;
-                    case CmdType.Zatudan_2:
-                    if(action != ActionType.Internet2ch) return false;
-                    return true;
-                    case CmdType.Zatudan_3:
-                    if (action != ActionType.OdekakeHikarigaokaPark) return false;
-                    return true;
-                    case CmdType.Zatudan_4:
-                    if (action != ActionType.InternetPoketter) return false;
-                    return true;
-                    case CmdType.Zatudan_5:
-                    if (action != ActionType.InternetPoketter)return false;
-                    return true;
-                case CmdType.Gamejikkyou_1:
-                    if (action != ActionType.EntameGame) return false;
-                    return true;
-                    case CmdType.Gamejikkyou_2:
-                    if (action != ActionType.OdekakeAkihabara ) return false;
-                    return true;
-                    case CmdType.Gamejikkyou_3:
-                    if (action != ActionType.InternetPoketter) return false;
-                    return true;
-                    case CmdType.Gamejikkyou_4:
-                    if (action != ActionType.OdekakeNakano) return false;
-                    return true;
-                    case CmdType.Gamejikkyou_5:
-                    if (action != ActionType.EntameGame) return false;
-                    return true;
-                case CmdType.Otakutalk_1:
-                    if (action != ActionType.InternetYoutube) return false;
-                    return true;
-                    case CmdType.Otakutalk_2:
-                    if (action != ActionType.InternetPoketterEgosa) return false;
-                    return true;
-                    case CmdType.Otakutalk_3:
-                    if (action != ActionType.SleepToTwilight) return false;
-                    return true;
-                    case CmdType.Otakutalk_4:
-                    if (action != ActionType.OkusuriHappa) return false;
-                    return true;
-                    case CmdType.Otakutalk_5:
-                    if (action != ActionType.InternetYoutube) return false;
-                    return true;
-                case CmdType.Imbouron_1:
-                    if (action != ActionType.InternetPoketter) return false;
-                    return true;
-                    case CmdType.Imbouron_2:
-                    if (action != ActionType.EntameGame) return false;
-                    return true;
-                    case CmdType.Imbouron_3:
-                    if (action != ActionType.InternetYoutube) return false;
-                    return true;
-                    case CmdType.Imbouron_4:
-                    if (action != ActionType.OkusuriPsyche) return false;
-                    return true;
-                    case CmdType.Imbouron_5:
-                    if (action != ActionType.OkusuriPsyche) return false;
-                    return true;
-                    case CmdType.Error: 
-                    if (action != ActionType.OkusuriPsyche) return false;
-                    return true;
-                case CmdType.Kaidan_1:
-                    if (action != ActionType.Internet2ch) return false;
-                    return true;
-                    case CmdType.Kaidan_2:
-                    if (action != ActionType.Internet2ch) return false;
-                    return true;
-                    case CmdType.Kaidan_3:
-                    if (action != ActionType.OdekakeIchigaya) return false;
-                    return true;
-                    case CmdType.Kaidan_4:
-                    if (action != ActionType.InternetPoketter) return false;
-                    return true;
-                    case CmdType.Kaidan_5:
-                    if (action != ActionType.Internet2ch) return false;
-                    return true;
-                case CmdType.ASMR_1:
-                    if (action != ActionType.SleepToTomorrow) return false;
-                    return true;
-                    case CmdType.ASMR_2:
-                    if (action != ActionType.PlayIchatuku) return false;
-                    return true;
-                    case CmdType.ASMR_3:
-                    if (action != ActionType.PlayMakeLove) return false;
-                    return true;
-                    case CmdType.ASMR_4:
-                    if (action != ActionType.InternetYoutube) return false;
-                    return true;
-                    case CmdType.ASMR_5:
-                    if (action != ActionType.InternetDeai) return false;
-                    return true;
-                case CmdType.Hnahaisin_1:
-                    if (action != ActionType.PlayIchatuku) return false;
-                    return true;
-                    case CmdType.Hnahaisin_2:
-                    if (action != ActionType.PlayMakeLove) return false;
-                    return true;
-                    case CmdType.Hnahaisin_3:
-                    if (action != ActionType.InternetYoutube) return false;
-                    return true;
-                    case CmdType.Hnahaisin_4:
-                    if (action != ActionType.OdekakeShibuya) return false;
-                    return true;
-            }
+            var a = action.TargetAction.Action;
+            return a.ToString().Contains("Okusuri") &&
+                a != ActionType.OkusuriPuronModerate &&
+                a != ActionType.OkusuriHipuronModerate &&
+                a != ActionType.OkusuriDaypassModerate;
         }
-        */
 
         public static (int DayIndex, int DayPart, CmdType Idea) ActionToStreamIdea(TargetActionData pastAction, TargetActionData presentAction, EndingBranchData branch)
         {
-            var ideas = branch.StreamIdeaList;
-            var used = branch.StreamUsedList;
             var noMeds = branch.NoMeds;
             int day = presentAction.TargetAction.DayIndex;
             int dayPart = presentAction.TargetAction.DayPart;
@@ -744,111 +639,201 @@ namespace NSOEndingTreeMaker
             {
 
                 case ActionType.EntameGame:
-                    if (!ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Gamejikkyou_1)) return (day, dayPart, CmdType.Gamejikkyou_1);
-                    if (pastAction.Followers >= 250000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Gamejikkyou_4) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Gamejikkyou_5)) return (day, dayPart, CmdType.Gamejikkyou_5);
-                    if (used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Imbouron_1) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Imbouron_2)) return (day, dayPart, CmdType.Imbouron_2);
-                    if (pastAction.Followers >= 10000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Kaisetu_2) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Kaisetu_3)) return (day, dayPart, CmdType.Kaisetu_3);
-                    if (pastAction.Followers >= 10000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.PR_2) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.PR_3)) return (day, dayPart, CmdType.PR_3);
+                    if (CanGetStreamIdea(1,AlphaType.Gamejikkyou)) 
+                        return (day, dayPart, CmdType.Gamejikkyou_1);
+                    if (CanGetStreamIdea(5, AlphaType.Gamejikkyou)) 
+                        return (day, dayPart, CmdType.Gamejikkyou_5);
+                    if (CanGetStreamIdea(2, AlphaType.Imbouron)) 
+                        return (day, dayPart, CmdType.Imbouron_2);
+                    if (CanGetStreamIdea(3, AlphaType.Kaisetu)) 
+                        return (day, dayPart, CmdType.Kaisetu_3);
+                    if (CanGetStreamIdea(3, AlphaType.PR)) 
+                        return (day, dayPart, CmdType.PR_3);
                     break;
                 case ActionType.PlayIchatuku:
-                    if (used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.ASMR_1) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.ASMR_2)) return (day, dayPart, CmdType.ASMR_2);
-                    if (!ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Hnahaisin_1)) return (day, dayPart, CmdType.Hnahaisin_1);
-                    if (used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Kaisetu_1) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Kaisetu_2)) return (day, dayPart, CmdType.Kaisetu_2);
-                    if (pastAction.Followers >= 250000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Taiken_4) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Taiken_5)) return (day, dayPart, CmdType.Taiken_5);
-                    if (pastAction.Followers >= 10000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Yamihaishin_2) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Yamihaishin_3)) return (day, dayPart, CmdType.Yamihaishin_3);
+                    if (CanGetStreamIdea(2, AlphaType.ASMR)) 
+                        return (day, dayPart, CmdType.ASMR_2);
+                    if (CanGetStreamIdea(1, AlphaType.Hnahaisin)) 
+                        return (day, dayPart, CmdType.Hnahaisin_1);
+                    if (CanGetStreamIdea(2, AlphaType.Kaisetu)) 
+                        return (day, dayPart, CmdType.Kaisetu_2);
+                    if (CanGetStreamIdea(5,AlphaType.Taiken)) 
+                        return (day, dayPart, CmdType.Taiken_5);
+                    if (CanGetStreamIdea(3,AlphaType.Yamihaishin)) 
+                        return (day, dayPart, CmdType.Yamihaishin_3);
+                    if (CanGetStreamIdea(4, AlphaType.PR))
+                        return (day, dayPart, CmdType.PR_4);
                     break;
                 case ActionType.PlayMakeLove:
-                    if (pastAction.Followers >= 10000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.ASMR_2) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.ASMR_3)) return (day, dayPart, CmdType.ASMR_3);
-                    if (used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Hnahaisin_1) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Hnahaisin_2)) return (day, dayPart, CmdType.Hnahaisin_2);
-                    if (pastAction.Followers >= 250000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Hnahaisin_4) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Hnahaisin_5)) return (day, dayPart, CmdType.Hnahaisin_5);
+                    if (CanGetStreamIdea(3,AlphaType.ASMR)) 
+                        return (day, dayPart, CmdType.ASMR_3);
+                    if (CanGetStreamIdea(2,AlphaType.Hnahaisin)) 
+                        return (day, dayPart, CmdType.Hnahaisin_2);
+                    if (CanGetStreamIdea(5,AlphaType.Hnahaisin)) 
+                        return (day, dayPart, CmdType.Hnahaisin_5);
                     break;
                 case ActionType.SleepToTwilight:
-                    if (pastAction.Followers >= 10000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Otakutalk_2) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Otakutalk_3)) return (day, dayPart, CmdType.Otakutalk_3);
+                    if (CanGetStreamIdea(3,AlphaType.Otakutalk)) 
+                        return (day, dayPart, CmdType.Otakutalk_3);
                     break;
                 case ActionType.SleepToTomorrow:
-                    if (!ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.ASMR_1)) return (day, dayPart, CmdType.ASMR_1);
+                    if (CanGetStreamIdea(1,AlphaType.ASMR)) 
+                        return (day, dayPart, CmdType.ASMR_1);
                     break;
                 case ActionType.OkusuriDaypassOverdose:
                     if (noMeds.isEventing) break;
-                    if (!ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Yamihaishin_1)) return (day, dayPart, CmdType.Yamihaishin_1);
+                    if (CanGetStreamIdea(1,AlphaType.Yamihaishin)) 
+                        return (day, dayPart, CmdType.Yamihaishin_1);
                     break;
                 case ActionType.OkusuriHiPuronOverdose:
                     if (noMeds.isEventing) break;
-                    if (pastAction.Followers >= 100000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Yamihaishin_3) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Yamihaishin_4)) return (day, dayPart, CmdType.Yamihaishin_4);
+                    if (CanGetStreamIdea(4,AlphaType.Yamihaishin)) 
+                        return (day, dayPart, CmdType.Yamihaishin_4);
                     break;
                 case ActionType.OkusuriHappa:
                     if (noMeds.isEventing) break;
-                    if (pastAction.Followers >= 100000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Otakutalk_3) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Otakutalk_4)) return (day, dayPart, CmdType.Otakutalk_4);
-                    if (pastAction.Followers >= 250000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Yamihaishin_4) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Yamihaishin_5)) return (day, dayPart, CmdType.Yamihaishin_5);
+                    if (CanGetStreamIdea(4,AlphaType.Otakutalk)) 
+                        return (day, dayPart, CmdType.Otakutalk_4);
+                    if (CanGetStreamIdea(5, AlphaType.Yamihaishin)) 
+                        return (day, dayPart, CmdType.Yamihaishin_5);
                     break;
                 case ActionType.OkusuriPsyche:
                     if (noMeds.isEventing) break;
-                    if (pastAction.Followers >= 100000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Imbouron_3) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Imbouron_4)) return (day, dayPart, CmdType.Imbouron_4);
-                    if (pastAction.Followers >= 250000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Imbouron_4) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Imbouron_5)) return (day, dayPart, CmdType.Imbouron_5);
-                    if (used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Imbouron_5) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Error)) return (day, dayPart, CmdType.Error);
+                    if (CanGetStreamIdea(4, AlphaType.Imbouron)) 
+                        return (day, dayPart, CmdType.Imbouron_4);
+                    if (CanGetStreamIdea(5, AlphaType.Imbouron)) 
+                        return (day, dayPart, CmdType.Imbouron_5);
+                    if (CanGetStreamIdea(6, AlphaType.Imbouron)) 
+                        return (day, dayPart, CmdType.Error);
+                    if (CanGetStreamIdea(5, AlphaType.Kaisetu))
+                        return (day, dayPart, CmdType.Kaisetu_5);
                     break;
                 case ActionType.InternetPoketter:
-                    if (pastAction.Followers >= 100000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Zatudan_3) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Zatudan_4)) return (day, dayPart, CmdType.Zatudan_4);
-                    if (pastAction.Followers >= 250000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Zatudan_4) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Zatudan_5)) return (day, dayPart, CmdType.Zatudan_5);
-                    if (pastAction.Followers >= 10000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Gamejikkyou_2) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Gamejikkyou_3)) return (day, dayPart, CmdType.Gamejikkyou_3);
-                    if (!ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Imbouron_1)) return (day, dayPart, CmdType.Imbouron_1);
-                    if (pastAction.Followers >= 100000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Kaidan_3) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Kaidan_4)) return (day, dayPart, CmdType.Kaidan_4);
-                    if (pastAction.Followers >= 100000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Kaisetu_3) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Kaisetu_4)) return (day, dayPart, CmdType.Kaisetu_4);
+                    if (CanGetStreamIdea(4, AlphaType.Zatudan))
+                        return (day, dayPart, CmdType.Zatudan_4);
+                    if (CanGetStreamIdea(5, AlphaType.Zatudan))
+                        return (day, dayPart, CmdType.Zatudan_5);
+                    if (CanGetStreamIdea(3, AlphaType.Gamejikkyou))
+                        return (day, dayPart, CmdType.Gamejikkyou_3);
+                    if (CanGetStreamIdea(1, AlphaType.Imbouron))
+                        return (day, dayPart, CmdType.Imbouron_1);
+                    if (CanGetStreamIdea(4, AlphaType.Kaidan))
+                        return (day, dayPart, CmdType.Kaidan_4);
+                    if (CanGetStreamIdea(4, AlphaType.Kaisetu))
+                        return (day, dayPart, CmdType.Kaisetu_4);
                     break;
                 case ActionType.InternetPoketterEgosa:
-                    if (used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Otakutalk_1) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Otakutalk_2)) return (day, dayPart, CmdType.Otakutalk_2);
-                    if (used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Taiken_1) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Taiken_2)) return (day, dayPart, CmdType.Taiken_2);
-                    if (used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Yamihaishin_1) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Yamihaishin_2)) return (day, dayPart, CmdType.Yamihaishin_2);
-                    if (pastAction.Followers >= 250000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.PR_4) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.PR_5)) return (day, dayPart, CmdType.PR_5);
+                    if (CanGetStreamIdea(2, AlphaType.Otakutalk))
+                        return (day, dayPart, CmdType.Otakutalk_2);
+                    if (CanGetStreamIdea(2, AlphaType.Taiken))
+                        return (day, dayPart, CmdType.Taiken_2);
+                    if (CanGetStreamIdea(2, AlphaType.Yamihaishin))
+                        return (day, dayPart, CmdType.Yamihaishin_2);
+                    if (CanGetStreamIdea(5, AlphaType.PR))
+                        return (day, dayPart, CmdType.PR_5);
                     break;
                 case ActionType.InternetYoutube:
-                    if (!ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Otakutalk_1)) return (day, dayPart, CmdType.Otakutalk_1);
-                    if (pastAction.Followers >= 250000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Otakutalk_4) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Otakutalk_5)) return (day, dayPart, CmdType.Otakutalk_5);
-                    if (pastAction.Followers >= 10000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Imbouron_2) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Imbouron_3)) return (day, dayPart, CmdType.Imbouron_3);
-                    if (pastAction.Followers >= 100000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.ASMR_3) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.ASMR_4)) return (day, dayPart, CmdType.ASMR_4);
-                    if (pastAction.Followers >= 10000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Hnahaisin_2) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Hnahaisin_3)) return (day, dayPart, CmdType.Hnahaisin_3);
-                    if (!ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Kaisetu_1)) return (day, dayPart, CmdType.Kaisetu_1);
-                    if (pastAction.Followers >= 10000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Taiken_2) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Taiken_3)) return (day, dayPart, CmdType.Taiken_3);
-                    if (used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.PR_1) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.PR_2)) return (day, dayPart, CmdType.PR_2);
+                    if (CanGetStreamIdea(1, AlphaType.Otakutalk))
+                        return (day, dayPart, CmdType.Otakutalk_1);
+                    if (CanGetStreamIdea(5, AlphaType.Otakutalk))
+                        return (day, dayPart, CmdType.Otakutalk_5);
+                    if (CanGetStreamIdea(3, AlphaType.Imbouron))
+                        return (day, dayPart, CmdType.Imbouron_3);
+                    if (CanGetStreamIdea(4, AlphaType.ASMR))
+                        return (day, dayPart, CmdType.ASMR_4);
+                    if (CanGetStreamIdea(3, AlphaType.Hnahaisin))
+                        return (day, dayPart, CmdType.Hnahaisin_3);
+                    if (CanGetStreamIdea(1, AlphaType.Kaisetu))
+                        return (day, dayPart, CmdType.Kaisetu_1);
+                    if (CanGetStreamIdea(3, AlphaType.Taiken))
+                        return (day, dayPart, CmdType.Taiken_3);
+                    if (CanGetStreamIdea(2, AlphaType.PR))
+                        return (day, dayPart, CmdType.PR_2);
                     break;
                 case ActionType.Internet2ch:
-                    if (used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Zatudan_1) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Zatudan_2)) return (day, dayPart, CmdType.Zatudan_2);
-                    if (!ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Kaidan_1)) return (day, dayPart, CmdType.Kaidan_1);
-                    if (used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Kaidan_1) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Kaidan_2)) return (day, dayPart, CmdType.Kaidan_2);
-                    if (pastAction.Followers >= 250000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Kaidan_4) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Kaidan_5)) return (day, dayPart, CmdType.Kaidan_5);
+                    if (CanGetStreamIdea(2, AlphaType.Zatudan))
+                        return (day, dayPart, CmdType.Zatudan_2);
+                    if (CanGetStreamIdea(1, AlphaType.Kaidan))
+                        return (day, dayPart, CmdType.Kaidan_1);
+                    if (CanGetStreamIdea(2, AlphaType.Kaidan))
+                        return (day, dayPart, CmdType.Kaidan_2);
+                    if (CanGetStreamIdea(5, AlphaType.Kaidan))
+                        return (day, dayPart, CmdType.Kaidan_5);
                     break;
                 case ActionType.InternetDeai:
-                    if (pastAction.Followers >= 250000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.ASMR_4) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.ASMR_5)) return (day, dayPart, CmdType.ASMR_5);
-                    if (pastAction.Followers >= 100000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Taiken_3) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Taiken_4)) return (day, dayPart, CmdType.Taiken_4);
+                    if (CanGetStreamIdea(5, AlphaType.ASMR))
+                        return (day, dayPart, CmdType.ASMR_5);
+                    if (CanGetStreamIdea(4, AlphaType.Taiken))
+                        return (day, dayPart, CmdType.Taiken_4);
                     break;
                 case ActionType.OdekakeHikarigaokaPark:
-                    if (pastAction.Followers >= 10000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Zatudan_2) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Zatudan_3)) return (day, dayPart, CmdType.Zatudan_3);
+                    if (CanGetStreamIdea(3, AlphaType.Zatudan))
+                        return (day, dayPart, CmdType.Zatudan_3);
                     break;
                 case ActionType.OdekakeAkihabara:
-                    if (used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Gamejikkyou_1) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Gamejikkyou_2)) return (day, dayPart, CmdType.Gamejikkyou_2);
+                    if (CanGetStreamIdea(2, AlphaType.Gamejikkyou))
+                        return (day, dayPart, CmdType.Gamejikkyou_2);
                     break;
                 case ActionType.OdekakeNakano:
-                    if (pastAction.Followers >= 100000 && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Gamejikkyou_3) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Gamejikkyou_4)) return (day, dayPart, CmdType.Gamejikkyou_4);
+                    if (CanGetStreamIdea(4, AlphaType.Gamejikkyou))
+                        return (day, dayPart, CmdType.Gamejikkyou_4);
                     break;
                 case ActionType.OdekakeIchigaya:
-                    if (pastAction.Followers >= 10000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Kaidan_2) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Kaidan_3)) return (day, dayPart, CmdType.Kaidan_3);
+                    if (CanGetStreamIdea(3, AlphaType.Kaidan))
+                        return (day, dayPart, CmdType.Kaidan_3);
                     break;
                 case ActionType.OdekakeShibuya:
-                    if (pastAction.Followers >= 100000 && used.Exists(c => c.DayIndex < presentAction.TargetAction.DayIndex && c.UsedStream == CmdType.Hnahaisin_3) && !ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Hnahaisin_4)) return (day, dayPart, CmdType.Hnahaisin_4);
+                    if (CanGetStreamIdea(4, AlphaType.Hnahaisin))
+                        return (day, dayPart, CmdType.Hnahaisin_4);
                     break;
                 case ActionType.OdekakeHarajuku:
-                    if (!ideas.Exists(c => ((c.DayIndex == presentAction.TargetAction.DayIndex && c.DayPart <= presentAction.TargetAction.DayPart) || c.DayIndex < presentAction.TargetAction.DayIndex) && c.Idea == CmdType.Taiken_1)) return (day, dayPart, CmdType.Taiken_1);
+                    if (CanGetStreamIdea(1, AlphaType.Taiken))
+                        return (day, dayPart, CmdType.Taiken_1);
                     break;
                 default: break;
             }
             return (0, 0, CmdType.None);
+
+            bool CanGetStreamIdea(int streamLevelToGet, AlphaType streamTopic)
+            {
+                int followerReq;
+                CmdType streamIdea;
+                switch (streamLevelToGet)
+                {
+                    case 3:
+                        followerReq = 10000;
+                        break;
+                    case 4:
+                        followerReq = 100000;
+                        break;
+                    case 5:
+                        followerReq = 250000;
+                        break;
+                    default:
+                        followerReq = 0;
+                        break;
+                }
+                if (streamLevelToGet < 1 || streamLevelToGet > 6)
+                    throw new ArgumentOutOfRangeException("Only 1-6 is valid for this argument.");
+                if (streamLevelToGet == 6 && streamTopic != AlphaType.Imbouron)
+                    throw new ArgumentOutOfRangeException("Only 6 is valid if AlphaType is AlphaType.Imbouron.");
+                if (streamLevelToGet == 6 && streamTopic == AlphaType.Imbouron)
+                    return branch.UsedStreamExistsBeforeAction(presentAction, CmdType.Imbouron_5) && !branch.StreamIdeaExistsBeforeAction(presentAction, CmdType.Error);
+                streamIdea = (CmdType)Enum.Parse(typeof(CmdType), $"{streamTopic}_{streamLevelToGet}");
+                if (streamLevelToGet == 1)
+                    return !branch.StreamIdeaExistsBeforeAction(presentAction, streamIdea);
+                else
+                {
+                    var pastStream = (CmdType)Enum.Parse(typeof(CmdType), $"{streamTopic}_{streamLevelToGet-1}");
+                    return pastAction.Followers >= followerReq && branch.UsedStreamExistsBeforeAction(presentAction, pastStream) && !branch.StreamIdeaExistsBeforeAction(presentAction, streamIdea);
+                }
+            }
         }
 
         public static void InitializeMilestoneIdea(TargetActionData action, EndingBranchData branch, bool isReallyStress)
         {
 
             var ideas = branch.StreamIdeaList;
-            var used = branch.StreamUsedList;
             var isReallyStressed_EventCounter = branch.isReallyStressed;
             if (action.TargetAction.DayIndex < 4)
             {
@@ -860,37 +845,37 @@ namespace NSOEndingTreeMaker
                 action.MilestoneIdea = CmdType.None;
                 return;
             }
-            if (action.Followers >= 10000 && !ideas.Exists(c => ((c.DayIndex == action.TargetAction.DayIndex && c.DayPart <= action.TargetAction.DayPart) || c.DayIndex < action.TargetAction.DayIndex) && c.Idea == CmdType.Angel_1))
+            if (action.Followers >= 10000 && !branch.StreamIdeaExistsBeforeAction(action,CmdType.Angel_1))
             {
                 ideas.Add(new(action.TargetAction.DayIndex, action.TargetAction.DayPart, CmdType.Angel_1));
                 action.MilestoneIdea = CmdType.Angel_1;
                 return;
             }
-            if (action.Followers >= 30000 && !ideas.Exists(c => ((c.DayIndex == action.TargetAction.DayIndex && c.DayPart <= action.TargetAction.DayPart) || c.DayIndex < action.TargetAction.DayIndex) && c.Idea == CmdType.PR_1))
+            if (action.Followers >= 30000 && !branch.StreamIdeaExistsBeforeAction(action, CmdType.PR_1))
             {
                 ideas.Add(new(action.TargetAction.DayIndex, action.TargetAction.DayPart, CmdType.PR_1));
                 action.MilestoneIdea = CmdType.PR_1;
                 return;
             }
-            if (action.Followers >= 100000 && !ideas.Exists(c => ((c.DayIndex == action.TargetAction.DayIndex && c.DayPart <= action.TargetAction.DayPart) || c.DayIndex < action.TargetAction.DayIndex) && c.Idea == CmdType.Angel_2))
+            if (action.Followers >= 100000 && !branch.StreamIdeaExistsBeforeAction(action, CmdType.Angel_2))
             {
                 ideas.Add(new(action.TargetAction.DayIndex, action.TargetAction.DayPart, CmdType.Angel_2));
                 action.MilestoneIdea = CmdType.Angel_2;
                 return;
             }
-            if (action.Followers >= 250000 && !ideas.Exists(c => ((c.DayIndex == action.TargetAction.DayIndex && c.DayPart <= action.TargetAction.DayPart) || c.DayIndex < action.TargetAction.DayIndex) && c.Idea == CmdType.Angel_3))
+            if (action.Followers >= 250000 && !branch.StreamIdeaExistsBeforeAction(action, CmdType.Angel_3))
             {
                 ideas.Add(new(action.TargetAction.DayIndex, action.TargetAction.DayPart, CmdType.Angel_3));
                 action.MilestoneIdea = CmdType.Angel_3;
                 return;
             }
-            if (action.Followers >= 500000 && !ideas.Exists(c => ((c.DayIndex == action.TargetAction.DayIndex && c.DayPart <= action.TargetAction.DayPart) || c.DayIndex < action.TargetAction.DayIndex) && c.Idea == CmdType.Angel_4))
+            if (action.Followers >= 500000 && !branch.StreamIdeaExistsBeforeAction(action, CmdType.Angel_4))
             {
                 ideas.Add(new(action.TargetAction.DayIndex, action.TargetAction.DayPart, CmdType.Angel_4));
                 action.MilestoneIdea = CmdType.Angel_4;
                 return;
             }
-            if (((!isReallyStress && !isReallyStressed_EventCounter.isEventing) || (isReallyStress || isReallyStressed_EventCounter.isEventing && isReallyStressed_EventCounter.DayIndex > action.TargetAction.DayIndex)) && action.Followers >= 1000000 && !ideas.Exists(c => ((c.DayIndex == action.TargetAction.DayIndex && c.DayPart <= action.TargetAction.DayPart) || c.DayIndex < action.TargetAction.DayIndex) && c.Idea == CmdType.Angel_5) && !ideas.Exists(c => ((c.DayIndex == action.TargetAction.DayIndex && c.DayPart <= action.TargetAction.DayPart) || c.DayIndex < action.TargetAction.DayIndex) && c.Idea == CmdType.Angel_6))
+            if (((!isReallyStress && !isReallyStressed_EventCounter.isEventing) || (isReallyStress || isReallyStressed_EventCounter.isEventing && isReallyStressed_EventCounter.DayIndex > action.TargetAction.DayIndex)) && action.Followers >= 1000000 && !branch.StreamIdeaExistsBeforeAction(action, CmdType.Angel_5) && !branch.StreamIdeaExistsBeforeAction(action, CmdType.Angel_6))
             {
                 ideas.Add(new(action.TargetAction.DayIndex, action.TargetAction.DayPart, CmdType.Angel_5));
                 action.MilestoneIdea = CmdType.Angel_5;
@@ -898,12 +883,12 @@ namespace NSOEndingTreeMaker
             }
             if (isReallyStress || (isReallyStressed_EventCounter.isEventing && isReallyStressed_EventCounter.DayIndex < action.TargetAction.DayIndex))
             {
-                if (ideas.Exists(c => ((c.DayIndex == action.TargetAction.DayIndex && c.DayPart <= action.TargetAction.DayPart) || c.DayIndex < action.TargetAction.DayIndex) && c.Idea == CmdType.Angel_5) && used.Exists(c => c.DayIndex < action.TargetAction.DayIndex && c.UsedStream == CmdType.Angel_5))
+                if (branch.StreamIdeaExistsBeforeAction(action, CmdType.Angel_5) && branch.UsedStreamExistsBeforeAction(action, CmdType.Angel_5))
                 {
                     action.MilestoneIdea = CmdType.None;
                     return;
                 }
-                if (action.Followers >= 1000000 && !ideas.Exists(c => ((c.DayIndex == action.TargetAction.DayIndex && c.DayPart <= action.TargetAction.DayPart) || c.DayIndex < action.TargetAction.DayIndex) && c.Idea == CmdType.Angel_6))
+                if (action.Followers >= 1000000 && !branch.StreamIdeaExistsBeforeAction(action, CmdType.Angel_6))
                 {
                     ideas.Add(new(action.TargetAction.DayIndex, action.TargetAction.DayPart, CmdType.Angel_6));
                     action.MilestoneIdea = CmdType.Angel_6;

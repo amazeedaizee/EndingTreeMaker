@@ -76,6 +76,33 @@ namespace NSOEndingTreeMaker
             CommandResult = NSOCommandManager.CmdTypeToCommand(cmd);
         }
 
+        public void SetStatsToMaxOrMin(EndingBranchData branch)
+        {
+            var stressMax = 100;
+            var affectionMax = 100;
+            if (branch.isStressed.isEventing && branch.isReallyStressed.isEventing && TargetAction.DayIndex >= branch.isReallyStressed.DayIndex)
+                stressMax = 120;
+            if (branch.isReallyLove.isEventing && TargetAction.DayIndex >= branch.isReallyLove.DayIndex)
+                affectionMax = 120;
+            Followers = ClampStats(0, Followers, 9999999);
+            Stress = ClampStats(0, Stress, stressMax);
+            Affection = ClampStats(0, Affection, affectionMax);
+            Darkness = ClampStats(0, Darkness, 100);
+            StreamStreak = ClampStats(0, StreamStreak, 30);
+            Communication = ClampStats(0, Communication, 90);
+            Experience = ClampStats(0, Experience, 60);
+            Impact = ClampStats(0, Impact, 60);
+            GamerGirl = ClampStats(0, GamerGirl, 60);
+            Cinephile = ClampStats(0, Cinephile, 60);
+            RabbitHole = ClampStats(0, RabbitHole, 100);
+
+            int ClampStats(int min, int num, int max)
+            {
+                if (num > max) return max;
+                if (num < min) return min;
+                return num;
+            }
+        }
         public void ResetActionStats()
         {
             TargetAction.Action = ActionType.None;
