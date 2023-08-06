@@ -125,8 +125,9 @@
             this.ToolStrip_Branch = new System.Windows.Forms.ToolStripDropDownButton();
             this.ToolStrip_Edit = new System.Windows.Forms.ToolStripDropDownButton();
             this.Branch_ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.SaveBranch_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ResetEnding_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SaveBranch_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.SaveEndingBranchAndExit_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Branch_MenuSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.PreviousBranch_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.NextBranch_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -148,6 +149,7 @@
             // 
             // EndingToGet_Group
             // 
+            this.EndingToGet_Group.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.EndingToGet_Group.Controls.Add(this.IgnoreNightEnding_Label);
             this.EndingToGet_Group.Controls.Add(this.StressfulBreakdown_Check);
             this.EndingToGet_Group.Controls.Add(this.EndingToGet_Dropdown);
@@ -218,6 +220,7 @@
             // 
             // SaveEndingBranchButton
             // 
+            this.SaveEndingBranchButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.SaveEndingBranchButton.Location = new System.Drawing.Point(1129, 651);
             this.SaveEndingBranchButton.Name = "SaveEndingBranchButton";
             this.SaveEndingBranchButton.Size = new System.Drawing.Size(232, 36);
@@ -228,6 +231,9 @@
             // 
             // ActionListView
             // 
+            this.ActionListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ActionListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.DayIndexColumn,
             this.DayPartColumn,
@@ -418,6 +424,8 @@
             // 
             // ActionStatDelta
             // 
+            this.ActionStatDelta.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ActionStatDelta.Controls.Add(this.BaseStatDelta);
             this.ActionStatDelta.Controls.Add(this.BonusStatDelta_Tab);
             this.ActionStatDelta.Location = new System.Drawing.Point(6, 216);
@@ -579,7 +587,7 @@
             // 
             this.DayIndexNumeric.Location = new System.Drawing.Point(9, 44);
             this.DayIndexNumeric.Maximum = new decimal(new int[] {
-            30,
+            29,
             0,
             0,
             0});
@@ -600,6 +608,8 @@
             // 
             // TargetAction_Group
             // 
+            this.TargetAction_Group.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.TargetAction_Group.Controls.Add(this.StreamLevelNumeric);
             this.TargetAction_Group.Controls.Add(this.StreamLevel_Label);
             this.TargetAction_Group.Controls.Add(this.StreamTopic_Label);
@@ -788,6 +798,7 @@
             // 
             // StressedGroup
             // 
+            this.StressedGroup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.StressedGroup.Controls.Add(this.Stressed_Bool);
             this.StressedGroup.Controls.Add(this.ReallyStressed_Bool);
             this.StressedGroup.Controls.Add(this.Vomited_Bool);
@@ -800,6 +811,7 @@
             // 
             // LoveGroup
             // 
+            this.LoveGroup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.LoveGroup.Controls.Add(this.Trauma_Bool);
             this.LoveGroup.Controls.Add(this.Parents_Bool);
             this.LoveGroup.Location = new System.Drawing.Point(561, 19);
@@ -851,6 +863,7 @@
             // 
             // PopularGroup
             // 
+            this.PopularGroup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.PopularGroup.Controls.Add(this.NoMeds_Bool);
             this.PopularGroup.Controls.Add(this.GalacticRail_Bool);
             this.PopularGroup.Controls.Add(this.MV_bool);
@@ -951,6 +964,7 @@
             // 
             // LoveCount
             // 
+            this.LoveCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.LoveCount.AutoSize = true;
             this.LoveCount.Location = new System.Drawing.Point(113, 674);
             this.LoveCount.Name = "LoveCount";
@@ -960,6 +974,7 @@
             // 
             // PaperCount
             // 
+            this.PaperCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.PaperCount.AutoSize = true;
             this.PaperCount.Location = new System.Drawing.Point(214, 674);
             this.PaperCount.Name = "PaperCount";
@@ -969,6 +984,7 @@
             // 
             // IgnoredCount
             // 
+            this.IgnoredCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.IgnoredCount.AutoSize = true;
             this.IgnoredCount.Location = new System.Drawing.Point(12, 674);
             this.IgnoredCount.Name = "IgnoredCount";
@@ -978,6 +994,9 @@
             // 
             // EndingGuesser
             // 
+            this.EndingGuesser.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.EndingGuesser.BackColor = System.Drawing.Color.Transparent;
             this.EndingGuesser.Location = new System.Drawing.Point(606, 674);
             this.EndingGuesser.Name = "EndingGuesser";
             this.EndingGuesser.Size = new System.Drawing.Size(501, 13);
@@ -997,6 +1016,7 @@
             // 
             // ExtraMilestones_Label
             // 
+            this.ExtraMilestones_Label.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.ExtraMilestones_Label.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.ExtraMilestones_Label.Location = new System.Drawing.Point(318, 672);
             this.ExtraMilestones_Label.Name = "ExtraMilestones_Label";
@@ -1126,22 +1146,15 @@
             // Branch_ContextMenuStrip
             // 
             this.Branch_ContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.SaveBranch_MenuItem,
             this.ResetEnding_MenuItem,
+            this.SaveBranch_MenuItem,
+            this.SaveEndingBranchAndExit_MenuItem,
             this.Branch_MenuSeparator,
             this.PreviousBranch_MenuItem,
             this.NextBranch_MenuItem});
             this.Branch_ContextMenuStrip.Name = "Branch_ContextMenuStrip";
             this.Branch_ContextMenuStrip.Size = new System.Drawing.Size(302, 120);
             this.Branch_ContextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.Branch_ContextMenuStrip_Opening);
-            // 
-            // SaveBranch_MenuItem
-            // 
-            this.SaveBranch_MenuItem.Name = "SaveBranch_MenuItem";
-            this.SaveBranch_MenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.SaveBranch_MenuItem.Size = new System.Drawing.Size(301, 22);
-            this.SaveBranch_MenuItem.Text = "Save Ending Branch";
-            this.SaveBranch_MenuItem.Click += new System.EventHandler(this.SaveBranch_MenuItemClick);
             // 
             // ResetEnding_MenuItem
             // 
@@ -1152,6 +1165,23 @@
             this.ResetEnding_MenuItem.Size = new System.Drawing.Size(301, 22);
             this.ResetEnding_MenuItem.Text = "Reset Ending Branch";
             this.ResetEnding_MenuItem.Click += new System.EventHandler(this.ResetBranch_MenuItemClick);
+            // 
+            // SaveBranch_MenuItem
+            // 
+            this.SaveBranch_MenuItem.Name = "SaveBranch_MenuItem";
+            this.SaveBranch_MenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.SaveBranch_MenuItem.Size = new System.Drawing.Size(301, 22);
+            this.SaveBranch_MenuItem.Text = "Save Ending Branch";
+            this.SaveBranch_MenuItem.Click += new System.EventHandler(this.SaveBranch_MenuItemClick);
+            // 
+            // SaveEndingBranchAndExit_MenuItem
+            // 
+            this.SaveEndingBranchAndExit_MenuItem.Name = "SaveEndingBranchAndExit_MenuItem";
+            this.SaveEndingBranchAndExit_MenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.S)));
+            this.SaveEndingBranchAndExit_MenuItem.Size = new System.Drawing.Size(301, 22);
+            this.SaveEndingBranchAndExit_MenuItem.Text = "Save Ending Branch And Exit";
+            this.SaveEndingBranchAndExit_MenuItem.Click += new System.EventHandler(this.SaveEndingBranchAndExit_MenuItem_Click);
             // 
             // Branch_MenuSeparator
             // 
@@ -1200,9 +1230,8 @@
             this.Controls.Add(this.SaveEndingBranchButton);
             this.Controls.Add(this.EndingToGet_Group);
             this.Controls.Add(this.TargetAction_Group);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MaximizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(1330, 450);
             this.Name = "EndingBranchEditor";
             this.Text = "Ending Branch";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.EndingBranchEditor_FormClosing);
@@ -1333,5 +1362,6 @@
         private System.Windows.Forms.ToolStripSeparator Branch_MenuSeparator;
         private System.Windows.Forms.ToolStripMenuItem PreviousBranch_MenuItem;
         private System.Windows.Forms.ToolStripMenuItem NextBranch_MenuItem;
+        private System.Windows.Forms.ToolStripMenuItem SaveEndingBranchAndExit_MenuItem;
     }
 }

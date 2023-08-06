@@ -37,5 +37,10 @@ namespace NSOEndingTreeMaker
         {
             if (branchWindow.usedWindow != null) { branchWindow.usedWindow = null; }
         }
+
+        private void UsedStream_ListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

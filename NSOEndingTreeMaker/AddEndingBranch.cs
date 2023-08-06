@@ -49,6 +49,7 @@ namespace NSOEndingTreeMaker
                 }
                 mainForm.CurrentEndingTree.EndingsList.Add(NewEnding);
                 mainForm.AddEndingToListView(NewEnding);
+                mainForm.isBranchEdited = true;
             }
             this.Close();
 

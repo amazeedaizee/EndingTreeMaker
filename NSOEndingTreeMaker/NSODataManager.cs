@@ -623,6 +623,8 @@ namespace NSOEndingTreeMaker
 
         public static bool IsOverdoseAction(TargetActionData action)
         {
+            if (action == null) 
+                return false;
             var a = action.TargetAction.Action;
             return a.ToString().Contains("Okusuri") &&
                 a != ActionType.OkusuriPuronModerate &&

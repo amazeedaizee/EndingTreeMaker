@@ -106,44 +106,79 @@ namespace NSOEndingTreeMaker
             {   
                 var list = new List<(string, string, string)>();
                 var branch = CurrentEndingTree.EndingsList[i];
-                string futureBranchName = $"Branch {i + 1}. {NSODataManager.EndingNames[branch.EndingBranch.EndingToGet]}";
-                AddEndingToListView(CurrentEndingTree.EndingsList[i]);
-                branch.InitializeActionStats();
+                string futureBranchName = $"Branch {i + 1}. {NSODataManager.EndingNames[branch.EndingBranch.EndingToGet]}";            
                 if (CurrentEndingTree.isDay2Exp && branch.EndingBranch.AllActions.Exists(a => a.TargetAction.DayIndex == 2 && a.TargetAction.DayPart == -1 && a.Command == CmdType.None))
                 {
                     list.Add(new("", "", "Day 2 Extra Action must have an action if Day 2 Extra Action is enabled."));
                 }
-                if (i == 0) list.AddRange(branch.ValidateBranch(futureBranchName));
-                if (list.Count > 0 && i == 0) 
-                { 
-                    EndingListView.Items[i].SubItems[0].Text += " (!)";
-                    errorList.AddRange(list);
+                if (i == 0) 
+                {
+                    InitializeEndingList(i, errorList, futureBranchName);
+                    continue;
                 }
-                if (i == 0) continue;
-                if (SetStartingAction(branch, false, i - 1) == null)
+                var startAction = SetStartingAction(branch, false, i - 1);
+                branch.EndingBranch.AllActions[0] = startAction;
+                if (startAction.Followers == 0)
                     list.Add(new(futureBranchName, "", $"Tried to initialize starting stats for this branch's starting day, however no valid day exists to set stats."));
+                else branch.EndingBranch.AllActions[0] = startAction;
                 ResetStartingDayData(branch, i - 1);
-                list.AddRange(branch.ValidateBranch(futureBranchName));
-                if (list.Count > 0) EndingListView.Items[i].SubItems[0].Text += " (!)";
-                errorList.AddRange(list);
+                InitializeEndingList(i,errorList,futureBranchName);
             }
-
-
             if (errorList.Count > 0) UnvalidBranches_Label.Visible = true;
             else UnvalidBranches_Label.Visible = false;
             Notes.Text = CurrentEndingTree.Notes;
             Day2Exp_Check.Checked = CurrentEndingTree.isDay2Exp;
             return errorList;
+
+            void InitializeEndingList(int branchIndex, List<(string, string, string)> errorList, string branchName)
+            {
+                var branch = CurrentEndingTree.EndingsList[branchIndex];
+                var list = new List<(string, string, string)>();
+                branch.InitializeActionStats();
+                AddExpectedErrorToErrorList(branch, list, branchName);
+                list.AddRange(branch.ValidateBranch(branchName));
+                AddEndingToListView(branch);
+                if (list.Count > 0) EndingListView.Items[branchIndex].SubItems[0].Text += " (!)";
+                errorList.AddRange(list);
+            }
         }
         
+        bool IsExpectedMatchesEndingToGet(EndingBranchData branch)
+        {
+            if (branch.EndingBranch.AllActions[0].Followers == 0)
+                return true;
+            if (branch.ExpectedDayOfEnd.Item3 != branch.EndingBranch.EndingToGet)
+            {
+                if (NSODataManager.IsNightEnding(branch.ExpectedDayOfEnd.Item3) && branch.IgnoreNightEndings)
+                    return true;
+                else return false;
+            }
+            return true;
+        }
+
+        void AddExpectedErrorToErrorList(EndingBranchData branch, List<(string, string, string)> errorList, string branchName)
+        {
+            if (!IsExpectedMatchesEndingToGet(branch))
+            {
+                errorList.Add(new(branchName, "", $"Expected ending in this branch does not match this branch's selected ending.\n\nExpected ending:{NSODataManager.EndingNames[branch.ExpectedDayOfEnd.Item3]} \nSelected ending:{NSODataManager.EndingNames[branch.EndingBranch.EndingToGet]}"));
+            }
+        }
 
         public void AddEndingToListView(EndingBranchData endingData)
         {
             bool doesEndExist = NSODataManager.EndingNames.TryGetValue(endingData.EndingBranch.EndingToGet, out string name);
             ListViewItem ending = EndingListView.Items.Add(doesEndExist ? name : "");
             ending.SubItems.Add(endingData.EndingBranch.StartingDay.ToString());
-            ending.SubItems.Add(endingData.EndingBranch.AllActions[endingData.EndingBranch.AllActions.Count - 1].TargetAction.DayIndex.ToString());
+            ending.SubItems.Add(SetLatestDayString(endingData));
             ending.SubItems.Add(endingData.EndingBranch.IsStressfulBressdown ? "Yes" : "");
+        }
+
+        public string SetLatestDayString(EndingBranchData endingData)
+        {
+            TargetActionData action = endingData.EndingBranch.AllActions[endingData.EndingBranch.AllActions.Count - 1];
+            if (action.TargetAction.DayPart + action.CommandResult.daypart >= 3)
+                return $"{action.TargetAction.DayIndex + 1}";
+            return action.TargetAction.DayIndex.ToString();
         }
 
         private void DeleteSelectedEndingData()
@@ -211,7 +246,9 @@ namespace NSOEndingTreeMaker
                 }
                 for (int j = actions.Count - 1; j >= 0; j--)
                 {
-                    if (actions[j].TargetAction.DayIndex == branch.EndingBranch.StartingDay && (refBranch.ExpectedDayOfEnd.Item3 == EndingType.Ending_None || (actions[j].TargetAction.DayIndex <= refBranch.ExpectedDayOfEnd.Item1 && !(refBranch.isHorror.isEventing && actions[j].TargetAction.DayIndex >= refBranch.isHorror.DayIndex))))
+                    bool foundReferenceDay = actions[j].TargetAction.DayIndex == branch.EndingBranch.StartingDay || (actions[j].TargetAction.DayIndex == (branch.EndingBranch.StartingDay-1) && actions[j].TargetAction.DayPart + actions[j].CommandResult.daypart >= 3);
+                    bool isNoEndingExpected = (refBranch.ExpectedDayOfEnd.Item3 == EndingType.Ending_None || (actions[j].TargetAction.DayIndex <= refBranch.ExpectedDayOfEnd.Item1 && !(refBranch.isHorror.isEventing && actions[j].TargetAction.DayIndex >= refBranch.isHorror.DayIndex)));
+                    if (foundReferenceDay && isNoEndingExpected && !foundValidDay)
                     {
                         foundValidDay = true;
                         continue;
@@ -310,29 +347,29 @@ namespace NSOEndingTreeMaker
                     branch.PsycheCounter.InsertRange(0, newPsyNum);
                     branch.IgnoreCounter.InsertRange(0, newIgnoreNum);
 
-                    if ((endingToImport.hasGalacticRail.DayIndex < branch.EndingBranch.StartingDay) && endingToImport.hasGalacticRail.isEventing)
+                    if ((endingToImport.hasGalacticRail.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.hasGalacticRail.isEventing)
                         branch.hasGalacticRail = endingToImport.hasGalacticRail;
-                    if ((endingToImport.NoMeds.DayIndex < branch.EndingBranch.StartingDay) && endingToImport.NoMeds.isEventing)
+                    if ((endingToImport.NoMeds.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.NoMeds.isEventing)
                         branch.NoMeds = endingToImport.NoMeds;
-                    if ((endingToImport.isHorror.DayIndex < branch.EndingBranch.StartingDay) && endingToImport.isHorror.isEventing)
+                    if ((endingToImport.isHorror.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.isHorror.isEventing)
                         branch.isHorror = endingToImport.isHorror;
-                    if ((endingToImport.isReallyLove.DayIndex < branch.EndingBranch.StartingDay) && endingToImport.isReallyLove.isEventing)
+                    if ((endingToImport.isReallyLove.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.isReallyLove.isEventing)
                         branch.isReallyLove = endingToImport.isReallyLove;
-                    if ((endingToImport.isStressed.DayIndex < branch.EndingBranch.StartingDay) && endingToImport.isStressed.isEventing)
+                    if ((endingToImport.isStressed.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.isStressed.isEventing)
                         branch.isStressed = endingToImport.isStressed;
-                    if ((endingToImport.isReallyStressed.DayIndex < branch.EndingBranch.StartingDay) && endingToImport.isReallyStressed.isEventing)
+                    if ((endingToImport.isReallyStressed.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.isReallyStressed.isEventing)
                         branch.isReallyStressed = endingToImport.isReallyStressed;
-                    if ((endingToImport.isTrauma.DayIndex < branch.EndingBranch.StartingDay) && endingToImport.isTrauma.isEventing)
+                    if ((endingToImport.isTrauma.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.isTrauma.isEventing)
                         branch.isTrauma = endingToImport.isTrauma;
-                    if ((endingToImport.isVideo.DayIndex < branch.EndingBranch.StartingDay) && endingToImport.isVideo.isEventing)
+                    if ((endingToImport.isVideo.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.isVideo.isEventing)
                         branch.isVideo = endingToImport.isVideo;
-                    if ((endingToImport.is150M.DayIndex < branch.EndingBranch.StartingDay) && endingToImport.is150M.isEventing)
+                    if ((endingToImport.is150M.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.is150M.isEventing)
                         branch.is150M = endingToImport.is150M;
-                    if ((endingToImport.is300M.DayIndex < branch.EndingBranch.StartingDay) && endingToImport.is300M.isEventing)
+                    if ((endingToImport.is300M.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.is300M.isEventing)
                         branch.is300M = endingToImport.is300M;
-                    if ((endingToImport.is500M.DayIndex < branch.EndingBranch.StartingDay) && endingToImport.is500M.isEventing)
+                    if ((endingToImport.is500M.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.is500M.isEventing)
                         branch.is500M = endingToImport.is500M;
-                    if ((endingToImport.isMaxFollowers.DayIndex < branch.isMaxFollowers.DayIndex) && endingToImport.isMaxFollowers.isEventing) branch.isMaxFollowers = endingToImport.isMaxFollowers;
+                    if ((endingToImport.isMaxFollowers.DayIndex <= branch.isMaxFollowers.DayIndex) && endingToImport.isMaxFollowers.isEventing) branch.isMaxFollowers = endingToImport.isMaxFollowers;
                     return;
 
                 }
@@ -346,7 +383,7 @@ namespace NSOEndingTreeMaker
             bool isValidated = true;
             string errorMsg = "";
             List<string> endings = new List<string>();
-            int oldLatestIndex = CurrentEndingTree.EndingsList[index].EndingBranch.AllActions.Count - 1;
+            int oldLatestIndex = CurrentEndingTree.EndingsList[index].EndingBranch.AllActions.Count -1;
             int oldLatestDay = CurrentEndingTree.EndingsList[index].EndingBranch.AllActions[oldLatestIndex].TargetAction.DayIndex;
             for (int i = index; i < CurrentEndingTree.EndingsList.Count; i++)
             {
@@ -382,11 +419,13 @@ namespace NSOEndingTreeMaker
             if (errorList.Count > 0)
             {
                 bool isConfirm;
+                CurrentEndingTree.isBroken = true;
                 BranchErrorDetails errorDetails = new BranchErrorDetails(errorList, false);
                 errorDetails.ErrorIntro.Text = "Branches in this tree contains validation errors. Are you sure you want to proceed?";
                 isConfirm = errorDetails.ShowDialog() == DialogResult.Yes ? true : false;               
                 return isConfirm;
             }
+            CurrentEndingTree.isBroken = false;
             return true;
         }
 
@@ -592,7 +631,7 @@ namespace NSOEndingTreeMaker
             if (SelectedEnding == null || selectedEndings.Count == 0)
             {
                 AddEndingBranch newEnding = new(this);
-                newEnding.Show();
+                newEnding.ShowDialog();
                 return;
             }
             if (selectedEndings.Count == 0 || selectedEndings.Count > 1)
@@ -601,7 +640,7 @@ namespace NSOEndingTreeMaker
                 return;
             }
             EndingBranchEditor editor = new(SelectedEnding, this);
-            editor.Show();
+            editor.ShowDialog();
         }
 
         private void EndingTreeForm_Leave(object sender, EventArgs e)
@@ -992,7 +1031,6 @@ namespace NSOEndingTreeMaker
                 UnvalidBranches_Label.Visible = false;
                 return;
             }
-            CurrentEndingTree.isBroken = UnvalidBranches_Label.Visible;
         }
 
         private void Day2ExtraAction()

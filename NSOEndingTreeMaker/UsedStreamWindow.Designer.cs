@@ -36,16 +36,21 @@
             // 
             // UsedStream_ListView
             // 
+            this.UsedStream_ListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.UsedStream_ListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.Stream,
             this.DayIndex});
             this.UsedStream_ListView.HideSelection = false;
             this.UsedStream_ListView.Location = new System.Drawing.Point(13, 13);
+            this.UsedStream_ListView.Margin = new System.Windows.Forms.Padding(10);
             this.UsedStream_ListView.Name = "UsedStream_ListView";
             this.UsedStream_ListView.Size = new System.Drawing.Size(292, 425);
             this.UsedStream_ListView.TabIndex = 0;
             this.UsedStream_ListView.UseCompatibleStateImageBehavior = false;
             this.UsedStream_ListView.View = System.Windows.Forms.View.Details;
+            this.UsedStream_ListView.SelectedIndexChanged += new System.EventHandler(this.UsedStream_ListView_SelectedIndexChanged);
             // 
             // Stream
             // 

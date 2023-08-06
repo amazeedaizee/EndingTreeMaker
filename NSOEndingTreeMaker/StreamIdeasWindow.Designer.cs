@@ -325,6 +325,9 @@
             // 
             // StreamIdeas_ListView
             // 
+            this.StreamIdeas_ListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.StreamIdeas_ListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.Stream,
             this.DayIndex});
@@ -544,6 +547,9 @@
             // 
             // StreamTopic_ListView
             // 
+            this.StreamTopic_ListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.StreamTopic_ListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2,
@@ -781,7 +787,6 @@
             this.Controls.Add(this.SortBy_Label);
             this.Controls.Add(this.StreamTopic_ListView);
             this.Controls.Add(this.StreamIdeas_ListView);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;

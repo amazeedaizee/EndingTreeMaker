@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
 using static NSOEndingTreeMaker.EndingBranchSubData;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
 
 namespace NSOEndingTreeMaker
@@ -18,6 +19,7 @@ namespace NSOEndingTreeMaker
         public StreamIdeasWindow ideasWindow;
         public UsedStreamWindow usedWindow;
         public EndingBranchData SelectedEndingBranch;
+        public int SelectedEndingIndex;
         public EndingBranchData UnsavedEndingBranchData;
         public List<TargetActionData> ActionList = new();
 
@@ -51,6 +53,7 @@ namespace NSOEndingTreeMaker
                 dayPartStart = 0;
             }
             NewAction = new TargetActionData(ActionList[ActionList.Count - 1].TargetAction.DayIndex, dayPartStart, CmdType.None);
+            SelectedEndingIndex = MainForm.CurrentEndingTree.EndingsList.IndexOf(SelectedEndingBranch);
         }
 
         internal void AddActionVisualData(TargetActionData action, bool addAlsoToActionList)
@@ -182,7 +185,7 @@ namespace NSOEndingTreeMaker
                 ActionList.Insert(0, actionData);
                 ActionListView.Items.Insert(0, item);
                 UnsavedEndingBranchData.EndingBranch.StartingDay = actionData.TargetAction.DayIndex;
-                int index = MainForm.CurrentEndingTree.EndingsList.IndexOf(SelectedEndingBranch);
+                int index = SelectedEndingIndex;
                 var newFirstDay = MainForm.SetStartingAction(UnsavedEndingBranchData, false, index - 1);
                 MainForm.ResetStartingDayData(UnsavedEndingBranchData, index - 1);
                 ActionList[0] = newFirstDay;
@@ -194,13 +197,12 @@ namespace NSOEndingTreeMaker
 
         internal void InitializeBreakdown()
         {
-            UnsavedEndingBranchData.InitializeActionStats(this);
             TargetActionData breakdown = ActionList.FirstOrDefault(a => a.TargetAction.DayIndex == 15 && a.TargetAction.DayPart == 3);
+            TargetActionData dayBeforeBreak = InitializeDayBeforeBreakdown();
             if (breakdown == null)
             {
-                if (ActionList.Exists(a => a.TargetAction.DayIndex == 15 && a.TargetAction.DayPart + a.CommandResult.daypart >= 3))
+                if (dayBeforeBreak != null)
                 {
-                    TargetActionData dayBeforeBreak = ActionList.Find(a => a.TargetAction.DayIndex == 15 && a.TargetAction.DayPart + a.CommandResult.daypart >= 3 && a.TargetAction.DayPart != 3);
                     TargetActionData newBreakdown = new TargetActionData(15, 3, "Breakdown", new CommandAction());
                     newBreakdown.CommandResult = new CommandAction();
                     if (dayBeforeBreak.Affection >= 60 && dayBeforeBreak.Darkness >= 60)
@@ -222,7 +224,7 @@ namespace NSOEndingTreeMaker
             if (breakdown != null)
             {
                 breakdown.CommandResult = new CommandAction();
-                if (!ActionList.Exists(a => a.TargetAction.DayIndex == 15 && a.TargetAction.DayPart != 3 && a.TargetAction.DayPart + a.CommandResult.daypart >= 3 && a.TargetAction.DayPart != 3))
+                if (dayBeforeBreak == null)
                 {
                     int index = ActionList.IndexOf(breakdown);
                     ActionList.RemoveAt(index);
@@ -231,7 +233,6 @@ namespace NSOEndingTreeMaker
                     ToggleBranchLabelIfUnsaved();
                     return;
                 }
-                TargetActionData dayBeforeBreak = ActionList.Find(a => a.TargetAction.DayIndex == 15 && a.TargetAction.DayPart != 3 && a.TargetAction.DayPart + a.CommandResult.daypart >= 3 && a.TargetAction.DayPart != 3);
                 if (dayBeforeBreak.Affection >= 60 && dayBeforeBreak.Darkness >= 60)
                 {
                     breakdown.ActionName = "Trauma Dump";
@@ -253,6 +254,15 @@ namespace NSOEndingTreeMaker
             ToggleBranchLabelIfUnsaved();
         }
 
+        private TargetActionData InitializeDayBeforeBreakdown()
+        {
+            if (!ActionList.Exists(a => a.TargetAction.DayIndex == 15 && a.TargetAction.DayPart != 3 && a.TargetAction.DayPart + a.CommandResult.daypart >= 3 && a.TargetAction.DayPart != 3))
+                return null;
+            var dayBeforeBreak = ActionList.Find((a => a.TargetAction.DayIndex == 15 && a.TargetAction.DayPart != 3 && a.TargetAction.DayPart + a.CommandResult.daypart >= 3 && a.TargetAction.DayPart != 3));
+            var dayBeforeDayBeforeBreak = ActionList.Find(a => (a.TargetAction.DayIndex == 15 && a.TargetAction.DayPart != 3 && a.TargetAction.DayPart < dayBeforeBreak.TargetAction.DayPart) || a.TargetAction.DayIndex < dayBeforeBreak.TargetAction.DayIndex);
+            NSOCommandManager.CalculateStats(UnsavedEndingBranchData, dayBeforeDayBeforeBreak, dayBeforeBreak);
+            return dayBeforeBreak;
+        }
         private void ToggleBranchLabelIfUnsaved()
         {
             bool changed = isChanged || UnsavedEndingBranchData.EndingBranch.IsStressfulBressdown != SelectedEndingBranch.EndingBranch.IsStressfulBressdown || UnsavedEndingBranchData.IgnoreNightEndings != SelectedEndingBranch.IgnoreNightEndings;
@@ -335,10 +345,10 @@ namespace NSOEndingTreeMaker
 
         }
 
-        internal void SetGuessedEnding(EndingBranchData branch, (int,int,EndingType) expectedEnding)
+        internal void SetGuessedEnding(EndingBranchData branch, (int, int, EndingType) expectedEnding)
         {
 
-            ExpectedEnding = expectedEnding;
+            ExpectedEnding = branch.ExpectedDayOfEnd;
             int endedDay = ExpectedEnding.DayIndex;
             int endedDayPart = ExpectedEnding.DayPart;
             if (ExpectedEnding.ending == EndingType.Ending_KowaiInternet)
@@ -374,7 +384,6 @@ namespace NSOEndingTreeMaker
             }
             else endedDayPart -= 1;
             EndingGuesser.Text = ExpectedEnding.ending == EndingType.Ending_None ? "Projected Ending : None" : $"Projected Ending : {NSODataManager.EndingNames[ExpectedEnding.ending]} on Day {endedDay}, {NSODataManager.DayPartNames[endedDayPart]}";
-            UnsavedEndingBranchData.ExpectedDayOfEnd = expectedEnding;
         }
 
         internal void SetActionCounterText(EndingBranchData branch)
@@ -482,7 +491,9 @@ namespace NSOEndingTreeMaker
         private CmdType ConvertActionChoiceToCmd(TargetActionData pastAction)
         {
             if (ParentAction_Dropdown.SelectedIndex > 0)
-                TargetActionButton.Enabled = true; 
+                TargetActionButton.Enabled = true;
+            if (pastAction == null)
+                return CmdType.None;
             switch (ParentAction_Dropdown.SelectedIndex)
             {
                 case -1:
@@ -503,7 +514,7 @@ namespace NSOEndingTreeMaker
                         case 1:
                             if (pastAction.Affection < 40)
                                 return CmdType.PlayIchatukuTalk;
-                            if (pastAction.Affection >= 80) 
+                            if (pastAction.Affection >= 80)
                                 return CmdType.PlayIchatukuKizu;
                             return CmdType.PlayIchatukuIchatuku;
                         case 2:
@@ -678,10 +689,10 @@ namespace NSOEndingTreeMaker
                         Action_Dropdown.Items[2] = "Sleep To Tomorrow (Noon)";
                     else if (DayPart_Dropdown.SelectedIndex == 1)
                         Action_Dropdown.Items[2] = "Sleep To Tomorrow (Dusk)";
-                    else Action_Dropdown.Items[2] = "Sleep To Tomorrow (Night)";            
+                    else Action_Dropdown.Items[2] = "Sleep To Tomorrow (Night)";
                     break;
                 case 3:
-                   
+
                     if (pastAction.Darkness < 20)
                         Action_Dropdown.Items[1] = "Prescription GO! (strongest)";
                     else if (pastAction.Darkness >= 20 && pastAction.Darkness < 40)
@@ -697,32 +708,32 @@ namespace NSOEndingTreeMaker
                     else Action_Dropdown.Items[3] = "OTC GO! (weakest)";
 
                     if (pastAction.Darkness < 60)
-                        Action_Dropdown.Items[4]= "Sleeping Pills GO! (strongest)";
+                        Action_Dropdown.Items[4] = "Sleeping Pills GO! (strongest)";
                     else Action_Dropdown.Items[4] = "Sleeping Pills GO! (weakest)";
 
                     if (pastAction.Darkness < 80)
-                        Action_Dropdown.Items[5] ="Magic Grass GO! (strongest)";
+                        Action_Dropdown.Items[5] = "Magic Grass GO! (strongest)";
                     else Action_Dropdown.Items[5] = "Magic Grass GO! (weakest)";
-                    
+
                     break;
                 case 4:
 
-                            if (pastAction.Followers < 10000 && pastAction.Darkness < 20)
-                                Action_Dropdown.Items[0]= "Social Media (Daily Tweet)";
-                            else if ((pastAction.Followers < 10000 && pastAction.Darkness >= 20) || (pastAction.Followers < 100000 && pastAction.Followers >= 10000 && pastAction.Darkness >= 40 && pastAction.Darkness < 60))
-                                Action_Dropdown.Items[0] = "Social Media (Vent On Main)";
-                            else if (pastAction.Followers < 100000 && pastAction.Followers >= 10000 && pastAction.Darkness < 40)
-                                Action_Dropdown.Items[0] = "Social Media (Make Business Tweet)";
-                            else if (pastAction.Followers >= 10000 && pastAction.Followers < 100000 && pastAction.Darkness >= 60)
-                                Action_Dropdown.Items[0] = "Social Media (Bash Others)";
-                            else Action_Dropdown.Items[0] = "Social Media (Muse)";
+                    if (pastAction.Followers < 10000 && pastAction.Darkness < 20)
+                        Action_Dropdown.Items[0] = "Social Media (Daily Tweet)";
+                    else if ((pastAction.Followers < 10000 && pastAction.Darkness >= 20) || (pastAction.Followers < 100000 && pastAction.Followers >= 10000 && pastAction.Darkness >= 40 && pastAction.Darkness < 60))
+                        Action_Dropdown.Items[0] = "Social Media (Vent On Main)";
+                    else if (pastAction.Followers < 100000 && pastAction.Followers >= 10000 && pastAction.Darkness < 40)
+                        Action_Dropdown.Items[0] = "Social Media (Make Business Tweet)";
+                    else if (pastAction.Followers >= 10000 && pastAction.Followers < 100000 && pastAction.Darkness >= 60)
+                        Action_Dropdown.Items[0] = "Social Media (Bash Others)";
+                    else Action_Dropdown.Items[0] = "Social Media (Muse)";
 
-                            if (pastAction.Darkness < 40)
-                                Action_Dropdown.Items[3] = "/st/ (Search Opinions)";
-                            else if (pastAction.Darkness >= 40 && pastAction.Darkness < 60)
-                                Action_Dropdown.Items[3] = "/st/ (Go Undercover)";
-                            else Action_Dropdown.Items[3] = "/st/ (Stir Shit)";
-                    
+                    if (pastAction.Darkness < 40)
+                        Action_Dropdown.Items[3] = "/st/ (Search Opinions)";
+                    else if (pastAction.Darkness >= 40 && pastAction.Darkness < 60)
+                        Action_Dropdown.Items[3] = "/st/ (Go Undercover)";
+                    else Action_Dropdown.Items[3] = "/st/ (Stir Shit)";
+
                     break;
             }
         }
@@ -793,7 +804,7 @@ namespace NSOEndingTreeMaker
                 var branch = UnsavedEndingBranchData;
                 TargetActionData pastAction = null;
                 if (MainForm.CurrentEndingTree.isDay2Exp && SelectedAction.TargetAction.DayIndex == 2 && SelectedAction.TargetAction.DayPart == -1)
-                { 
+                {
                     pastAction = new TargetActionData(1, 2, CmdType.None);
                     pastAction.CommandResult = new();
                 }
@@ -801,7 +812,7 @@ namespace NSOEndingTreeMaker
                 CommandAction command = NSOCommandManager.CmdTypeToCommand(ConvertActionChoiceToCmd(pastAction));
                 int addStress = command.stress;
                 CmdType stream = CmdType.Error;
-                if (ParentAction_Dropdown.SelectedIndex == 0 && !(StreamTopic_Dropdown.SelectedIndex == NSODataManager.StreamTopicList.IndexOf(AlphaType.Imbouron) && StreamLevelNumeric.Value == 6)) 
+                if (ParentAction_Dropdown.SelectedIndex == 0 && !(StreamTopic_Dropdown.SelectedIndex == NSODataManager.StreamTopicList.IndexOf(AlphaType.Imbouron) && StreamLevelNumeric.Value == 6))
                     stream = (CmdType)Enum.Parse(typeof(CmdType), $"{NSODataManager.StreamTopicList[StreamTopic_Dropdown.SelectedIndex]}_{StreamLevelNumeric.Value}");
                 TargetActionData followerAction = new TargetActionData((int)DayIndexNumeric.Value, DayPart_Dropdown.SelectedIndex, stream);
                 if (command.id == "Internet: Social Media" && command.stress > 0)
@@ -841,7 +852,7 @@ namespace NSOEndingTreeMaker
                 SetStreamIdeaPreview(pastAction);
                 SetHiatusText();
                 SetBonuses(command, pastAction);
-               
+
             }
             catch
             {
@@ -921,7 +932,7 @@ namespace NSOEndingTreeMaker
             }
             void SetFollowersTooltip(int followersCalculation, TargetActionData pastAction, CommandAction streamCmd)
             {
-                if (followersCalculation == 0) 
+                if (followersCalculation == 0)
                 {
                     FollowerResults_Tooltip.SetToolTip(FollowersDiff, "");
                     return;
@@ -929,12 +940,12 @@ namespace NSOEndingTreeMaker
                 double followerBase = Math.Min((float)(Math.Log10(pastAction.Followers) * 25f), Math.Floor(pastAction.Followers / 100.0));
                 string streamMultiplier = streamCmd.id == "Stream" ? $"\nStream Streak Multiplier: {pastAction.StreamStreak + 1f}" : "";
                 string preAlertMultiplier = pastAction.PreAlertBonus ? $"\nPre-Alert Multiplier: {(double)1.2f}" : "";
-                string gameMultiplier = streamCmd.name.Contains("Letsplay") ? $"\nGamer Girl Multiplier: {(double)(pastAction.GamerGirl/2f + 1f)}" : "";
+                string gameMultiplier = streamCmd.name.Contains("Letsplay") ? $"\nGamer Girl Multiplier: {(double)(pastAction.GamerGirl / 2f + 1f)}" : "";
                 string movieMultiplier = streamCmd.name.Contains("Nerd Talk") ? $"\nCinephile Multiplier: {(double)(pastAction.Cinephile / 2f + 1f)}" : "";
                 string impactMultiplier = streamCmd.name.Contains("Breakdown Stream") || streamCmd.name.Contains("Darkness ") ? $"\nImpact Multiplier: {(double)(pastAction.Impact / 2f + 1f)}" : "";
                 string expMultiplier = streamCmd.name.Contains("ASMR") || streamCmd.name.Contains("Sexy Stream") ? $"\nExperience Multiplier: {(double)(pastAction.Experience / 2f + 1f)}" : "";
                 string commMultiplier = streamCmd.id == "Stream" ? $"\nCommunication Multiplier: {(double)(pastAction.Communication / 10f + 1f)}" : "";
-                string holeMultiplier = pastAction.RabbitHole > 0 ? $"\nRabbit Hole Multiplier: {(double)(1f - (pastAction.RabbitHole / 100f)  )}" : "";
+                string holeMultiplier = pastAction.RabbitHole > 0 ? $"\nRabbit Hole Multiplier: {(double)(1f - (pastAction.RabbitHole / 100f))}" : "";
                 string followerDesc = $"Base Number: {followerBase}{streamMultiplier}{preAlertMultiplier}{gameMultiplier}{movieMultiplier}{impactMultiplier}{expMultiplier}{commMultiplier}{holeMultiplier}\n\nNew Followers: {followersCalculation}";
                 FollowerResults_Tooltip.SetToolTip(FollowersDiff, followerDesc);
             }
@@ -1061,7 +1072,9 @@ namespace NSOEndingTreeMaker
         {
             CmdType command = CmdType.None;
             var selectedActions = ActionListView.SelectedIndices;
-            var pastAction = ActionList[ActionList.FindLastIndex(a => (a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart < DayPart_Dropdown.SelectedIndex) || a.TargetAction.DayIndex < DayIndexNumeric.Value)];
+            TargetActionData pastAction = null;
+            if (ActionListView.Items.Count > 0 && !ActionListView.SelectedIndices.Contains(0) && DayPart_Dropdown.SelectedIndex > -1)
+                pastAction = ActionList[ActionList.FindLastIndex(a => (a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart < DayPart_Dropdown.SelectedIndex) || a.TargetAction.DayIndex < DayIndexNumeric.Value)];
             if (DayPart_Dropdown.SelectedIndex == -1 && (selectedActions.Count == 0 || (selectedActions.Count == 1 && ActionListView.SelectedIndices[0] != 0 && !(MainForm.CurrentEndingTree.isDay2Exp && selectedActions.Count == 1 && ActionList[selectedActions[0]].TargetAction.DayIndex == 2 && ActionList[selectedActions[0]].TargetAction.DayPart == -1))))
             {
                 MessageBox.Show("Time of Day cannot be empty.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1142,10 +1155,10 @@ namespace NSOEndingTreeMaker
 
             void ChangeMultipleActions()
             {
-
                 List<ActionHistoryObj> listForUndoHistory = new();
                 List<TargetActionData> selectedDatas = new();
                 List<int> selectedIndexes = new List<int>();
+
                 for (int i = 0; i < selectedActions.Count; i++)
                 {
                     selectedDatas.Add(ActionList[selectedActions[i]]);
@@ -1153,7 +1166,7 @@ namespace NSOEndingTreeMaker
                 }
                 for (var i = 0; i < selectedDatas.Count; i++)
                 {
-                    if ((selectedDatas[i].TargetAction.DayPart == -1 && !(MainForm.CurrentEndingTree.isDay2Exp && selectedDatas[i].TargetAction.DayIndex == 2 && selectedDatas[i].TargetAction.DayPart == -1))|| selectedDatas[i].TargetAction.DayIndex == 1)
+                    if ((selectedDatas[i].TargetAction.DayPart == -1 && !(MainForm.CurrentEndingTree.isDay2Exp && selectedDatas[i].TargetAction.DayIndex == 2 && selectedDatas[i].TargetAction.DayPart == -1)) || selectedDatas[i].TargetAction.DayIndex == 1)
                     {
                         continue;
                     }
@@ -1183,20 +1196,22 @@ namespace NSOEndingTreeMaker
                 ActionListView.SelectedIndices.Clear();
                 int nextDayPart = action.TargetAction.DayPart;
                 int nextDay = action.TargetAction.DayIndex;
-                nextDayPart += action.CommandResult.daypart;
+                nextDayPart += action.CommandResult != null ? action.CommandResult.daypart : 1;
                 if (nextDayPart >= 3)
                 {
                     if (nextDay >= DayIndexNumeric.Maximum) return;
                     nextDay++;
                     DayIndexNumeric.Value = nextDay;
                     DayPart_Dropdown.SelectedIndex = 0;
+                    ForceMandatoryEvents();
                     ConvertActionChoiceNames();
                     return;
                 }
                 DayPart_Dropdown.SelectedIndex = nextDayPart;
                 ForceMandatoryEvents();
+                ForceMandatoryNewAction(NewAction);
                 ConvertActionChoiceNames();
-          
+
             }
 
             bool InitializeSelectedStartDay()
@@ -1205,17 +1220,17 @@ namespace NSOEndingTreeMaker
                 {
                     TargetActionData dayOneAction = new(1, 2, CmdType.None);
                     ActionList[0] = dayOneAction;
-                    UnsavedEndingBranchData.InitializeActionStats(this);   
+                    UnsavedEndingBranchData.InitializeActionStats(this);
                 }
                 else
                 {
-                    if (ActionList.Exists(a => a.TargetAction.DayIndex == DayIndexNumeric.Value) && ActionList.Count > 1 && DayIndexNumeric.Value > ActionList[1].TargetAction.DayIndex)
+                    if (ActionList.Count > 1 && DayIndexNumeric.Value > ActionList[1].TargetAction.DayIndex)
                     {
                         MessageBox.Show("Can't set the starting day higher than other action days.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return false;
                     }
                     int pastStartingDay = UnsavedEndingBranchData.EndingBranch.StartingDay;
-                    int index = MainForm.CurrentEndingTree.EndingsList.IndexOf(SelectedEndingBranch);
+                    int index = SelectedEndingIndex;
                     UnsavedEndingBranchData.EndingBranch.StartingDay = (int)DayIndexNumeric.Value;
                     var newAction = MainForm.SetStartingAction(UnsavedEndingBranchData, false, index - 1);
                     if (newAction.Followers == 0)
@@ -1225,7 +1240,7 @@ namespace NSOEndingTreeMaker
                         {
                             UnsavedEndingBranchData.EndingBranch.StartingDay = pastStartingDay;
                             return false;
-                        }                 
+                        }
                     }
                     MainForm.ResetStartingDayData(UnsavedEndingBranchData, index - 1);
                     if (ActionList[0].TargetAction.DayIndex != newAction.TargetAction.DayIndex)
@@ -1238,6 +1253,7 @@ namespace NSOEndingTreeMaker
                     ActionList[selectedActions[0]].TargetAction.DayPart = -1;
                     EditActionVisualData(ActionList[0]);
                     UnsavedEndingBranchData.InitializeActionStats(this);
+                    ChangeNumeralDropdowns(ActionList[0]);
                 }
                 return true;
             }
@@ -1245,26 +1261,39 @@ namespace NSOEndingTreeMaker
 
         private void ForceMandatoryEvents()
         {
+            bool isStartingDay = SelectedAction != null && SelectedAction.TargetAction.DayPart == -1;
             var stress = UnsavedEndingBranchData.isStressed;
             var veryStress = UnsavedEndingBranchData.isReallyStressed;
             var veryLove = UnsavedEndingBranchData.isReallyLove;
             var musicVideo = UnsavedEndingBranchData.isVideo;
+            if (ActionListView.SelectedIndices.Count > 1)
+                return;
+            if (isStartingDay)
+                return;
             if (stress.isEventing && DayIndexNumeric.Value == stress.DayIndex)
             {
+                var isDarkOneExists = ActionList.Exists(a => a.TargetAction.DayIndex == stress.DayIndex && a.TargetAction.DayPart == 0 && a.Command == CmdType.DarknessS1);
+                StreamLevelNumeric.Value = 1;
                 if (DayPart_Dropdown.SelectedIndex == 1 || DayPart_Dropdown.SelectedIndex == -1)
                     DayPart_Dropdown.SelectedIndex = 0;
                 if (DayPart_Dropdown.SelectedIndex == 0)
                 {
                     StreamIdea_Label.Text = $"She's stressed.";
+                    StreamTopic_Dropdown.Visible = false;
+                    StreamLevelNumeric.Visible = false;
+                    Action_Dropdown.Visible = true;
                     ParentAction_Dropdown.SelectedIndex = 6;
                     Action_Dropdown.SelectedIndex = 0;
                     IgnoreDMCheck.Enabled = true;
                 }
                 if (DayPart_Dropdown.SelectedIndex == 2)
                 {
+                    StreamTopic_Dropdown.Visible = true;
+                    StreamLevelNumeric.Visible = true;
+                    Action_Dropdown.Visible = false;
                     ParentAction_Dropdown.SelectedIndex = 0;
-                    StreamTopic_Dropdown.SelectedIndex = 12;
                     StreamLevelNumeric.Value = 1;
+                    StreamTopic_Dropdown.SelectedIndex = 12;
                     IgnoreDMCheck.Enabled = false;
                 }
                 DayPart_Dropdown.Enabled = false;
@@ -1276,20 +1305,28 @@ namespace NSOEndingTreeMaker
             }
             if (veryStress.isEventing && DayIndexNumeric.Value == veryStress.DayIndex)
             {
-                if (DayPart_Dropdown.SelectedIndex == 1 || DayPart_Dropdown.SelectedIndex == -1)
+                var isDarkTwoExists = ActionList.Exists(a => a.TargetAction.DayIndex == veryStress.DayIndex && a.TargetAction.DayPart == 0 && a.Command == CmdType.DarknessS2);
+                StreamLevelNumeric.Value = 1;
+                if (DayPart_Dropdown.SelectedIndex == 1 || DayPart_Dropdown.SelectedIndex == -1 || !isDarkTwoExists)
                     DayPart_Dropdown.SelectedIndex = 0;
                 if (DayPart_Dropdown.SelectedIndex == 0)
                 {
                     StreamIdea_Label.Text = $"You really did it now.";
+                    StreamTopic_Dropdown.Visible = false;
+                    StreamLevelNumeric.Visible = false;
+                    Action_Dropdown.Visible = true;
                     ParentAction_Dropdown.SelectedIndex = 6;
                     Action_Dropdown.SelectedIndex = 1;
                     IgnoreDMCheck.Enabled = false;
                 }
                 if (DayPart_Dropdown.SelectedIndex == 2)
                 {
+                    StreamTopic_Dropdown.Visible = true;
+                    StreamLevelNumeric.Visible = true;
+                    Action_Dropdown.Visible = false;
                     ParentAction_Dropdown.SelectedIndex = 0;
-                    StreamTopic_Dropdown.SelectedIndex = 12;
                     StreamLevelNumeric.Value = 2;
+                    StreamTopic_Dropdown.SelectedIndex = 12;
                     IgnoreDMCheck.Enabled = false;
                 }
                 DayPart_Dropdown.Enabled = false;
@@ -1308,6 +1345,9 @@ namespace NSOEndingTreeMaker
                     StreamIdea_Label.Text = $"Aww, she really loves you!";
                     ParentAction_Dropdown.SelectedIndex = 5;
                     Action_Dropdown.SelectedIndex = 16;
+                    StreamTopic_Dropdown.Visible = false;
+                    StreamLevelNumeric.Visible = false;
+                    Action_Dropdown.Visible = true;
                     IgnoreDMCheck.Enabled = false;
                     DayPart_Dropdown.Enabled = false;
                     ParentAction_Dropdown.Enabled = false;
@@ -1332,6 +1372,9 @@ namespace NSOEndingTreeMaker
                     StreamIdea_Label.Text = $"Music video unlocked!";
                     ParentAction_Dropdown.SelectedIndex = 5;
                     Action_Dropdown.SelectedIndex = 17;
+                    StreamTopic_Dropdown.Visible = false;
+                    StreamLevelNumeric.Visible = false;
+                    Action_Dropdown.Visible = true;
                     IgnoreDMCheck.Enabled = false;
                     DayPart_Dropdown.Enabled = false;
                     ParentAction_Dropdown.Enabled = false;
@@ -1354,6 +1397,57 @@ namespace NSOEndingTreeMaker
             StreamTopic_Dropdown.Enabled = true;
             IgnoreDMCheck.Enabled = true;
         }
+    
+
+        private void ForceMandatoryNewAction(TargetActionData action)
+        {
+            var stress = UnsavedEndingBranchData.isStressed;
+            var veryStress = UnsavedEndingBranchData.isReallyStressed;
+            var veryLove = UnsavedEndingBranchData.isReallyLove;
+            var musicVideo = UnsavedEndingBranchData.isVideo;
+            if (stress.isEventing && DayIndexNumeric.Value == stress.DayIndex)
+            {
+
+                if (DayPart_Dropdown.SelectedIndex == 0)
+                {
+                    action.Command = CmdType.DarknessS1;
+                }
+                if (DayPart_Dropdown.SelectedIndex == 2)
+                {
+                    action.Command = CmdType.Darkness_1;
+                }
+            }
+            if (veryStress.isEventing && DayIndexNumeric.Value == veryStress.DayIndex)
+            {
+                if (DayPart_Dropdown.SelectedIndex == 0)
+                {
+                    action.Command = CmdType.DarknessS2;
+                }
+                if (DayPart_Dropdown.SelectedIndex == 2)
+                {
+                    action.Command = CmdType.Darkness_2;
+                }
+            }
+            if (veryLove.isEventing && DayIndexNumeric.Value == veryLove.DayIndex)
+            {
+                if (DayPart_Dropdown.SelectedIndex == 0)
+                {
+                    action.Command = CmdType.OdekakeZikka;
+                    
+                }
+            }
+            if (musicVideo.isEventing && DayIndexNumeric.Value == musicVideo.DayIndex)
+            {
+                if (DayPart_Dropdown.SelectedIndex == 0)
+                {
+                    action.Command = CmdType.OdekakeOdaiba;
+                    return;
+                }
+            }
+            action.TargetAction.DayIndex = (int)DayIndexNumeric.Value;
+            action.TargetAction.DayPart = DayPart_Dropdown.SelectedIndex;
+        }
+    
         private void EndingToGetOnSelectedIndexChanged(object sender, EventArgs e)
         {
             UnsavedEndingBranchData.EndingBranch.EndingToGet = NSODataManager.EndingsList[EndingToGet_Dropdown.SelectedIndex];
@@ -1412,10 +1506,9 @@ namespace NSOEndingTreeMaker
                             DayIndexNumeric.Enabled = false;
                             DayPart_Dropdown.Enabled = false;
                             ConvertActionChoiceNames();
-
                             return;
                         }
-                        if (SelectedAction.TargetAction.DayIndex == UnsavedEndingBranchData.EndingBranch.StartingDay && (UnsavedEndingBranchData.EndingBranch.StartingDay == 1 || SelectedAction.TargetAction.DayPart == -1))
+                        if (SelectedAction.TargetAction.DayIndex <= UnsavedEndingBranchData.EndingBranch.StartingDay && (UnsavedEndingBranchData.EndingBranch.StartingDay == 1 || SelectedAction.TargetAction.DayPart == -1))
                         {
                             OnlyDayIndexEditableIfFirstDaySelected();
                             ConvertActionChoiceNames();
@@ -1468,6 +1561,7 @@ namespace NSOEndingTreeMaker
                 DayIndexNumeric.Enabled = true;
                 if (UnsavedEndingBranchData.EndingBranch.StartingDay == 1)
                 {
+
                     DayIndexNumeric.Minimum = 1;
                     DayIndexNumeric.Enabled = false;
                     TargetActionButton.Enabled = false;
@@ -1485,8 +1579,19 @@ namespace NSOEndingTreeMaker
             void OnlyActionEditableIfMultiSelected()
             {
                 if (isDeleting) return;
+                if (selectedActions.Contains(0))
+                {
+                    ChangeActionEnableBool(false);
+                    TargetActionButton.Enabled = false;
+                    return;
+                }        
+                else 
+                {
+                    ChangeActionEnableBool(true);
+                    TargetActionButton.Enabled = true;
+                }
                 DayIndexNumeric.Enabled = false;
-                ChangeActionEnableBool(true);
+
                 DayPart_Dropdown.Enabled = false;
                 DayPart_Dropdown.SelectedIndex = -1;
                 TargetActionButton.Text = "Save Action";
@@ -1573,7 +1678,6 @@ namespace NSOEndingTreeMaker
                             else StreamLevelNumeric.Value = int.Parse(NewAction.Command.ToString().Split('_')[1]);
                         }
                         catch { StreamLevelNumeric.Value = 1; }
-                        ForceMandatoryEvents();
                         EnableActionOrStreamDropdown(true);
                         break;
                     case 1:
@@ -1593,7 +1697,6 @@ namespace NSOEndingTreeMaker
                         break;
                     case 6:
                         Action_Dropdown.SelectedIndex = NSODataManager.DarknessList.IndexOf(NewAction.Command);
-                        ForceMandatoryEvents();
                         break;
                 }
                 ForceMandatoryEvents();
@@ -1630,7 +1733,7 @@ namespace NSOEndingTreeMaker
         private void DayIndexNumericOnValueChanged(object sender, EventArgs e)
         {
             if (isReseting) return;
-            if (ActionList.Exists(a => a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart == DayPart_Dropdown.SelectedIndex) && DayPart_Dropdown.SelectedIndex != -1 && ActionListView.SelectedIndices.Count == 0)
+            if (ActionList.Exists(a => a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart == DayPart_Dropdown.SelectedIndex) && DayPart_Dropdown.SelectedIndex != -1 && ActionListView.SelectedIndices.Count == 0 && ActionListView.Items.Count > 0)
             {
                 int index = ActionList.FindIndex(a => a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart == DayPart_Dropdown.SelectedIndex);
                 ActionListView.SelectedIndices.Add(index);
@@ -1642,7 +1745,7 @@ namespace NSOEndingTreeMaker
         private void DayPart_DropdownOnSelectedIndexChanged(object sender, EventArgs e)
         {
             if (isReseting) return;
-            if (ActionList.Exists(a => a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart == DayPart_Dropdown.SelectedIndex) && DayPart_Dropdown.SelectedIndex != -1 && ActionListView.SelectedIndices.Count == 0)
+            if (ActionList.Exists(a => a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart == DayPart_Dropdown.SelectedIndex) && DayPart_Dropdown.SelectedIndex != -1 && ActionListView.SelectedIndices.Count == 0 && ActionListView.Items.Count > 0)
             {
                 int index = ActionList.FindIndex(a => a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart == DayPart_Dropdown.SelectedIndex);
                 ActionListView.SelectedIndices.Add(index);
@@ -1662,7 +1765,8 @@ namespace NSOEndingTreeMaker
             UnsavedEndingBranchData.EndingBranch.AllActions = ActionList;
             List<(string, string, string)> errorList = new();
             errorList.AddRange(UnsavedEndingBranchData.ValidateBranch(""));
-            var branchConflicts = MainForm.ValidateFutureBranchStarts(MainForm.CurrentEndingTree.EndingsList.IndexOf(SelectedEndingBranch), UnsavedEndingBranchData);
+            int index = SelectedEndingIndex;
+            var branchConflicts = MainForm.ValidateFutureBranchStarts(index, UnsavedEndingBranchData);
             if (branchConflicts.Item3 != "") errorList.Add(new("", "", branchConflicts.Item3));
             if (MainForm.CurrentEndingTree.isDay2Exp && ActionList.Exists(a => a.TargetAction.DayIndex == 2 && a.TargetAction.DayPart == -1 && a.Command == CmdType.None))
             {
@@ -1673,7 +1777,7 @@ namespace NSOEndingTreeMaker
                 BranchErrorDetails errorWindow = new(errorList, true);
                 if (errorWindow.ShowDialog() == DialogResult.Yes)
                 {
-                    ConfirmSaveEndingBranch();
+                    ConfirmSaveEndingBranch(closeAfter);
                     return true;
                 }                  
                 return false;                         
@@ -1681,7 +1785,8 @@ namespace NSOEndingTreeMaker
             if (branchConflicts.Item2 && isChanged)
             {
                 var msgHasFutureBranchStartDays = MessageBox.Show($"Some future branches rely on this branch for stats, stream ideas, etc. By changing this branch, some of those future branches might become broken.\n\nAre you sure you want to proceed?", "Caution", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-                if (msgHasFutureBranchStartDays == DialogResult.No) return false;
+                if (msgHasFutureBranchStartDays == DialogResult.No) 
+                    return false;
             }
             (int, int, EndingType) checkEnding = UnsavedEndingBranchData.ExpectedDayOfEnd;
             switch (checkEnding.Item3)
@@ -1696,43 +1801,21 @@ namespace NSOEndingTreeMaker
                     }
                     return false;
                 default:
-                    if (checkEnding.Item3 != UnsavedEndingBranchData.EndingBranch.EndingToGet && NSODataManager.IsNightEnding(checkEnding.Item3))
-                    {
-                        var msgTitle = "Night ending found!";
-                        var msgDesc = $"Selected ending in this branch is \"{NSODataManager.EndingNames[UnsavedEndingBranchData.EndingBranch.EndingToGet]}\". \n\nHowever, a different ending is projected to happen instead: \n\"{NSODataManager.EndingNames[checkEnding.Item3]}\"\n\nIt is possible to skip this ending in the game. \nDo you want to change to this ending?";
-                        if (UnsavedEndingBranchData.EndingBranch.EndingToGet == EndingType.Ending_None)
-                        {
-                            msgTitle = "Ending found!";
-                            msgDesc = $"No ending in this branch is selected. \n\nHowever, an ending is currently projected to happen: \n\"{NSODataManager.EndingNames[checkEnding.Item3]}\". \n\nIt is possible to skip this ending in the game. \nDo you want to change to this ending?";
-                        }
-                        var msgDiffEnding = MessageBox.Show(msgDesc, msgTitle, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
-                        switch(msgDiffEnding)
-                        {
-                            case DialogResult.Yes:
-                                ConfirmSaveEndingBranch();
-                                return true;
-                            case DialogResult.No:
-                                UnsavedEndingBranchData.InitializeActionStats(this);
-                                checkEnding = UnsavedEndingBranchData.ExpectedDayOfEnd;
-                                break;
-                            default: return false;
-                        }
-                    }
                     if (checkEnding.Item3 != UnsavedEndingBranchData.EndingBranch.EndingToGet)
                     {
                         var msgTitle = "Different ending found!";
-                        var msgDesc = $"Selected ending in this branch is \"{NSODataManager.EndingNames[UnsavedEndingBranchData.EndingBranch.EndingToGet]}\". \n\nHowever, a different ending is projected to happen instead: \n\"{NSODataManager.EndingNames[checkEnding.Item3]}\". \n\nSelected ending will change into the expected ending if you continue.";
+                        var msgDesc = $"Selected ending in this branch is \"{NSODataManager.EndingNames[UnsavedEndingBranchData.EndingBranch.EndingToGet]}\". \n\nHowever, a different ending is projected to happen instead: \n\"{NSODataManager.EndingNames[checkEnding.Item3]}\". \n\nDo you want to change to this ending?";
                         if (UnsavedEndingBranchData.EndingBranch.EndingToGet == EndingType.Ending_None)
                         {
                             msgTitle = "Ending found!";
-                            msgDesc = $"No ending in this branch is selected. \n\nHowever, an ending is currently projected to happen: \n\"{NSODataManager.EndingNames[checkEnding.Item3]}\". \n\nSelected ending will change into the expected ending if you continue.";
+                            msgDesc = $"No ending in this branch is selected. \n\nHowever, an ending is currently projected to happen: \n\"{NSODataManager.EndingNames[checkEnding.Item3]}\". \n\nDo you want to change to this ending?";
                         }
-                        var msgDiffEnding = MessageBox.Show(msgDesc, msgTitle, MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                        var msgDiffEnding = MessageBox.Show(msgDesc, msgTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                         switch (msgDiffEnding)
                         {
-                            case DialogResult.OK:
+                            case DialogResult.Yes:
                                 UnsavedEndingBranchData.EndingBranch.EndingToGet = checkEnding.Item3;
-                                EndingToGet_Dropdown.SelectedIndex = NSODataManager.EndingsList.IndexOf(UnsavedEndingBranchData.EndingBranch.EndingToGet); ;
+                                EndingToGet_Dropdown.SelectedIndex = NSODataManager.EndingsList.IndexOf(UnsavedEndingBranchData.EndingBranch.EndingToGet); 
                                 break;
                             default: return false;
                         }
@@ -1770,14 +1853,15 @@ namespace NSOEndingTreeMaker
         private void ConfirmSaveEndingBranch(bool closeAfter = true)
         {
             isSaving = true;
-            int index = MainForm.CurrentEndingTree.EndingsList.IndexOf(SelectedEndingBranch);
+            int index = SelectedEndingIndex;
             UnsavedEndingBranchData.EndingBranch.AllActions = ActionList;
-            MainForm.CurrentEndingTree.EndingsList[index] = UnsavedEndingBranchData;
-            ActionList = new();
+            MainForm.CurrentEndingTree.EndingsList[index] = new EndingBranchData(UnsavedEndingBranchData);
+            SelectedEndingBranch = MainForm.CurrentEndingTree.EndingsList[index];
             bool changed = isChanged || UnsavedEndingBranchData.EndingBranch.IsStressfulBressdown != SelectedEndingBranch.EndingBranch.IsStressfulBressdown || UnsavedEndingBranchData.IgnoreNightEndings != SelectedEndingBranch.IgnoreNightEndings;
             if (changed && !MainForm.isBranchEdited) MainForm.isBranchEdited = true;
-            MainForm.SetEndingListViewData();
             isChanged = false;
+            MainForm.SetEndingListViewData();
+            ToggleBranchLabelIfUnsaved();
             if (closeAfter)
             {
                 MainForm.SelectedEnding = null;
@@ -1833,6 +1917,8 @@ namespace NSOEndingTreeMaker
             if (ActionList[ActionList.Count - 1].TargetAction.DayIndex == 1)
                 DayIndexNumeric.Value = 2;
             else DayIndexNumeric.Value = ActionList[ActionList.Count - 1].TargetAction.DayIndex;
+            ForceMandatoryEvents();
+            ForceMandatoryNewAction(NewAction);
             EndingToGet_Dropdown.SelectedIndex = NSODataManager.EndingsList.IndexOf(UnsavedEndingBranchData.EndingBranch.EndingToGet);
             StressfulBreakdown_Check.Checked = UnsavedEndingBranchData.EndingBranch.IsStressfulBressdown;
             IgnoreNightEnding_Label.Checked = UnsavedEndingBranchData.IgnoreNightEndings;
@@ -1867,7 +1953,9 @@ namespace NSOEndingTreeMaker
         {
             if (Action_Dropdown.SelectedIndex == -1)
                 TargetActionButton.Enabled = false;
-            var pastAction = ActionList[ActionList.FindLastIndex(a => (a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart < DayPart_Dropdown.SelectedIndex) || a.TargetAction.DayIndex < DayIndexNumeric.Value)];
+            TargetActionData pastAction = null;
+            if (ActionListView.Items.Count > 0 && !ActionListView.SelectedIndices.Contains(0) && DayPart_Dropdown.SelectedIndex > -1)
+                pastAction = ActionList[ActionList.FindLastIndex(a => (a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart < DayPart_Dropdown.SelectedIndex) || a.TargetAction.DayIndex < DayIndexNumeric.Value)];
             if (SelectedAction == null)
             {
                 NewAction.Command = ConvertActionChoiceToCmd(pastAction);
@@ -2239,14 +2327,14 @@ namespace NSOEndingTreeMaker
                 }
             }
             SelectedEndingBranch = MainForm.CurrentEndingTree.EndingsList[branchIndex];
+            SelectedEndingIndex = branchIndex;
             ResetEndingBranch(false);
             ActionListView.SelectedIndices.Clear();
         }
 
         private void SwitchToPreviousBranch()
         {
-            var tree = MainForm.CurrentEndingTree;
-            int index = tree.EndingsList.IndexOf(SelectedEndingBranch);
+            int index = SelectedEndingIndex;
             if (index == 0)
                 return;
             SwitchToOtherEndingBranch(index - 1);
@@ -2255,7 +2343,7 @@ namespace NSOEndingTreeMaker
         private void SwitchToNextBranch()
         {
             var tree = MainForm.CurrentEndingTree;
-            int index = tree.EndingsList.IndexOf(SelectedEndingBranch);
+            int index = SelectedEndingIndex;
             if (index == tree.EndingsList.Count -1)
                 return;
             SwitchToOtherEndingBranch(index + 1);
@@ -2354,7 +2442,7 @@ namespace NSOEndingTreeMaker
 
         private void SaveBranch_MenuItemClick(object sender, EventArgs e)
         {
-            SaveEndingBranch();
+            SaveEndingBranch(false);
         }
 
         private void IgnoreNightEnding_Label_CheckedChanged(object sender, EventArgs e)
@@ -2376,7 +2464,11 @@ namespace NSOEndingTreeMaker
         private void EndingBranchEditor_KeyDown(object sender, KeyEventArgs e)
         {
             if (!e.Control) return;
-            if (e.KeyCode == Keys.S && !e.Shift)
+            if (e.KeyCode == Keys.S && e.Shift)
+            {
+                SaveEndingBranch();
+            }
+            else if (e.KeyCode == Keys.S && !e.Shift)
             {
                 SaveEndingBranch(false);
             }
@@ -2412,7 +2504,7 @@ namespace NSOEndingTreeMaker
 
         private void Branch_ContextMenuStrip_Opening(object sender, CancelEventArgs e)
         {
-            int index = MainForm.CurrentEndingTree.EndingsList.IndexOf(SelectedEndingBranch);
+            int index = SelectedEndingIndex;
             if (MainForm.CurrentEndingTree.EndingsList.Count ==1)
             {
                 PreviousBranch_MenuItem.Enabled = false;
@@ -2433,6 +2525,11 @@ namespace NSOEndingTreeMaker
                 PreviousBranch_MenuItem.Enabled = true;
                 NextBranch_MenuItem.Enabled = true;
             }
+        }
+
+        private void SaveEndingBranchAndExit_MenuItem_Click(object sender, EventArgs e)
+        {
+            SaveEndingBranch();
         }
     }
 }
