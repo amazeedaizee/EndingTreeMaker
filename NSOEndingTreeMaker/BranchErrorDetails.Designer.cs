@@ -158,7 +158,7 @@
             this.MinimizeBox = false;
             this.Name = "BranchErrorDetails";
             this.RightToLeftLayout = true;
-            this.Text = "Save Failed";
+            this.Text = "Errors Detected";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.BranchErrorDetails_FormClosing);
             this.Load += new System.EventHandler(this.BranchErrorDetails_Load);
             this.Click += new System.EventHandler(this.BranchErrorDetails_Click);

@@ -88,7 +88,7 @@
             // 
             this.StartingDayNumeric.Location = new System.Drawing.Point(13, 34);
             this.StartingDayNumeric.Maximum = new decimal(new int[] {
-            30,
+            29,
             0,
             0,
             0});

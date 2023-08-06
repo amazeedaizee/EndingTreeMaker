@@ -32,5 +32,15 @@ namespace NSOEndingTreeMaker
             UsedStream_ListView.BeginUpdate();
             UpdateUsed();
         }
+
+        private void UsedStreamWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (branchWindow.usedWindow != null) { branchWindow.usedWindow = null; }
+        }
+
+        private void UsedStream_ListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
