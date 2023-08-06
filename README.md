@@ -7,7 +7,7 @@ A program that creates and organizes ending runs for Needy Streamer Overload \(*
 Before using this program, you should have a moderate understanding of some of the core mechanics from the game already.
 
 **You also must have Needy Streamer Overload (1.1.0+) installed through Steam in order for this program to work properly.**
-Pirated or past copies of the game might not work well with this program.
+Pirated or past copies of the game might not work with this program.
 
 **\*Stats calculated is based on the Steam version**
 
@@ -28,11 +28,13 @@ This was mostly made with speed-runners in mind (since the speed-running categor
 - Can export ending trees into a CSV file
 - Accurately calculates stat changes from doing actions like in the game
 - Can predict endings projected to happen (if applicable) in a branch
+- Save your favorite ending trees in up to 5 slots for easy access
+- Easy access to the game using Ctrl+Shift+Alt+P
 - ...and some other things I might be missing.
 
 ## Some notes
 
-The program has a check for branches to see if the ending run can also be done the same way in the game. So while it is possible to choose the stream action at noon when editing branches, it would not be possible to save the branch since streaming can only be done at night in the game.
+The program has a check for branches to see if the ending run can also be done the same way in the game. While it is possible to create and save ending trees that have actions that are impossible for the game to do, the program will always let you know that the branch is technically invalid for the game. (This is for easy editing, in case you wants to make a valid branch later).
 
 Event flags when activated during branch editing might force you to do specific actions in said branch, if the day the event flag was set is not less than the starting day of the branch.
 
@@ -40,7 +42,7 @@ Non-stream Darkness actions have their own parent action category.
 
 Ame's Parents and Music Video action events are found in the Go Out parent category. 
 
-Branches and ending trees in this program also do not take into account stat changes from random noon events \(ESPECIALLY the Mentally Healthy noon events\), or removing stressful comments. When creating branches and ending trees, its also good to take into account the possibility of these events, as your branch might end in a different ending than you expect. 
+Branches and ending trees in this program also do not take into account stat changes from random noon events \(ESPECIALLY the Mentally Healthy noon events\), removing stressful comments, and etc. When creating branches and ending trees, its also good to take into account the possibility of these events, as your branch might end in a different ending than you expect. 
 
 With that being said, **Blazing Hell** (which can be achieved from a random noon event while Darkness is 60+) isn't available as one of the endings you can choose when making or editing a branch, nor the program will predict if Blazing Hell is an expected ending. This program only focuses on endings that don't rely on RNG to get. If you're aiming for a 100% endings run, you should take into account Blazing Hell in relation to other branches when planning out your ending tree.
 
