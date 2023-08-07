@@ -303,13 +303,13 @@ namespace NSOEndingTreeMaker
                     break;
             }
             Vomited_Bool.Checked = branch.isHorror.isEventing;
-            Vomited_ToolTip.SetToolTip(Vomited_Bool, "Only true if Ame vomits on Day 25, if on Day 24 she has 80+ stress, and her stress maximum (not current stress) is 120. ");
+            Vomited_ToolTip.SetToolTip(Vomited_Bool, "Only true if at the end on Day 24, Ame has 80+ stress, and her stress maximum (not current stress) is 120. ");
             Trauma_Bool.Checked = branch.isTrauma.isEventing;
             Trauma_Tooltip.SetToolTip(Trauma_Bool, "Only true if Ame trauma dumps on you on Day 15 instead of breaking down.");
             Parents_Bool.Checked = branch.isReallyLove.isEventing;
             Parents_Tooltip.SetToolTip(Parents_Bool, "Only true if Ame visits her parents on Day 24, if at the end of day 23 she has 80+ affection.");
             MV_bool.Checked = branch.isVideo.isEventing;
-            MV_Tooltip.SetToolTip(MV_bool, "Only true if Ame goes out to record her MV on Day 27, if she has 500000 or more followers.");
+            MV_Tooltip.SetToolTip(MV_bool, "Only true if Ame goes out to record her MV on Day 27, if she has 500000 or more followers at the end of Day 26.");
             NoMeds_Bool.Checked = branch.NoMeds.isEventing;
             switch (ReallyStressed_Bool.Checked)
             {
@@ -384,7 +384,7 @@ namespace NSOEndingTreeMaker
                 endedDayPart = 3;
             }
             else endedDayPart -= 1;
-            EndingGuesser.Text = ExpectedEnding.ending == EndingType.Ending_None ? "Projected Ending : None" : $"Projected Ending : {NSODataManager.EndingNames[ExpectedEnding.ending]} on Day {endedDay}, {NSODataManager.DayPartNames[endedDayPart]}";
+            EndingGuesser.Text = ExpectedEnding.ending == EndingType.Ending_None ? "Ending To Expect: None" : $"Ending To Expect: {NSODataManager.EndingNames[ExpectedEnding.ending]} on Day {endedDay}, {NSODataManager.DayPartNames[endedDayPart]}";
         }
 
         internal void SetActionCounterText(EndingBranchData branch)
@@ -940,15 +940,16 @@ namespace NSOEndingTreeMaker
                     return;
                 }
                 double followerBase = Math.Min((float)(Math.Log10(pastAction.Followers) * 25f), Math.Floor(pastAction.Followers / 100.0));
-                string streamMultiplier = streamCmd.id == "Stream" ? $"\nStream Streak Multiplier: {pastAction.StreamStreak + 1f}" : "";
+                string followerMultiplier = $"\nBase Follower Multiplier: {streamCmd.followers}";
+                string streakMultiplier = streamCmd.id == "Stream" ? $"\nStream Streak Multiplier: {pastAction.StreamStreak + 1f}" : "";
                 string preAlertMultiplier = pastAction.PreAlertBonus ? $"\nPre-Alert Multiplier: {(double)1.2f}" : "";
                 string gameMultiplier = streamCmd.name.Contains("Letsplay") ? $"\nGamer Girl Multiplier: {(double)(pastAction.GamerGirl / 2f + 1f)}" : "";
                 string movieMultiplier = streamCmd.name.Contains("Nerd Talk") ? $"\nCinephile Multiplier: {(double)(pastAction.Cinephile / 2f + 1f)}" : "";
                 string impactMultiplier = streamCmd.name.Contains("Breakdown Stream") || streamCmd.name.Contains("Darkness ") ? $"\nImpact Multiplier: {(double)(pastAction.Impact / 2f + 1f)}" : "";
                 string expMultiplier = streamCmd.name.Contains("ASMR") || streamCmd.name.Contains("Sexy Stream") ? $"\nExperience Multiplier: {(double)(pastAction.Experience / 2f + 1f)}" : "";
                 string commMultiplier = streamCmd.id == "Stream" ? $"\nCommunication Multiplier: {(double)(pastAction.Communication / 10f + 1f)}" : "";
-                string holeMultiplier = pastAction.RabbitHole > 0 ? $"\nRabbit Hole Multiplier: {(double)(1f - (pastAction.RabbitHole / 100f))}" : "";
-                string followerDesc = $"Base Number: {followerBase}{streamMultiplier}{preAlertMultiplier}{gameMultiplier}{movieMultiplier}{impactMultiplier}{expMultiplier}{commMultiplier}{holeMultiplier}\n\nNew Followers: {followersCalculation}";
+                string holeMultiplier = pastAction.RabbitHole > 0 && streamCmd.id == "Stream" ? $"\nRabbit Hole Multiplier: {(double)(1f - (pastAction.RabbitHole / 100f))}" : "";
+                string followerDesc = $"Base Number: {followerBase}{followerMultiplier}{streakMultiplier}{preAlertMultiplier}{gameMultiplier}{movieMultiplier}{impactMultiplier}{expMultiplier}{commMultiplier}{holeMultiplier}\n\nNew Followers: {followersCalculation}";
                 FollowerResults_Tooltip.SetToolTip(FollowersDiff, followerDesc);
             }
 
