@@ -1,7 +1,8 @@
 
 # EndingTreeMaker
 
-![image](https://github.com/amazeedaizee/EndingTreeMaker/assets/131136866/4a599794-0bf8-4ffb-b45b-b09f18d996ac)
+![image](https://github.com/amazeedaizee/EndingTreeMaker/assets/131136866/adf4b72a-ddae-422f-9526-40d4936cd275)
+
 
 A program that creates and organizes ending runs for Needy Streamer Overload \(**Windows** only\).
 Before using this program, you should have a moderate understanding of some of the core mechanics from the game already.
