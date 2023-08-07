@@ -29,7 +29,7 @@ This was mostly made with speed-runners in mind (since the speed-running categor
 - Accurately calculates stat changes from doing actions like in the game
 - Can predict endings projected to happen (if applicable) in a branch
 - Save your favorite ending trees in up to 5 slots for easy access
-- Easy access to the game using Ctrl+Shift+Alt+P
+- Easy access to the game using Ctrl+Shift+P (with Steam) or Ctrl+Shift+Alt+P (without Steam)
 - ...and some other things I might be missing.
 
 ## Some notes
