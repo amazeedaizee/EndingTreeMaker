@@ -128,6 +128,7 @@ namespace NSOEndingTreeMaker
             else UnvalidBranches_Label.Visible = false;
             Notes.Text = CurrentEndingTree.Notes;
             Day2Exp_Check.Checked = CurrentEndingTree.isDay2Exp;
+            ChangeFileLabelIfUnsaved();
             return errorList;
 
             void InitializeEndingList(int branchIndex, List<(string, string, string)> errorList, string branchName)
@@ -173,12 +174,47 @@ namespace NSOEndingTreeMaker
             ending.SubItems.Add(endingData.EndingBranch.IsStressfulBressdown ? "Yes" : "");
         }
 
+        public void InsertEndingToListView(EndingBranchData endingData, int index)
+        {
+            bool doesEndExist = NSODataManager.EndingNames.TryGetValue(endingData.EndingBranch.EndingToGet, out string name);
+            ListViewItem ending = EndingListView.Items.Insert(index, doesEndExist ? name : "");
+            ending.SubItems.Add(endingData.EndingBranch.StartingDay.ToString());
+            ending.SubItems.Add(SetLatestDayString(endingData));
+            ending.SubItems.Add(endingData.EndingBranch.IsStressfulBressdown ? "Yes" : "");
+        }
+
         public string SetLatestDayString(EndingBranchData endingData)
         {
             TargetActionData action = endingData.EndingBranch.AllActions[endingData.EndingBranch.AllActions.Count - 1];
-            if (action.TargetAction.DayPart + action.CommandResult.daypart >= 3)
+            if (action.TargetAction.DayPart + action.CommandResult.daypart >= 3 && !NSODataManager.IsEndingOnSameDay(endingData.ExpectedDayOfEnd.Item3))
                 return $"{action.TargetAction.DayIndex + 1}";
             return action.TargetAction.DayIndex.ToString();
+        }
+
+        private void MoveBranchToPreviousIndex()
+        {
+            if (SelectedEnding == null || EndingListView.SelectedIndices.Count == 0 || EndingListView.SelectedIndices[0] <= 1)
+                return;
+            int branchIndex = CurrentEndingTree.EndingsList.IndexOf(SelectedEnding);
+            MoveBranchToNewIndex(SelectedEnding, branchIndex - 1);
+        }
+        private void MoveBranchToNextIndex()
+        {
+            int maxListCount = CurrentEndingTree.EndingsList.Count;
+            if (SelectedEnding == null || EndingListView.SelectedIndices.Count == 0 || EndingListView.SelectedIndices[0] == maxListCount -1)
+                return;
+            int branchIndex = CurrentEndingTree.EndingsList.IndexOf(SelectedEnding);
+            MoveBranchToNewIndex(SelectedEnding, branchIndex+1);
+        }
+        private void MoveBranchToNewIndex(EndingBranchData endingData, int newIndex)
+        {
+            int branchIndex = CurrentEndingTree.EndingsList.IndexOf(endingData);
+            var newBranch = new EndingBranchData(endingData);
+            CurrentEndingTree.EndingsList.RemoveAt(branchIndex);
+            EndingListView.Items.RemoveAt(branchIndex);
+            CurrentEndingTree.EndingsList.Insert(newIndex,newBranch);
+            InsertEndingToListView(newBranch, newIndex);
+            SetEndingListViewData();
         }
 
         private void DeleteSelectedEndingData()
@@ -195,7 +231,11 @@ namespace NSOEndingTreeMaker
                 return;
             }
             var confirm = MessageBox.Show($"Are you sure you want to delete {(selectedEndings.Count > 1 ? "these endings" : "this ending")}? \n\nThis action can't be undone.", "Delete Ending?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (confirm == DialogResult.No) return;
+            if (confirm == DialogResult.No) 
+            {
+                ResetSelectedEnding();
+                return; 
+            }
             for (int i = selectedEndings.Count - 1; i >= 0; i--)
             {
                 int index = selectedEndings[selectedEndings.Count - 1];
@@ -212,11 +252,16 @@ namespace NSOEndingTreeMaker
                             if (CurrentEndingTree.EndingsList[index].EndingBranch.AllActions.Exists(a => a.TargetAction.DayIndex == CurrentEndingTree.EndingsList[k].EndingBranch.StartingDay) &&
                                 (CurrentEndingTree.EndingsList[k].EndingBranch.StartingDay - 1) <= CurrentEndingTree.EndingsList[index].EndingBranch.AllActions[CurrentEndingTree.EndingsList[index].EndingBranch.AllActions.Count - 1].TargetAction.DayIndex) continue;
                             checkIfValid = false;
+
                         }
                         if (!checkIfValid)
                         {
-                            MessageBox.Show($"Could not delete an Ending Branch: \n\nOne or more future ending branches relies on only this branch for their Starting Days.\n\nEnding Branch: \n\nBranch {j + 1} \nEnding To Get: {NSODataManager.EndingNames[CurrentEndingTree.EndingsList[index].EndingBranch.EndingToGet]}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
+                            var confirmAgain = MessageBox.Show($"Are you really sure? \n\nOne or more future ending branches relies on only this branch for their Starting Days.\n\nEnding Branch To Delete: Branch {j + 1} \nEnding To Get: {NSODataManager.EndingNames[CurrentEndingTree.EndingsList[index].EndingBranch.EndingToGet]}", "Confirm Again", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                            if (confirmAgain == DialogResult.No)
+                            {
+                                ResetSelectedEnding();
+                                return;
+                            }
                         }
                     }
                 }
@@ -224,10 +269,17 @@ namespace NSOEndingTreeMaker
                 EndingListView.Items.RemoveAt(index);
             }
             SetEndingListViewData(true);
-            SelectedEnding = null;
-            DeleteEndingBranch.Enabled = false;
-            EditEndingBranch.Enabled = false;
-            DeletingEndings = false;
+            ResetSelectedEnding();
+
+            void ResetSelectedEnding()
+            {
+                SelectedEnding = null;
+                DeleteEndingBranch.Enabled = false;
+                EditEndingBranch.Enabled = false;
+                MoveBranchDown_Button.Enabled = false;
+                MoveBranchUp_Button.Enabled = false;
+                DeletingEndings = false;
+            }
         }
 
 
@@ -242,16 +294,15 @@ namespace NSOEndingTreeMaker
                 List<TargetActionData> actions = refBranch.EndingBranch.AllActions;
                 if (branch.EndingBranch.StartingDay > actions[actions.Count - 1].TargetAction.DayIndex)
                 {
-                    continue;
+                   break;
                 }
                 for (int j = actions.Count - 1; j >= 0; j--)
                 {
                     bool foundReferenceDay = actions[j].TargetAction.DayIndex == branch.EndingBranch.StartingDay || (actions[j].TargetAction.DayIndex == (branch.EndingBranch.StartingDay-1) && actions[j].TargetAction.DayPart + actions[j].CommandResult.daypart >= 3);
                     bool isNoEndingExpected = (refBranch.ExpectedDayOfEnd.Item3 == EndingType.Ending_None || (actions[j].TargetAction.DayIndex <= refBranch.ExpectedDayOfEnd.Item1 && !(refBranch.isHorror.isEventing && actions[j].TargetAction.DayIndex >= refBranch.isHorror.DayIndex)));
-                    if (foundReferenceDay && isNoEndingExpected && !foundValidDay)
+                    if (foundReferenceDay && isNoEndingExpected)
                     {
                         foundValidDay = true;
-                        continue;
                     }
                     if (foundValidDay && actions[j].TargetAction.DayIndex == (branch.EndingBranch.StartingDay - 1))
                     {
@@ -332,7 +383,7 @@ namespace NSOEndingTreeMaker
             for (int i = index; i >= 0; i--)
             {
                 EndingBranchData endingToImport = CurrentEndingTree.EndingsList[i];
-                List<TargetActionData> actions = CurrentEndingTree.EndingsList[i].EndingBranch.AllActions;
+                List<TargetActionData> actions = endingToImport.EndingBranch.AllActions;
                 if (actions.Exists(a => a.TargetAction.DayIndex == (branch.EndingBranch.StartingDay - 1)))
                 {
                     var newIdeas = endingToImport.StreamIdeaList.FindAll(i => i.DayIndex < branch.EndingBranch.StartingDay);
@@ -349,27 +400,40 @@ namespace NSOEndingTreeMaker
 
                     if ((endingToImport.hasGalacticRail.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.hasGalacticRail.isEventing)
                         branch.hasGalacticRail = endingToImport.hasGalacticRail;
+                    else branch.hasGalacticRail = new(0, false);
                     if ((endingToImport.NoMeds.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.NoMeds.isEventing)
                         branch.NoMeds = endingToImport.NoMeds;
+                    else branch.NoMeds = new(0, false);
                     if ((endingToImport.isHorror.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.isHorror.isEventing)
                         branch.isHorror = endingToImport.isHorror;
+                    else branch.isHorror = new(0, false);
                     if ((endingToImport.isReallyLove.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.isReallyLove.isEventing)
                         branch.isReallyLove = endingToImport.isReallyLove;
+                    else branch.isReallyLove = new(0, false);
                     if ((endingToImport.isStressed.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.isStressed.isEventing)
                         branch.isStressed = endingToImport.isStressed;
+                    else branch.isStressed = new(0, false);
                     if ((endingToImport.isReallyStressed.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.isReallyStressed.isEventing)
                         branch.isReallyStressed = endingToImport.isReallyStressed;
+                    else branch.isReallyStressed = new(0, false);
                     if ((endingToImport.isTrauma.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.isTrauma.isEventing)
                         branch.isTrauma = endingToImport.isTrauma;
+                    else branch.isTrauma = new(0, false);
                     if ((endingToImport.isVideo.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.isVideo.isEventing)
                         branch.isVideo = endingToImport.isVideo;
+                    else branch.isVideo = new(0, false);
                     if ((endingToImport.is150M.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.is150M.isEventing)
                         branch.is150M = endingToImport.is150M;
+                    else branch.is150M = new(0, false);
                     if ((endingToImport.is300M.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.is300M.isEventing)
                         branch.is300M = endingToImport.is300M;
+                    else branch.is300M = new(0, false);
                     if ((endingToImport.is500M.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.is500M.isEventing)
                         branch.is500M = endingToImport.is500M;
-                    if ((endingToImport.isMaxFollowers.DayIndex <= branch.isMaxFollowers.DayIndex) && endingToImport.isMaxFollowers.isEventing) branch.isMaxFollowers = endingToImport.isMaxFollowers;
+                    else branch.is500M = new(0, false);
+                    if ((endingToImport.isMaxFollowers.DayIndex <= branch.isMaxFollowers.DayIndex) && endingToImport.isMaxFollowers.isEventing) 
+                        branch.isMaxFollowers = endingToImport.isMaxFollowers;
+                    else branch.isMaxFollowers = new(0, false);
                     return;
 
                 }
@@ -438,6 +502,8 @@ namespace NSOEndingTreeMaker
             _currentNotes = CurrentEndingTree.Notes;
             DeleteEndingBranch.Enabled = false;
             EditEndingBranch.Enabled = false;
+            MoveBranchDown_Button.Enabled = false;
+            MoveBranchUp_Button.Enabled = false;
             OpenRecent_MenuItem.Text += $" {Path.GetFileName(_recentlyClosed)}";
             string gameModPath = InitializeValidGamePath() + @"\BepInEx\plugins\EndingTreeSimulator";
             EndingSim_MenuItem.Visible = Directory.Exists(gameModPath) && File.Exists(gameModPath + @"\EndingTreeSimulator.dll");
@@ -466,6 +532,7 @@ namespace NSOEndingTreeMaker
                 stream.Close();
                 MessageBox.Show("Successfully saved Ending Tree!", "Success", MessageBoxButtons.OK);
                 ChangeFormTitle();
+                ChangeFileLabelIfUnsaved();
                 return true;
             }
             return false;
@@ -496,6 +563,7 @@ namespace NSOEndingTreeMaker
                     stream.Close();
                     MessageBox.Show("Successfully saved Ending Tree!", "Success", MessageBoxButtons.OK);
                     ChangeFormTitle();
+                    ChangeFileLabelIfUnsaved();
                     return true;
                 }
                 return false;
@@ -526,6 +594,7 @@ namespace NSOEndingTreeMaker
                     _isNotesEdited = false;
                     isBranchEdited = false;
                     ChangeFormTitle();
+                    ChangeFileLabelIfUnsaved();
                     return true;
                     }
                 }
@@ -568,6 +637,7 @@ namespace NSOEndingTreeMaker
                         isBranchEdited = false;
                         openEndingTree.Dispose();
                         ChangeFormTitle();
+                        ChangeFileLabelIfUnsaved();
                         return true;
                     }
                 }
@@ -601,7 +671,16 @@ namespace NSOEndingTreeMaker
                 SelectedEnding = CurrentEndingTree.EndingsList[selectedEndings[0]];
                 DeleteEndingBranch.Enabled = true;
                 EditEndingBranch.Enabled = true;
-                Console.WriteLine("Selected Ending Ignored DM's: " + SelectedEnding.IgnoreCounter.Count);
+                if (selectedEndings[0] == 0)
+                {
+                    MoveBranchDown_Button.Enabled = false;
+                    MoveBranchUp_Button.Enabled = false;
+                    return;
+                }
+                if (selectedEndings[0] != CurrentEndingTree.EndingsList.Count -1)
+                    MoveBranchDown_Button.Enabled = true;
+                if (selectedEndings[0] > 1)
+                   MoveBranchUp_Button.Enabled = true;
                 return;
             }
             if (selectedEndings.Count == 0)
@@ -609,10 +688,14 @@ namespace NSOEndingTreeMaker
                 SelectedEnding = null;
                 DeleteEndingBranch.Enabled = false;
                 EditEndingBranch.Enabled = false;
+                MoveBranchDown_Button.Enabled = false;
+                MoveBranchUp_Button.Enabled = false;
                 return;
             }
             DeleteEndingBranch.Enabled = true;
             EditEndingBranch.Enabled = false;
+            MoveBranchDown_Button.Enabled = false;
+            MoveBranchUp_Button.Enabled = false;
         }
 
         private void EndingListView_KeyDown(object sender, KeyEventArgs e)
@@ -654,6 +737,7 @@ namespace NSOEndingTreeMaker
             CurrentEndingTree.Notes = Notes.Text;
             if (CurrentEndingTree.Notes != _currentNotes) _isNotesEdited = true;
             else _isNotesEdited = false;
+            ChangeFileLabelIfUnsaved();
         }
 
         private void ExportEndingTreeToCSV()
@@ -796,6 +880,13 @@ namespace NSOEndingTreeMaker
             }
             if (confirm == DialogResult.No) return true;
             return false;
+        }
+
+        private void ChangeFileLabelIfUnsaved()
+        {
+            if (isBranchEdited || _isNotesEdited || _isExpEdited)
+                File_MenuItem.Text = "File*";
+            else File_MenuItem.Text = "File";
         }
 
         private void SaveOrSaveAs()
@@ -1106,6 +1197,21 @@ namespace NSOEndingTreeMaker
             }
             catch { MessageBox.Show("Could not open the game from the Steam path: either the game doesn't exist, has been moved to another location, or is corrupted.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
 
+        }
+
+        private void MoveBranchDown_Button_Click(object sender, EventArgs e)
+        {
+            MoveBranchToNextIndex();
+        }
+
+        private void MoveBranchUp_Button_Click(object sender, EventArgs e)
+        {
+            MoveBranchToPreviousIndex();
+        }
+
+        private void File_MenuItem_DropDownOpened(object sender, EventArgs e)
+        {
+            OpenRecent_MenuItem.Text = $"Open Recent Ending Tree: {Path.GetFileName(_recentlyClosed)}"; ;
         }
     }
 }

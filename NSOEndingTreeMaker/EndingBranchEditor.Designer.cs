@@ -132,6 +132,9 @@
             this.PreviousBranch_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.NextBranch_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FollowerResults_Tooltip = new System.Windows.Forms.ToolTip(this.components);
+            this.NewEndingBranch_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.NewEndingBranchFromSelected_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.NewBranch_Seperator = new System.Windows.Forms.ToolStripSeparator();
             this.EndingToGet_Group.SuspendLayout();
             this.ActionStatDelta.SuspendLayout();
             this.BaseStatDelta.SuspendLayout();
@@ -456,6 +459,7 @@
             // 
             // Hiatus_Label
             // 
+            this.Hiatus_Label.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.Hiatus_Label.AutoSize = true;
             this.Hiatus_Label.Location = new System.Drawing.Point(9, 225);
             this.Hiatus_Label.Name = "Hiatus_Label";
@@ -466,6 +470,7 @@
             // 
             // StreamIdea_Label
             // 
+            this.StreamIdea_Label.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.StreamIdea_Label.AutoSize = true;
             this.StreamIdea_Label.Location = new System.Drawing.Point(9, 207);
             this.StreamIdea_Label.Name = "StreamIdea_Label";
@@ -1146,6 +1151,9 @@
             // Branch_ContextMenuStrip
             // 
             this.Branch_ContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.NewEndingBranch_MenuItem,
+            this.NewEndingBranchFromSelected_MenuItem,
+            this.NewBranch_Seperator,
             this.ResetEnding_MenuItem,
             this.SaveBranch_MenuItem,
             this.SaveEndingBranchAndExit_MenuItem,
@@ -1153,7 +1161,7 @@
             this.PreviousBranch_MenuItem,
             this.NextBranch_MenuItem});
             this.Branch_ContextMenuStrip.Name = "Branch_ContextMenuStrip";
-            this.Branch_ContextMenuStrip.Size = new System.Drawing.Size(302, 120);
+            this.Branch_ContextMenuStrip.Size = new System.Drawing.Size(335, 192);
             this.Branch_ContextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.Branch_ContextMenuStrip_Opening);
             // 
             // ResetEnding_MenuItem
@@ -1162,7 +1170,7 @@
             this.ResetEnding_MenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
             | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.Z)));
-            this.ResetEnding_MenuItem.Size = new System.Drawing.Size(301, 22);
+            this.ResetEnding_MenuItem.Size = new System.Drawing.Size(334, 22);
             this.ResetEnding_MenuItem.Text = "Reset Ending Branch";
             this.ResetEnding_MenuItem.Click += new System.EventHandler(this.ResetBranch_MenuItemClick);
             // 
@@ -1170,7 +1178,7 @@
             // 
             this.SaveBranch_MenuItem.Name = "SaveBranch_MenuItem";
             this.SaveBranch_MenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.SaveBranch_MenuItem.Size = new System.Drawing.Size(301, 22);
+            this.SaveBranch_MenuItem.Size = new System.Drawing.Size(334, 22);
             this.SaveBranch_MenuItem.Text = "Save Ending Branch";
             this.SaveBranch_MenuItem.Click += new System.EventHandler(this.SaveBranch_MenuItemClick);
             // 
@@ -1179,20 +1187,20 @@
             this.SaveEndingBranchAndExit_MenuItem.Name = "SaveEndingBranchAndExit_MenuItem";
             this.SaveEndingBranchAndExit_MenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.S)));
-            this.SaveEndingBranchAndExit_MenuItem.Size = new System.Drawing.Size(301, 22);
+            this.SaveEndingBranchAndExit_MenuItem.Size = new System.Drawing.Size(334, 22);
             this.SaveEndingBranchAndExit_MenuItem.Text = "Save Ending Branch And Exit";
             this.SaveEndingBranchAndExit_MenuItem.Click += new System.EventHandler(this.SaveEndingBranchAndExit_MenuItem_Click);
             // 
             // Branch_MenuSeparator
             // 
             this.Branch_MenuSeparator.Name = "Branch_MenuSeparator";
-            this.Branch_MenuSeparator.Size = new System.Drawing.Size(298, 6);
+            this.Branch_MenuSeparator.Size = new System.Drawing.Size(331, 6);
             // 
             // PreviousBranch_MenuItem
             // 
             this.PreviousBranch_MenuItem.Name = "PreviousBranch_MenuItem";
             this.PreviousBranch_MenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Left)));
-            this.PreviousBranch_MenuItem.Size = new System.Drawing.Size(301, 22);
+            this.PreviousBranch_MenuItem.Size = new System.Drawing.Size(334, 22);
             this.PreviousBranch_MenuItem.Text = "Move To Previous Ending Branch";
             this.PreviousBranch_MenuItem.Click += new System.EventHandler(this.PreviousBranch_MenuItem_Click);
             // 
@@ -1200,7 +1208,7 @@
             // 
             this.NextBranch_MenuItem.Name = "NextBranch_MenuItem";
             this.NextBranch_MenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Right)));
-            this.NextBranch_MenuItem.Size = new System.Drawing.Size(301, 22);
+            this.NextBranch_MenuItem.Size = new System.Drawing.Size(334, 22);
             this.NextBranch_MenuItem.Text = "Move To Next Ending Branch";
             this.NextBranch_MenuItem.Click += new System.EventHandler(this.NextEnding_MenuItem_Click);
             // 
@@ -1208,6 +1216,28 @@
             // 
             this.FollowerResults_Tooltip.IsBalloon = true;
             this.FollowerResults_Tooltip.ToolTipTitle = "Followers calculated from:";
+            // 
+            // NewEndingBranch_MenuItem
+            // 
+            this.NewEndingBranch_MenuItem.Name = "NewEndingBranch_MenuItem";
+            this.NewEndingBranch_MenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this.NewEndingBranch_MenuItem.Size = new System.Drawing.Size(334, 22);
+            this.NewEndingBranch_MenuItem.Text = "New Ending Branch";
+            this.NewEndingBranch_MenuItem.Click += new System.EventHandler(this.newEndingBranchToolStripMenuItem_Click);
+            // 
+            // NewEndingBranchFromSelected_MenuItem
+            // 
+            this.NewEndingBranchFromSelected_MenuItem.Name = "NewEndingBranchFromSelected_MenuItem";
+            this.NewEndingBranchFromSelected_MenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.N)));
+            this.NewEndingBranchFromSelected_MenuItem.Size = new System.Drawing.Size(334, 22);
+            this.NewEndingBranchFromSelected_MenuItem.Text = "New Branch From Selected Actions";
+            this.NewEndingBranchFromSelected_MenuItem.Click += new System.EventHandler(this.newBranchFromSelectedDayToolStripMenuItem_Click);
+            // 
+            // NewBranch_Seperator
+            // 
+            this.NewBranch_Seperator.Name = "NewBranch_Seperator";
+            this.NewBranch_Seperator.Size = new System.Drawing.Size(331, 6);
             // 
             // EndingBranchEditor
             // 
@@ -1363,5 +1393,8 @@
         private System.Windows.Forms.ToolStripMenuItem PreviousBranch_MenuItem;
         private System.Windows.Forms.ToolStripMenuItem NextBranch_MenuItem;
         private System.Windows.Forms.ToolStripMenuItem SaveEndingBranchAndExit_MenuItem;
+        private System.Windows.Forms.ToolStripMenuItem NewEndingBranch_MenuItem;
+        private System.Windows.Forms.ToolStripMenuItem NewEndingBranchFromSelected_MenuItem;
+        private System.Windows.Forms.ToolStripSeparator NewBranch_Seperator;
     }
 }

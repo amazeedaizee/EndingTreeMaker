@@ -35,7 +35,12 @@
             this.StartingDay_Label = new System.Windows.Forms.Label();
             this.AddEnding_Label = new System.Windows.Forms.Label();
             this.IsStressfulBreakdown_CheckAdd = new System.Windows.Forms.CheckBox();
+            this.Advanced_Button = new System.Windows.Forms.LinkLabel();
+            this.InsertAtEndingIndex_Numeric = new System.Windows.Forms.NumericUpDown();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.StartingDayNumeric)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.InsertAtEndingIndex_Numeric)).BeginInit();
             this.SuspendLayout();
             // 
             // AddEndingButton
@@ -136,15 +141,67 @@
             this.IsStressfulBreakdown_CheckAdd.UseVisualStyleBackColor = true;
             this.IsStressfulBreakdown_CheckAdd.CheckedChanged += new System.EventHandler(this.IsStressfulBreakdown_CheckAdd_CheckedChanged);
             // 
+            // Advanced_Button
+            // 
+            this.Advanced_Button.AutoSize = true;
+            this.Advanced_Button.Location = new System.Drawing.Point(10, 109);
+            this.Advanced_Button.Name = "Advanced_Button";
+            this.Advanced_Button.Size = new System.Drawing.Size(56, 13);
+            this.Advanced_Button.TabIndex = 5;
+            this.Advanced_Button.TabStop = true;
+            this.Advanced_Button.Text = "Advanced";
+            this.Advanced_Button.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.Advanced_Button_LinkClicked);
+            // 
+            // InsertAtEndingIndex_Numeric
+            // 
+            this.InsertAtEndingIndex_Numeric.Location = new System.Drawing.Point(132, 140);
+            this.InsertAtEndingIndex_Numeric.Minimum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.InsertAtEndingIndex_Numeric.Name = "InsertAtEndingIndex_Numeric";
+            this.InsertAtEndingIndex_Numeric.Size = new System.Drawing.Size(54, 20);
+            this.InsertAtEndingIndex_Numeric.TabIndex = 1;
+            this.InsertAtEndingIndex_Numeric.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.InsertAtEndingIndex_Numeric.ValueChanged += new System.EventHandler(this.InsertAtEndingIndex_Numeric_ValueChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(10, 142);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(112, 13);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "Insert As Ending Num:";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(10, 168);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(397, 13);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "Note: Using this feature might break any ending branches that go past this number" +
+    ".";
+            // 
             // AddEndingBranch
             // 
             this.AcceptButton = this.AddEndingButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(434, 142);
+            this.ClientSize = new System.Drawing.Size(434, 191);
+            this.Controls.Add(this.Advanced_Button);
             this.Controls.Add(this.IsStressfulBreakdown_CheckAdd);
             this.Controls.Add(this.AddEnding_Label);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.StartingDay_Label);
+            this.Controls.Add(this.InsertAtEndingIndex_Numeric);
             this.Controls.Add(this.StartingDayNumeric);
             this.Controls.Add(this.AddEnding_Dropdown);
             this.Controls.Add(this.AddEndingButton);
@@ -152,11 +209,13 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(450, 180);
             this.Name = "AddEndingBranch";
             this.Text = "Add Ending Branch";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AddEndingBranch_FormClosing);
             this.Load += new System.EventHandler(this.AddEndingBranch_Load);
             ((System.ComponentModel.ISupportInitialize)(this.StartingDayNumeric)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.InsertAtEndingIndex_Numeric)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -166,9 +225,13 @@
 
         private System.Windows.Forms.Button AddEndingButton;
         private System.Windows.Forms.ComboBox AddEnding_Dropdown;
-        private System.Windows.Forms.NumericUpDown StartingDayNumeric;
         private System.Windows.Forms.Label StartingDay_Label;
         private System.Windows.Forms.Label AddEnding_Label;
         private System.Windows.Forms.CheckBox IsStressfulBreakdown_CheckAdd;
+        private System.Windows.Forms.LinkLabel Advanced_Button;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        internal System.Windows.Forms.NumericUpDown InsertAtEndingIndex_Numeric;
+        internal System.Windows.Forms.NumericUpDown StartingDayNumeric;
     }
 }

@@ -104,8 +104,6 @@ namespace NSOEndingTreeMaker
         public static CommandAction darknessOne = new CommandAction("Darkness", "Cut Wrists", 0, -15, -20, 10, 0, 0, 0, 0, 0, 0, 0, 0, 2);
         public static CommandAction darknessTwo = new CommandAction("Darkness", "Go Berserk", 0, -20, -35, 10, 0, 0, 0, 0, 0, 0, 0, 0, 2);
 
-        public static CommandAction streamOne = new CommandAction("First Streams", "FirstStream", 1000, 5, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0);
-
         public static CommandAction streamChatOne = new CommandAction("Stream", "Chat & Chill 1", 1, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
         public static CommandAction streamChatTwo = new CommandAction("Stream", "Chat & Chill 2", 4, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
         public static CommandAction streamChatThree = new CommandAction("Stream", "Chat & Chill 3", 8, 20, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1);
@@ -412,16 +410,16 @@ namespace NSOEndingTreeMaker
             {
                 return goOutBase;
             }
-            return null;
+            return new CommandAction();
         }
 
-        public static void CalculateStats(EndingBranchData branch, TargetActionData pastAction, TargetActionData presentAction)
+        public static void CalculateStats(EndingBranchData branch, TargetActionData pastAction, TargetActionData presentAction, bool IsNoMeds = false)
         {
             pastAction.CommandResult ??= new CommandAction();
             presentAction.CommandResult ??= new CommandAction();
             var addStress = presentAction.CommandResult.stress;
             presentAction.Followers = pastAction.Followers + CalculateFollowers(pastAction, presentAction);
-            if (branch.NoMeds.isEventing && branch.NoMeds.DayIndex <= presentAction.TargetAction.DayIndex && presentAction.TargetAction.Action == ActionType.Haishin)
+            if ((IsNoMeds || (branch.NoMeds.isEventing && branch.NoMeds.DayIndex <= presentAction.TargetAction.DayIndex)) && presentAction.TargetAction.Action == ActionType.Haishin)
                 addStress = 0;
             presentAction.Stress = pastAction.Stress + addStress;
             presentAction.Affection =pastAction.Affection + presentAction.CommandResult.affection;

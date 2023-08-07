@@ -23,6 +23,7 @@ namespace NSOEndingTreeMaker
         public EndingBranchData UnsavedEndingBranchData;
         public List<TargetActionData> ActionList = new();
 
+
         public (int DayIndex, int DayPart, EndingType ending) ExpectedEnding;
 
         public TargetActionData SelectedAction;
@@ -677,7 +678,7 @@ namespace NSOEndingTreeMaker
                         Action_Dropdown.Items[1] = "Spend Time Together (Pity Party)";
                     else Action_Dropdown.Items[1] = "Spend Time Together (Cuddle)";
 
-                    if (pastAction.TargetAction.DayPart == 0 && (pastAction.TargetAction.Action.ToString().Contains("Overdose") || pastAction.TargetAction.Action == ActionType.OkusuriHappa || pastAction.TargetAction.Action == ActionType.OkusuriPsyche))
+                    if (pastAction.TargetAction.DayPart == 0 && NSODataManager.IsOverdoseAction(pastAction))
                         Action_Dropdown.Items[2] = "*** (Have Chem***)";
                     else Action_Dropdown.Items[2] = "***";
                     break;
@@ -753,6 +754,7 @@ namespace NSOEndingTreeMaker
             IgnoreDMCheck.Enabled = isEnabled;
         }
 
+
         private void SetDayMinimum()
         {
             if (UnsavedEndingBranchData.EndingBranch.StartingDay == 1)
@@ -767,8 +769,8 @@ namespace NSOEndingTreeMaker
         {
             if (ActionListView.SelectedIndices.Count > 1)
             {
-                PreventEditForCertainActionsWhenMultiSelect();
                 ClearStatPreview();
+                PreventEditForCertainActionsWhenMultiSelect();
                 return;
             }
             if (SelectedAction != null && (SelectedAction.TargetAction.DayPart == -1 || SelectedAction.TargetAction.DayIndex == 1) && !(MainForm.CurrentEndingTree.isDay2Exp && SelectedAction.TargetAction.DayIndex == 2 && SelectedAction.TargetAction.DayPart == -1 && (SelectedAction.Command != CmdType.None || ParentAction_Dropdown.SelectedIndex != -1)))
@@ -904,10 +906,10 @@ namespace NSOEndingTreeMaker
                     StreamIdea_Label.Text = $"Can't stream now.";
                     TargetActionButton.Enabled = false;
                 }
-                else if (streamUsed != null && streamUsed.DayIndex > DayIndexNumeric.Value)
+                else if (streamUsed != null && streamUsed.DayIndex < DayIndexNumeric.Value)
                 {
-                    StreamIdea_Label.Text = $"You have already streamed this on Day {streamUsed.DayIndex}.";
-                    TargetActionButton.Enabled = false;
+                    StreamIdea_Label.Text = $"Note: You streamed this on Day {streamUsed.DayIndex}.";
+                    TargetActionButton.Enabled = true;
                 }
                 else if (streamIdea != null && streamUsed == null)
                 {
@@ -916,8 +918,8 @@ namespace NSOEndingTreeMaker
                 }
                 else if (streamIdea == null)
                 {
-                    StreamIdea_Label.Text = $"You haven't found this idea yet.";
-                    TargetActionButton.Enabled = false;
+                    StreamIdea_Label.Text = $"Note: You haven't found this idea yet.";
+                    TargetActionButton.Enabled = true;
                 }
                 else
                 {
@@ -1043,6 +1045,8 @@ namespace NSOEndingTreeMaker
                 StreamIdea_Label.Text = "";
                 Hiatus_Label.Visible = false;
                 BonusStatDelta.Items.Clear();
+                if (ActionListView.SelectedIndices.Count <= 1)
+                    TargetActionButton.Enabled = false;
             }
         }
 
@@ -1150,7 +1154,7 @@ namespace NSOEndingTreeMaker
                 ActionList.RemoveAt(index);
                 AddActionVisualData(moveSelected, true);
                 InitializeBreakdown();
-                ChangeNumeralDropdowns(moveSelected);
+                ChangeNumeralDropdowns(moveSelected, true);
             }
 
             void ChangeMultipleActions()
@@ -1191,28 +1195,65 @@ namespace NSOEndingTreeMaker
                 InitializeBreakdown();
             }
 
-            void ChangeNumeralDropdowns(TargetActionData action)
+            void ChangeNumeralDropdowns(TargetActionData action, bool applyDayToNewAction = false)
             {
-                ActionListView.SelectedIndices.Clear();
                 int nextDayPart = action.TargetAction.DayPart;
                 int nextDay = action.TargetAction.DayIndex;
-                nextDayPart += action.CommandResult != null ? action.CommandResult.daypart : 1;
+                nextDayPart += action.CommandResult.daypart > 0 ? action.CommandResult.daypart : 1;
                 if (nextDayPart >= 3)
                 {
                     if (nextDay >= DayIndexNumeric.Maximum) return;
                     nextDay++;
-                    DayIndexNumeric.Value = nextDay;
                     DayPart_Dropdown.SelectedIndex = 0;
+                    DayIndexNumeric.Value = nextDay;
+                    if (ParentAction_Dropdown.SelectedIndex == 0)
+                    {
+                        ParentAction_Dropdown.SelectedIndex = -1;
+                    }
+                    if (applyDayToNewAction)
+                    {
+                        NewAction.TargetAction.DayPart = 0;
+                        NewAction.TargetAction.DayIndex = nextDay;
+                    }
+                    DisableSubmitIfActionNull();
                     ForceMandatoryEvents();
                     ConvertActionChoiceNames();
+                    SelectNextDay(action);
                     return;
                 }
                 DayPart_Dropdown.SelectedIndex = nextDayPart;
+                if (applyDayToNewAction)
+                {
+                    NewAction.TargetAction.DayPart = nextDayPart;
+                    NewAction.TargetAction.DayIndex = nextDay;
+                }
+                DisableSubmitIfActionNull();
                 ForceMandatoryEvents();
                 ForceMandatoryNewAction(NewAction);
                 ConvertActionChoiceNames();
+                SelectNextDay(action);
 
             }
+
+            void SelectNextDay(TargetActionData action)
+            {
+                int nextDayPart = action.TargetAction.DayPart;
+                int nextDay = action.TargetAction.DayIndex;
+                nextDayPart += action.CommandResult.daypart > 0 ? action.CommandResult.daypart : 1;
+                if (nextDayPart >= 3)
+                {
+                    nextDay++;
+                    nextDayPart = 0;
+                }
+                  
+                ActionListView.SelectedIndices.Clear();
+                var nextAction = ActionList.FindIndex(a => a.TargetAction.DayIndex == nextDay && a.TargetAction.DayPart == nextDayPart);
+                if (nextAction > -1)
+                {
+                    ActionListView.SelectedIndices.Add(nextAction);
+                }
+            }
+            
 
             bool InitializeSelectedStartDay()
             {
@@ -1253,7 +1294,7 @@ namespace NSOEndingTreeMaker
                     ActionList[selectedActions[0]].TargetAction.DayPart = -1;
                     EditActionVisualData(ActionList[0]);
                     UnsavedEndingBranchData.InitializeActionStats(this);
-                    ChangeNumeralDropdowns(ActionList[0]);
+                    ChangeNumeralDropdowns(ActionList[0], true);
                 }
                 return true;
             }
@@ -1274,128 +1315,93 @@ namespace NSOEndingTreeMaker
             {
                 var isDarkOneExists = ActionList.Exists(a => a.TargetAction.DayIndex == stress.DayIndex && a.TargetAction.DayPart == 0 && a.Command == CmdType.DarknessS1);
                 StreamLevelNumeric.Value = 1;
-                if (DayPart_Dropdown.SelectedIndex == 1 || DayPart_Dropdown.SelectedIndex == -1)
+                if (DayPart_Dropdown.SelectedIndex == 1 || !isDarkOneExists)
                     DayPart_Dropdown.SelectedIndex = 0;
                 if (DayPart_Dropdown.SelectedIndex == 0)
                 {
                     StreamIdea_Label.Text = $"She's stressed.";
-                    StreamTopic_Dropdown.Visible = false;
-                    StreamLevelNumeric.Visible = false;
-                    Action_Dropdown.Visible = true;
+                    MakeActionOrStreamDropdownVisible(false);
                     ParentAction_Dropdown.SelectedIndex = 6;
                     Action_Dropdown.SelectedIndex = 0;
                     IgnoreDMCheck.Enabled = true;
                 }
                 if (DayPart_Dropdown.SelectedIndex == 2)
                 {
-                    StreamTopic_Dropdown.Visible = true;
-                    StreamLevelNumeric.Visible = true;
-                    Action_Dropdown.Visible = false;
+                    MakeActionOrStreamDropdownVisible(true);
                     ParentAction_Dropdown.SelectedIndex = 0;
                     StreamLevelNumeric.Value = 1;
                     StreamTopic_Dropdown.SelectedIndex = 12;
                     IgnoreDMCheck.Enabled = false;
                 }
-                DayPart_Dropdown.Enabled = false;
-                ParentAction_Dropdown.Enabled = false;
-                Action_Dropdown.Enabled = false;
-                StreamLevelNumeric.Enabled = false;
-                StreamTopic_Dropdown.Enabled = false;
+                EnableActions(false);
                 return;
             }
             if (veryStress.isEventing && DayIndexNumeric.Value == veryStress.DayIndex)
             {
                 var isDarkTwoExists = ActionList.Exists(a => a.TargetAction.DayIndex == veryStress.DayIndex && a.TargetAction.DayPart == 0 && a.Command == CmdType.DarknessS2);
                 StreamLevelNumeric.Value = 1;
-                if (DayPart_Dropdown.SelectedIndex == 1 || DayPart_Dropdown.SelectedIndex == -1 || !isDarkTwoExists)
+                if (DayPart_Dropdown.SelectedIndex == 1 || !isDarkTwoExists)
                     DayPart_Dropdown.SelectedIndex = 0;
                 if (DayPart_Dropdown.SelectedIndex == 0)
                 {
                     StreamIdea_Label.Text = $"You really did it now.";
-                    StreamTopic_Dropdown.Visible = false;
-                    StreamLevelNumeric.Visible = false;
-                    Action_Dropdown.Visible = true;
+                    MakeActionOrStreamDropdownVisible(false);
                     ParentAction_Dropdown.SelectedIndex = 6;
                     Action_Dropdown.SelectedIndex = 1;
                     IgnoreDMCheck.Enabled = false;
                 }
                 if (DayPart_Dropdown.SelectedIndex == 2)
                 {
-                    StreamTopic_Dropdown.Visible = true;
-                    StreamLevelNumeric.Visible = true;
-                    Action_Dropdown.Visible = false;
+                    MakeActionOrStreamDropdownVisible(true);
                     ParentAction_Dropdown.SelectedIndex = 0;
                     StreamLevelNumeric.Value = 2;
                     StreamTopic_Dropdown.SelectedIndex = 12;
                     IgnoreDMCheck.Enabled = false;
                 }
-                DayPart_Dropdown.Enabled = false;
-                ParentAction_Dropdown.Enabled = false;
-                Action_Dropdown.Enabled = false;
-                StreamLevelNumeric.Enabled = false;
-                StreamTopic_Dropdown.Enabled = false;
+                EnableActions(false);
                 return;
             }
             if (veryLove.isEventing && DayIndexNumeric.Value == veryLove.DayIndex)
             {
-                if (DayPart_Dropdown.SelectedIndex == 1 || DayPart_Dropdown.SelectedIndex == -1)
+                if (DayPart_Dropdown.SelectedIndex == 1)
                     DayPart_Dropdown.SelectedIndex = 0;
                 if (DayPart_Dropdown.SelectedIndex == 0)
                 {
                     StreamIdea_Label.Text = $"Aww, she really loves you!";
+                    MakeActionOrStreamDropdownVisible(false);
                     ParentAction_Dropdown.SelectedIndex = 5;
                     Action_Dropdown.SelectedIndex = 16;
-                    StreamTopic_Dropdown.Visible = false;
-                    StreamLevelNumeric.Visible = false;
-                    Action_Dropdown.Visible = true;
                     IgnoreDMCheck.Enabled = false;
-                    DayPart_Dropdown.Enabled = false;
-                    ParentAction_Dropdown.Enabled = false;
-                    Action_Dropdown.Enabled = false;
-                    StreamLevelNumeric.Enabled = false;
-                    StreamTopic_Dropdown.Enabled = false;
+                    EnableActions(false);
                     return;
-                }
-                else
-                {
-                    DayPart_Dropdown.Enabled = true;
-                    ParentAction_Dropdown.Enabled = true;
-                    Action_Dropdown.Enabled = true;
                 }
             }
             if (musicVideo.isEventing && DayIndexNumeric.Value == musicVideo.DayIndex)
             {
-                if (DayPart_Dropdown.SelectedIndex == 1 || DayPart_Dropdown.SelectedIndex == -1)
+                if (DayPart_Dropdown.SelectedIndex == 1)
                     DayPart_Dropdown.SelectedIndex = 0;
                 if (DayPart_Dropdown.SelectedIndex == 0)
                 {
                     StreamIdea_Label.Text = $"Music video unlocked!";
+                    MakeActionOrStreamDropdownVisible(false);
                     ParentAction_Dropdown.SelectedIndex = 5;
                     Action_Dropdown.SelectedIndex = 17;
-                    StreamTopic_Dropdown.Visible = false;
-                    StreamLevelNumeric.Visible = false;
-                    Action_Dropdown.Visible = true;
                     IgnoreDMCheck.Enabled = false;
-                    DayPart_Dropdown.Enabled = false;
-                    ParentAction_Dropdown.Enabled = false;
-                    Action_Dropdown.Enabled = false;
-                    StreamLevelNumeric.Enabled = false;
-                    StreamTopic_Dropdown.Enabled = false;
+                    EnableActions(false);
                     return;
                 }
-                else
-                {
-                    DayPart_Dropdown.Enabled = true;
-                    ParentAction_Dropdown.Enabled = true;
-                    Action_Dropdown.Enabled = true;
-                }
             }
-            DayPart_Dropdown.Enabled = true;
-            ParentAction_Dropdown.Enabled = true;
-            Action_Dropdown.Enabled = true;
-            StreamLevelNumeric.Enabled = true;
-            StreamTopic_Dropdown.Enabled = true;
+            EnableActions(true);
             IgnoreDMCheck.Enabled = true;
+
+            void EnableActions(bool toggle)
+            {
+                DayPart_Dropdown.Enabled = toggle;
+                ParentAction_Dropdown.Enabled = toggle;
+                Action_Dropdown.Enabled = toggle;
+                StreamLevelNumeric.Enabled = toggle;
+                StreamTopic_Dropdown.Enabled = toggle;
+            }
         }
     
 
@@ -1407,30 +1413,29 @@ namespace NSOEndingTreeMaker
             var musicVideo = UnsavedEndingBranchData.isVideo;
             if (stress.isEventing && DayIndexNumeric.Value == stress.DayIndex)
             {
-
-                if (DayPart_Dropdown.SelectedIndex == 0)
+                if (DayPart_Dropdown.SelectedIndex == 0 && !IsMandatoryActionExist(stress.DayIndex, 0, CmdType.DarknessS1))
                 {
                     action.Command = CmdType.DarknessS1;
                 }
-                if (DayPart_Dropdown.SelectedIndex == 2)
+                if (DayPart_Dropdown.SelectedIndex == 2 && !IsMandatoryActionExist(stress.DayIndex, 2, CmdType.Darkness_1))
                 {
                     action.Command = CmdType.Darkness_1;
                 }
             }
             if (veryStress.isEventing && DayIndexNumeric.Value == veryStress.DayIndex)
             {
-                if (DayPart_Dropdown.SelectedIndex == 0)
+                if (DayPart_Dropdown.SelectedIndex == 0 && !IsMandatoryActionExist(veryStress.DayIndex, 0, CmdType.DarknessS2))
                 {
                     action.Command = CmdType.DarknessS2;
                 }
-                if (DayPart_Dropdown.SelectedIndex == 2)
+                if (DayPart_Dropdown.SelectedIndex == 2 && !IsMandatoryActionExist(veryStress.DayIndex, 2, CmdType.Darkness_2))
                 {
                     action.Command = CmdType.Darkness_2;
                 }
             }
             if (veryLove.isEventing && DayIndexNumeric.Value == veryLove.DayIndex)
             {
-                if (DayPart_Dropdown.SelectedIndex == 0)
+                if (DayPart_Dropdown.SelectedIndex == 0 && !IsMandatoryActionExist(veryLove.DayIndex, 0, CmdType.OdekakeZikka))
                 {
                     action.Command = CmdType.OdekakeZikka;
                     
@@ -1438,7 +1443,7 @@ namespace NSOEndingTreeMaker
             }
             if (musicVideo.isEventing && DayIndexNumeric.Value == musicVideo.DayIndex)
             {
-                if (DayPart_Dropdown.SelectedIndex == 0)
+                if (DayPart_Dropdown.SelectedIndex == 0 && !IsMandatoryActionExist(veryLove.DayIndex, 0, CmdType.OdekakeOdaiba))
                 {
                     action.Command = CmdType.OdekakeOdaiba;
                     return;
@@ -1446,8 +1451,14 @@ namespace NSOEndingTreeMaker
             }
             action.TargetAction.DayIndex = (int)DayIndexNumeric.Value;
             action.TargetAction.DayPart = DayPart_Dropdown.SelectedIndex;
+
         }
-    
+
+        bool IsMandatoryActionExist(int day, int dayPart, CmdType command)
+        {
+            return ActionList.Exists(a => a.TargetAction.DayIndex == day && a.TargetAction.DayPart == dayPart && a.Command == command);
+        }
+
         private void EndingToGetOnSelectedIndexChanged(object sender, EventArgs e)
         {
             UnsavedEndingBranchData.EndingBranch.EndingToGet = NSODataManager.EndingsList[EndingToGet_Dropdown.SelectedIndex];
@@ -1470,9 +1481,11 @@ namespace NSOEndingTreeMaker
 
         private void ParentAction_DropdownOnSelectedIndexChanged(object sender, EventArgs e)
         {
-            Action_Dropdown.SelectedIndex = -1;
-            if (ParentAction_Dropdown.SelectedIndex != -1)
+            if (ParentAction_Dropdown.SelectedIndex == -1)
+            {
+                Action_Dropdown.SelectedIndex = -1;
                 TargetActionButton.Enabled = false;
+            }
             ChangeActionOptionsByParent();
             ConvertActionChoiceNames();
             if (ParentAction_Dropdown.SelectedIndex == 0)
@@ -1596,6 +1609,7 @@ namespace NSOEndingTreeMaker
                 DayPart_Dropdown.SelectedIndex = -1;
                 TargetActionButton.Text = "Save Action";
                 SetStatChangePreview();
+                DisableSubmitIfActionNull();
             }
 
             void UpdateEditFieldsWithSelectedAction()
@@ -1610,13 +1624,13 @@ namespace NSOEndingTreeMaker
                 ParentAction_Dropdown.SelectedIndex = NSODataManager.ParentActionIndex(SelectedAction.TargetAction.Action);
                 if (ParentAction_Dropdown.SelectedIndex != 0)
                 {
-                    EnableActionOrStreamDropdown(false);
+                    MakeActionOrStreamDropdownVisible(false);
 
                 }
                 switch (ParentAction_Dropdown.SelectedIndex)
                 {
                     case 0:
-                        EnableActionOrStreamDropdown(true);
+                        MakeActionOrStreamDropdownVisible(true);
                         StreamTopic_Dropdown.SelectedIndex = NSODataManager.StreamTopicList.IndexOf(SelectedAction.TargetAction.Stream);
                         try
                         {
@@ -1646,6 +1660,7 @@ namespace NSOEndingTreeMaker
 
                 }
                 IgnoreDMCheck.Checked = SelectedAction.TargetAction.IgnoreDM;
+                DisableSubmitIfActionNull();
                 ForceMandatoryEvents();
                 SetStatChangePreview();
             }
@@ -1657,10 +1672,12 @@ namespace NSOEndingTreeMaker
                 SelectedAction = null;
                 SetDayMinimum();
                 DayPart_Dropdown.SelectedIndex = NewAction.TargetAction.DayPart;
+                DayIndexNumeric.Value = NewAction.TargetAction.DayIndex;
+                DisableNewSubmitIfDayExists();
                 ParentAction_Dropdown.SelectedIndex = NewActionParentIndex;
                 if (ParentAction_Dropdown.SelectedIndex != 0)
                 {
-                    EnableActionOrStreamDropdown(false);
+                    MakeActionOrStreamDropdownVisible(false);
                 }
                 TargetActionButton.Text = "Add Action";
                 IgnoreDMCheck.Checked = NewAction.TargetAction.IgnoreDM;
@@ -1669,6 +1686,7 @@ namespace NSOEndingTreeMaker
                 {
                     case -1:
                         Action_Dropdown.SelectedIndex = -1;
+                        TargetActionButton.Enabled = false;
                         break;
                     case 0:
                         StreamTopic_Dropdown.SelectedIndex = NSODataManager.StreamTopicList.IndexOf(NewAction.TargetAction.Stream);
@@ -1678,7 +1696,7 @@ namespace NSOEndingTreeMaker
                             else StreamLevelNumeric.Value = int.Parse(NewAction.Command.ToString().Split('_')[1]);
                         }
                         catch { StreamLevelNumeric.Value = 1; }
-                        EnableActionOrStreamDropdown(true);
+                        MakeActionOrStreamDropdownVisible(true);
                         break;
                     case 1:
                         Action_Dropdown.SelectedIndex = NSODataManager.HangOutActionList.IndexOf(NewAction.TargetAction.Action);
@@ -1699,45 +1717,60 @@ namespace NSOEndingTreeMaker
                         Action_Dropdown.SelectedIndex = NSODataManager.DarknessList.IndexOf(NewAction.Command);
                         break;
                 }
+                Console.WriteLine($"Debug: Dropdown Index - {Action_Dropdown.SelectedIndex}, NewAction ActionType - {NewAction.TargetAction.Action}");
+                DisableSubmitIfActionNull();
                 ForceMandatoryEvents();
                 SetStatChangePreview();
             }
 
-           void EnableActionOrStreamDropdown(bool enableStream)
-           {
-                switch (enableStream)
-                {
-                    case true:
-                        Action_Label.Visible = false;
-                        Action_Dropdown.Visible = false;
-                        StreamLevelNumeric.Visible = true;
-                        StreamLevel_Label.Visible = true;
-                        StreamTopic_Label.Visible = true;
-                        StreamTopic_Dropdown.Visible = true;
-                        Action_Dropdown.SelectedIndex = -1;
-                        break;
-                    default:
-                        StreamTopic_Dropdown.SelectedIndex = -1;
-                        StreamLevelNumeric.Value = StreamLevelNumeric.Minimum;
-                        Action_Label.Visible = true;
-                        Action_Dropdown.Visible = true;
-                        StreamLevelNumeric.Visible = false;
-                        StreamLevel_Label.Visible = false;
-                        StreamTopic_Label.Visible = false;
-                        StreamTopic_Dropdown.Visible = false;
-                        break;
-                }
-           }
+        }
+        
+        private void DisableSubmitIfActionNull()
+        {
+            if (ParentAction_Dropdown.SelectedIndex == -1)
+                TargetActionButton.Enabled = false;
+            else if (Action_Dropdown.SelectedIndex == -1 && ParentAction_Dropdown.SelectedIndex > 0)           
+                TargetActionButton.Enabled = false;           
+            else TargetActionButton.Enabled = true;
+        }
+        private void MakeActionOrStreamDropdownVisible(bool enableStream)
+        {
+            switch (enableStream)
+            {
+                case true:
+                    Action_Dropdown.SelectedIndex = -1;
+                    Action_Label.Visible = false;
+                    Action_Dropdown.Visible = false;
+                    StreamLevelNumeric.Visible = true;
+                    StreamLevel_Label.Visible = true;
+                    StreamTopic_Label.Visible = true;
+                    StreamTopic_Dropdown.Visible = true;
+                    break;
+                default:
+                    StreamTopic_Dropdown.SelectedIndex = -1;
+                    StreamLevelNumeric.Value = StreamLevelNumeric.Minimum;
+                    Action_Label.Visible = true;
+                    Action_Dropdown.Visible = true;
+                    StreamLevelNumeric.Visible = false;
+                    StreamLevel_Label.Visible = false;
+                    StreamTopic_Label.Visible = false;
+                    StreamTopic_Dropdown.Visible = false;
+                    break;
+            }
         }
 
+        private void DisableNewSubmitIfDayExists()
+        {            
+            if (ActionList.Exists(a => a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart == DayPart_Dropdown.SelectedIndex) && DayPart_Dropdown.SelectedIndex != -1 && ActionListView.SelectedIndices.Count == 0 && ActionListView.Items.Count > 0 && SelectedAction == null)
+            {
+                TargetActionButton.Enabled = false;
+            }
+            else TargetActionButton.Enabled = true;
+        }
         private void DayIndexNumericOnValueChanged(object sender, EventArgs e)
         {
             if (isReseting) return;
-            if (ActionList.Exists(a => a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart == DayPart_Dropdown.SelectedIndex) && DayPart_Dropdown.SelectedIndex != -1 && ActionListView.SelectedIndices.Count == 0 && ActionListView.Items.Count > 0)
-            {
-                int index = ActionList.FindIndex(a => a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart == DayPart_Dropdown.SelectedIndex);
-                ActionListView.SelectedIndices.Add(index);
-            }
+            DisableNewSubmitIfDayExists();
             ForceMandatoryEvents();
             SetStatChangePreview();
 
@@ -1745,11 +1778,7 @@ namespace NSOEndingTreeMaker
         private void DayPart_DropdownOnSelectedIndexChanged(object sender, EventArgs e)
         {
             if (isReseting) return;
-            if (ActionList.Exists(a => a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart == DayPart_Dropdown.SelectedIndex) && DayPart_Dropdown.SelectedIndex != -1 && ActionListView.SelectedIndices.Count == 0 && ActionListView.Items.Count > 0)
-            {
-                int index = ActionList.FindIndex(a => a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart == DayPart_Dropdown.SelectedIndex);
-                ActionListView.SelectedIndices.Add(index);
-            }
+            DisableNewSubmitIfDayExists();
             SetStatChangePreview();
             ConvertActionChoiceNames();
         }
@@ -1810,42 +1839,19 @@ namespace NSOEndingTreeMaker
                             msgTitle = "Ending found!";
                             msgDesc = $"No ending in this branch is selected. \n\nHowever, an ending is currently projected to happen: \n\"{NSODataManager.EndingNames[checkEnding.Item3]}\". \n\nDo you want to change to this ending?";
                         }
-                        var msgDiffEnding = MessageBox.Show(msgDesc, msgTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                        var msgDiffEnding = MessageBox.Show(msgDesc, msgTitle, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
                         switch (msgDiffEnding)
                         {
                             case DialogResult.Yes:
                                 UnsavedEndingBranchData.EndingBranch.EndingToGet = checkEnding.Item3;
                                 EndingToGet_Dropdown.SelectedIndex = NSODataManager.EndingsList.IndexOf(UnsavedEndingBranchData.EndingBranch.EndingToGet); 
                                 break;
+                            case DialogResult.No: break;
                             default: return false;
                         }
                     }
                     break;
             }
-            // This isn't really needed anymore but its here just in case.
-            /*
-            if (checkEnding.Item1 != 0)
-            {
-                if (!(ActionList[ActionList.Count - 1].TargetAction.DayIndex == checkEnding.Item1 && ActionList[ActionList.Count - 1].TargetAction.DayPart == checkEnding.Item2))
-                {
-                    var extraActions = MessageBox.Show($"Extra actions found. Ending branches must end on the action that will achieve the selected ending. Do you want to remove the extra actions?", "Extra actions found!", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
-                    switch (extraActions)
-                    {
-                        case DialogResult.Yes:
-                            for (int i = ActionList.Count - 1; i >= 0; i--)
-                            {
-                                i = ActionList.Count - 1;
-                                if (ActionList[i].TargetAction.DayIndex == checkEnding.Item1 && ActionList[i].TargetAction.DayPart == checkEnding.Item2) break;
-                                ActionListView.Items.RemoveAt(i);
-                                ActionList.RemoveAt(i);
-                            }
-                            break;
-                        case DialogResult.No: break;
-                        default: return;
-                    }
-                }
-            }
-            */
             ConfirmSaveEndingBranch(closeAfter);
             return true;
         }
@@ -1959,7 +1965,9 @@ namespace NSOEndingTreeMaker
             if (SelectedAction == null)
             {
                 NewAction.Command = ConvertActionChoiceToCmd(pastAction);
+                NewAction.TargetAction.Action = NSODataManager.CmdToActionConverter(NewAction.Command);
             }
+            DisableNewSubmitIfDayExists();
             SetStatChangePreview();
         }
 
@@ -2162,7 +2170,8 @@ namespace NSOEndingTreeMaker
                 TargetActionData[] pasteList = getCopiedData as TargetActionData[];
                 for (int i = 0; i < pasteList.Length; i++)
                 {
-                    if (i == 0) latestDayPart += ActionList[ActionList.Count - 1].CommandResult.daypart;
+
+                    if (i == 0) latestDayPart += ActionList[ActionList.Count - 1].CommandResult.daypart == 0 ? 1 : ActionList[ActionList.Count - 1].CommandResult.daypart;
                     else latestDayPart += pasteList[i - 1].CommandResult.daypart;
                     if (latestDayPart >= 3)
                     {
@@ -2197,13 +2206,14 @@ namespace NSOEndingTreeMaker
         }
 
         void RedoActionEdit()
-        {
+        { 
             if (EditHistory.redoActions.Count == 0) return;
             var redoActions = EditHistory.redoActions[EditHistory.redoActions.Count - 1];
             List<ActionHistoryObj> undoActions = new();
             UseEditHistory(redoActions, undoActions);
             EditHistory.undoActions.Add(undoActions);
             EditHistory.redoActions.Remove(redoActions);
+            if (EditHistory.undoActions.Count > 0) isChanged = true;
             InitializeBreakdown();
         }
         void UndoActionEdit()
@@ -2214,8 +2224,8 @@ namespace NSOEndingTreeMaker
             UseEditHistory(undoActions, redoActions);
             EditHistory.redoActions.Add(redoActions);
             EditHistory.undoActions.Remove(undoActions);
-            InitializeBreakdown();
             if (EditHistory.undoActions.Count == 0) isChanged = false;
+            InitializeBreakdown();
             return;
         }
 
@@ -2500,6 +2510,16 @@ namespace NSOEndingTreeMaker
                 UndoActionEdit();
                 return;
             }
+            else if (!e.Shift && e.KeyCode == Keys.N)
+            {
+                CreateNewBranch();
+                return;
+            }
+            else if (e.Shift && e.KeyCode == Keys.N)
+            {
+                CreateNewBranchFromExistingDay();
+                return;
+            }
         }
 
         private void Branch_ContextMenuStrip_Opening(object sender, CancelEventArgs e)
@@ -2525,11 +2545,126 @@ namespace NSOEndingTreeMaker
                 PreviousBranch_MenuItem.Enabled = true;
                 NextBranch_MenuItem.Enabled = true;
             }
+            if (ActionListView.SelectedIndices.Count == 0)
+                NewEndingBranchFromSelected_MenuItem.Enabled = false;
+            else NewEndingBranchFromSelected_MenuItem.Enabled = true;
         }
 
+        private void CreateNewBranch()
+        {
+            EndingBranchData newBranch = null;
+            int newBranchIndex = SelectedEndingIndex;
+            AddEndingBranch newBranchWindow = new(MainForm);
+            newBranchWindow.branchEditor = this;
+            newBranchWindow.OnNewBranchCreated += () =>
+            {
+                newBranch = newBranchWindow.NewEnding;
+                newBranchIndex = newBranchWindow.endingIndex;
+            };
+            newBranchWindow.ShowDialog();
+            if (newBranch == null)
+            {
+                newBranchWindow.Dispose();
+                return;
+            }
+            MainForm.SetEndingListViewData();
+            MainForm.isBranchEdited = true;
+            SwitchToOtherEndingBranch(newBranchIndex);
+            newBranchWindow.Dispose();
+        }
+        private void CreateNewBranchFromExistingDay()
+        {
+            if (ActionListView.SelectedItems.Count == 0)
+                return;
+            var selectedDay = FindStartingDayFromSelected();
+            EndingBranchData newBranch = null;
+            int newBranchIndex = SelectedEndingIndex;
+            int maxBranchIndex = MainForm.CurrentEndingTree.EndingsList.Count + 1;
+            AddEndingBranch newBranchWindow = new(MainForm, false, SelectedEndingIndex+1);
+            newBranchWindow.branchEditor = this;
+            newBranchWindow.StartingDayNumeric.Value = selectedDay;
+            newBranchWindow.StartingDayNumeric.Enabled = false;
+            newBranchWindow.InsertAtEndingIndex_Numeric.Minimum = SelectedEndingIndex + 1;
+            newBranchWindow.InsertAtEndingIndex_Numeric.Value = SelectedEndingIndex + 1;
+            for (int i = SelectedEndingIndex; i < MainForm.CurrentEndingTree.EndingsList.Count; i++)
+            {
+                if (i == SelectedEndingIndex) continue;
+                var otherBranch = MainForm.CurrentEndingTree.EndingsList[i];
+                if (otherBranch.EndingBranch.AllActions.Exists(hasValidStartDay))
+                {
+                    maxBranchIndex = i+1;
+                    break;
+                }
+            }
+            newBranchWindow.InsertAtEndingIndex_Numeric.Maximum = maxBranchIndex;
+            newBranchWindow.OnNewBranchCreated += () => 
+            {
+                newBranch = newBranchWindow.NewEnding;
+                newBranchIndex = newBranchWindow.endingIndex;
+            };
+            newBranchWindow.ShowDialog();
+            if (newBranch == null)
+            {
+                newBranchWindow.Dispose();
+                return;
+            }
+            var list = CreateListCopy();
+            if (list != null && list.Count > 0)
+               newBranch.EndingBranch.AllActions.AddRange(list);
+            MainForm.SetEndingListViewData();
+            MainForm.isBranchEdited = true;
+            SwitchToOtherEndingBranch(newBranchIndex);
+            newBranchWindow.Dispose();
+
+            List<TargetActionData> SetNewActions()
+            {
+                List<TargetActionData> list = new();
+                int selectedDayIndex = ActionList.FindIndex(a => a.TargetAction.DayIndex == selectedDay && a.TargetAction.DayPart > -1 && a.TargetAction.DayPart != 3);
+                if (selectedDayIndex == -1)
+                    return null;
+                for (int i = selectedDayIndex; i < ActionList.Count; i++) 
+                {
+                    TargetActionData dupAction = new(ActionList[i]);
+                    list.Add(ActionList[i]);
+                }
+                return list;
+            }
+
+            int FindStartingDayFromSelected()
+            {
+                int startingDay = 2;
+                if (ActionListView.SelectedIndices.Count == 1)
+                    return SelectedAction.TargetAction.DayIndex;
+                List<TargetActionData> list = CreateListCopy();
+                for (int i = 2; i < 30; i++)
+                {
+                    if (!list.Exists(a => a.TargetAction.DayIndex == i)) 
+                        continue;
+                    startingDay = i;
+                    break;
+                }
+                return startingDay;
+            }
+
+            bool hasValidStartDay(TargetActionData a) 
+            { 
+                return a.TargetAction.DayIndex <= selectedDay || (a.TargetAction.DayIndex == selectedDay - 1 && a.TargetAction.DayPart + a.CommandResult.daypart >= 3); 
+            }
+
+        }
         private void SaveEndingBranchAndExit_MenuItem_Click(object sender, EventArgs e)
         {
             SaveEndingBranch();
+        }
+
+        private void newEndingBranchToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CreateNewBranch();
+        }
+
+        private void newBranchFromSelectedDayToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CreateNewBranchFromExistingDay();
         }
     }
 }

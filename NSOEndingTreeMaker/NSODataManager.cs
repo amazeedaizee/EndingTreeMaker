@@ -632,6 +632,27 @@ namespace NSOEndingTreeMaker
                 a != ActionType.OkusuriDaypassModerate;
         }
 
+        public static bool IsEndingOnSameDay(EndingType ending)
+        {
+            List<EndingType> conditions = new List<EndingType>() 
+            { 
+                EndingType.Ending_Healthy,
+                EndingType.Ending_Sukisuki,
+                EndingType.Ending_Jine,
+                EndingType.Ending_Meta,
+                EndingType.Ending_Kyouso,
+                EndingType.Ending_Ginga,
+                EndingType.Ending_Yami,
+                EndingType.Ending_Ideon,
+                EndingType.Ending_Stressful,
+                EndingType.Ending_Av,
+                EndingType.Ending_Ntr,
+                EndingType.Ending_Lust,
+                EndingType.Ending_Jikka
+            };
+
+            return conditions.Contains(ending);
+        }
         public static (int DayIndex, int DayPart, CmdType Idea) ActionToStreamIdea(TargetActionData pastAction, TargetActionData presentAction, EndingBranchData branch)
         {
             var noMeds = branch.NoMeds;

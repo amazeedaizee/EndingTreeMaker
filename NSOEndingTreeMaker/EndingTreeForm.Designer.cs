@@ -93,15 +93,17 @@
             this.OpenNSOwSteam_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PlayGame_Button = new System.Windows.Forms.ToolStripMenuItem();
             this.UnvalidBranches_Label = new System.Windows.Forms.Label();
+            this.MoveBranchUp_Button = new System.Windows.Forms.Button();
+            this.MoveBranchDown_Button = new System.Windows.Forms.Button();
             this.CurrentEndingTree_Group.SuspendLayout();
             this.EndingTree_MenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // AddEndingButton
             // 
-            this.AddEndingButton.Location = new System.Drawing.Point(19, 23);
+            this.AddEndingButton.Location = new System.Drawing.Point(19, 19);
             this.AddEndingButton.Name = "AddEndingButton";
-            this.AddEndingButton.Size = new System.Drawing.Size(218, 36);
+            this.AddEndingButton.Size = new System.Drawing.Size(218, 35);
             this.AddEndingButton.TabIndex = 4;
             this.AddEndingButton.Text = "Add Ending Branch";
             this.AddEndingButton.UseVisualStyleBackColor = true;
@@ -112,6 +114,8 @@
             this.CurrentEndingTree_Group.Controls.Add(this.Day2Exp_Check);
             this.CurrentEndingTree_Group.Controls.Add(this.Notes_Title);
             this.CurrentEndingTree_Group.Controls.Add(this.Notes);
+            this.CurrentEndingTree_Group.Controls.Add(this.MoveBranchDown_Button);
+            this.CurrentEndingTree_Group.Controls.Add(this.MoveBranchUp_Button);
             this.CurrentEndingTree_Group.Controls.Add(this.EditEndingBranch);
             this.CurrentEndingTree_Group.Controls.Add(this.DeleteEndingBranch);
             this.CurrentEndingTree_Group.Controls.Add(this.AddEndingButton);
@@ -124,7 +128,7 @@
             // Day2Exp_Check
             // 
             this.Day2Exp_Check.AutoSize = true;
-            this.Day2Exp_Check.Location = new System.Drawing.Point(19, 415);
+            this.Day2Exp_Check.Location = new System.Drawing.Point(19, 417);
             this.Day2Exp_Check.Name = "Day2Exp_Check";
             this.Day2Exp_Check.Size = new System.Drawing.Size(213, 17);
             this.Day2Exp_Check.TabIndex = 12;
@@ -136,7 +140,7 @@
             // Notes_Title
             // 
             this.Notes_Title.AutoSize = true;
-            this.Notes_Title.Location = new System.Drawing.Point(16, 168);
+            this.Notes_Title.Location = new System.Drawing.Point(16, 256);
             this.Notes_Title.Name = "Notes_Title";
             this.Notes_Title.Size = new System.Drawing.Size(35, 13);
             this.Notes_Title.TabIndex = 7;
@@ -144,19 +148,19 @@
             // 
             // Notes
             // 
-            this.Notes.Location = new System.Drawing.Point(19, 191);
+            this.Notes.Location = new System.Drawing.Point(19, 277);
             this.Notes.Multiline = true;
             this.Notes.Name = "Notes";
             this.Notes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.Notes.Size = new System.Drawing.Size(218, 213);
+            this.Notes.Size = new System.Drawing.Size(218, 132);
             this.Notes.TabIndex = 7;
             this.Notes.TextChanged += new System.EventHandler(this.Notes_TextChanged);
             // 
             // EditEndingBranch
             // 
-            this.EditEndingBranch.Location = new System.Drawing.Point(19, 115);
+            this.EditEndingBranch.Location = new System.Drawing.Point(19, 97);
             this.EditEndingBranch.Name = "EditEndingBranch";
-            this.EditEndingBranch.Size = new System.Drawing.Size(218, 36);
+            this.EditEndingBranch.Size = new System.Drawing.Size(218, 35);
             this.EditEndingBranch.TabIndex = 6;
             this.EditEndingBranch.Text = "Edit Ending Branch";
             this.EditEndingBranch.UseVisualStyleBackColor = true;
@@ -164,9 +168,9 @@
             // 
             // DeleteEndingBranch
             // 
-            this.DeleteEndingBranch.Location = new System.Drawing.Point(19, 69);
+            this.DeleteEndingBranch.Location = new System.Drawing.Point(19, 58);
             this.DeleteEndingBranch.Name = "DeleteEndingBranch";
-            this.DeleteEndingBranch.Size = new System.Drawing.Size(218, 36);
+            this.DeleteEndingBranch.Size = new System.Drawing.Size(218, 35);
             this.DeleteEndingBranch.TabIndex = 5;
             this.DeleteEndingBranch.Text = "Delete Ending Branch";
             this.DeleteEndingBranch.UseVisualStyleBackColor = true;
@@ -242,6 +246,7 @@
             this.File_MenuItem.Name = "File_MenuItem";
             this.File_MenuItem.Size = new System.Drawing.Size(37, 20);
             this.File_MenuItem.Text = "File";
+            this.File_MenuItem.DropDownOpened += new System.EventHandler(this.File_MenuItem_DropDownOpened);
             // 
             // NewEndingTree_MenuItem
             // 
@@ -342,7 +347,7 @@
             this.saveTreeToSlot1_MenuItem,
             this.loadTreeFromSlot1_MenuItem});
             this.SlotOne_Base.Name = "SlotOne_Base";
-            this.SlotOne_Base.Size = new System.Drawing.Size(180, 22);
+            this.SlotOne_Base.Size = new System.Drawing.Size(103, 22);
             this.SlotOne_Base.Text = "Slot 1";
             // 
             // Slot1_Name
@@ -381,7 +386,7 @@
             this.saveTreeToSlot2_MenuItem,
             this.loadTreeFromSlot2_MenuItem});
             this.SlotTwo_Base.Name = "SlotTwo_Base";
-            this.SlotTwo_Base.Size = new System.Drawing.Size(180, 22);
+            this.SlotTwo_Base.Size = new System.Drawing.Size(103, 22);
             this.SlotTwo_Base.Text = "Slot 2";
             // 
             // Slot2_Name
@@ -420,7 +425,7 @@
             this.saveTreeToSlot3_MenuItem,
             this.loadTreeFromSlot3_MenuItem});
             this.SlotThree_Base.Name = "SlotThree_Base";
-            this.SlotThree_Base.Size = new System.Drawing.Size(180, 22);
+            this.SlotThree_Base.Size = new System.Drawing.Size(103, 22);
             this.SlotThree_Base.Text = "Slot 3";
             // 
             // Slot3_Name
@@ -459,7 +464,7 @@
             this.saveTreeToSlot5_MenuItem,
             this.loadTreeFromSlot4_MenuItem});
             this.SlotFour_Base.Name = "SlotFour_Base";
-            this.SlotFour_Base.Size = new System.Drawing.Size(180, 22);
+            this.SlotFour_Base.Size = new System.Drawing.Size(103, 22);
             this.SlotFour_Base.Text = "Slot 4";
             // 
             // Slot4_Name
@@ -498,7 +503,7 @@
             this.saveTreeToSlot5_MenuItem1,
             this.loadTreeFromSlot5_MenuItem});
             this.SlotFive_Base.Name = "SlotFive_Base";
-            this.SlotFive_Base.Size = new System.Drawing.Size(180, 22);
+            this.SlotFive_Base.Size = new System.Drawing.Size(103, 22);
             this.SlotFive_Base.Text = "Slot 5";
             // 
             // Slot5_Name
@@ -635,6 +640,26 @@
             this.UnvalidBranches_Label.Text = "Unvalidated Ending Branches Detected";
             this.UnvalidBranches_Label.VisibleChanged += new System.EventHandler(this.UnvalidBranch_LabelToggle);
             // 
+            // MoveBranchUp_Button
+            // 
+            this.MoveBranchUp_Button.Location = new System.Drawing.Point(19, 158);
+            this.MoveBranchUp_Button.Name = "MoveBranchUp_Button";
+            this.MoveBranchUp_Button.Size = new System.Drawing.Size(218, 35);
+            this.MoveBranchUp_Button.TabIndex = 6;
+            this.MoveBranchUp_Button.Text = "Move Branch Up";
+            this.MoveBranchUp_Button.UseVisualStyleBackColor = true;
+            this.MoveBranchUp_Button.Click += new System.EventHandler(this.MoveBranchUp_Button_Click);
+            // 
+            // MoveBranchDown_Button
+            // 
+            this.MoveBranchDown_Button.Location = new System.Drawing.Point(19, 199);
+            this.MoveBranchDown_Button.Name = "MoveBranchDown_Button";
+            this.MoveBranchDown_Button.Size = new System.Drawing.Size(218, 35);
+            this.MoveBranchDown_Button.TabIndex = 6;
+            this.MoveBranchDown_Button.Text = "Move Branch Down";
+            this.MoveBranchDown_Button.UseVisualStyleBackColor = true;
+            this.MoveBranchDown_Button.Click += new System.EventHandler(this.MoveBranchDown_Button_Click);
+            // 
             // EndingTreeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -728,5 +753,7 @@
         private System.Windows.Forms.Label UnvalidBranches_Label;
         private System.Windows.Forms.CheckBox Day2Exp_Check;
         private System.Windows.Forms.ToolStripMenuItem OpenNSOwSteam_MenuItem;
+        private System.Windows.Forms.Button MoveBranchDown_Button;
+        private System.Windows.Forms.Button MoveBranchUp_Button;
     }
 }
