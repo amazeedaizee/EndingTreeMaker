@@ -4,9 +4,7 @@ using ngov3;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using static NSOEndingTreeMaker.EndingBranchSubData;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
 
 namespace NSOEndingTreeMaker
 {
@@ -14,7 +12,7 @@ namespace NSOEndingTreeMaker
     public class EndingBranchData
     {
         public EndingBranch_Stub EndingBranch;
-        public (int, int, EndingType) ExpectedDayOfEnd = new(0,0,EndingType.Ending_None);
+        public (int, int, EndingType) ExpectedDayOfEnd = new(0, 0, EndingType.Ending_None);
         public List<StreamIdeaObj> StreamIdeaList = new();
         public List<StreamUsedObj> StreamUsedList = new();
         public EventCounter hasGalacticRail = new(0, false);
@@ -126,20 +124,20 @@ namespace NSOEndingTreeMaker
             {
                 if (i == 0)
                     ValidateStartingDay(EndingBranch.AllActions[i], errorList, branchName);
-                if (i == EndingBranch.AllActions.Count - 1)                
-                    break;                
-                if (i > 0) 
-                {                    
+                if (i == EndingBranch.AllActions.Count - 1)
+                    break;
+                if (i > 0)
+                {
                     ValidatePreviousDay(EndingBranch.AllActions[i - 1], EndingBranch.AllActions[i], errorList, branchName);
                     ValidateIgnoreDm(EndingBranch.AllActions[i - 1], EndingBranch.AllActions[i], errorList, branchName);
-                    ValidateNightEvents(EndingBranch.AllActions[i - 1],EndingBranch.AllActions[i], errorList, branchName);
+                    ValidateNightEvents(EndingBranch.AllActions[i - 1], EndingBranch.AllActions[i], errorList, branchName);
                 }
                 ValidateNextDay(EndingBranch.AllActions[i], EndingBranch.AllActions[i + 1], errorList, branchName);
                 LookForMissingDays(EndingBranch.AllActions[i], EndingBranch.AllActions[i + 1], errorList, branchName);
                 (bool, string, CmdType) actionValid = ValidateAction(EndingBranch.AllActions[i], EndingBranch.AllActions[i + 1]);
                 if (!actionValid.Item1)
                 {
-                    errorList.Add(new(branchName,$"Day {EndingBranch.AllActions[i + 1].TargetAction.DayIndex}, {NSODataManager.DayPartNames[EndingBranch.AllActions[i + 1].TargetAction.DayPart]}: {NSODataManager.CmdName(actionValid.Item3)}", $"Action can't be done based on the stats of the previous action. \n\n({actionValid.Item2})"));
+                    errorList.Add(new(branchName, $"Day {EndingBranch.AllActions[i + 1].TargetAction.DayIndex}, {NSODataManager.DayPartNames[EndingBranch.AllActions[i + 1].TargetAction.DayPart]}: {NSODataManager.CmdName(actionValid.Item3)}", $"Action can't be done based on the stats of the previous action. \n\n({actionValid.Item2})"));
                 }
                 (bool, string) streamValid = ValidateStream(EndingBranch.AllActions[i + 1]);
                 if (!streamValid.Item1)
@@ -170,12 +168,12 @@ namespace NSOEndingTreeMaker
         }
         private void ValidateIgnoreDm(TargetActionData pastAction, TargetActionData presentAction, List<(string, string, string)> errorList, string branchName)
         {
-            var excludedCmds = new List<CmdType>() { CmdType.DarknessS2,CmdType.Darkness_1,CmdType.Darkness_2,CmdType.OdekakeOdaiba,CmdType.OdekakeZikka};
+            var excludedCmds = new List<CmdType>() { CmdType.DarknessS2, CmdType.Darkness_1, CmdType.Darkness_2, CmdType.OdekakeOdaiba, CmdType.OdekakeZikka };
             if (!presentAction.TargetAction.IgnoreDM) return;
             if (pastAction.Stress >= 80)
             {
-                if ((presentAction.TargetAction.DayPart == 0 && IsNotFixedEvents(pastAction, isTrauma.isEventing, isReallyLove.isEventing, isVideo.isEventing) && presentAction.MilestoneIdea == CmdType.None) || (presentAction.TargetAction.DayPart >0 && presentAction.TargetAction.DayPart != 3))
-                errorList.Add(new(branchName, $"Day {presentAction.TargetAction.DayIndex}, {NSODataManager.DayPartNames[presentAction.TargetAction.DayPart]}: {NSODataManager.CmdName(presentAction.Command)}", $"Can't ignore DM if there's no DM to ignore (Ame won't send a DM if her Stress is 80 or more at the start of a part of a day, save for any fixed or milestone events at Noon.)"));
+                if ((presentAction.TargetAction.DayPart == 0 && IsNotFixedEvents(pastAction, isTrauma.isEventing, isReallyLove.isEventing, isVideo.isEventing) && presentAction.MilestoneIdea == CmdType.None) || (presentAction.TargetAction.DayPart > 0 && presentAction.TargetAction.DayPart != 3))
+                    errorList.Add(new(branchName, $"Day {presentAction.TargetAction.DayIndex}, {NSODataManager.DayPartNames[presentAction.TargetAction.DayPart]}: {NSODataManager.CmdName(presentAction.Command)}", $"Can't ignore DM if there's no DM to ignore (Ame won't send a DM if her Stress is 80 or more at the start of a part of a day, save for any fixed or milestone events at Noon.)"));
                 return;
             }
             if (excludedCmds.Exists(c => c == presentAction.Command))
@@ -388,7 +386,7 @@ namespace NSOEndingTreeMaker
                 var usedStream = StreamUsedList.Find(u => u.DayIndex < action.TargetAction.DayIndex && u.UsedStream == action.Command);
                 return (false, $"You can't do this stream more than once. \n\nStream first done on: Day {usedStream.DayIndex}");
             }
-              
+
             if (breakdownThree != null && action.TargetAction.DayIndex > breakdownThree.DayIndex)
             {
                 if (action.TargetAction.DayIndex == (breakdownThree.DayIndex + 1))
@@ -420,7 +418,7 @@ namespace NSOEndingTreeMaker
             if (isNoMeds)
             {
                 if (NSODataManager.IsOverdoseAction(action))
-                    return (false, $"Drugs cannot be taken after Day {NoMeds.DayIndex-1} (the day you did Internet Angel 5.) ");
+                    return (false, $"Drugs cannot be taken after Day {NoMeds.DayIndex - 1} (the day you did Internet Angel 5.) ");
             }
             if (action.Command == CmdType.OdekakeZikka)
             {
@@ -484,8 +482,8 @@ namespace NSOEndingTreeMaker
 
         public void ValidateMissingMandatoryEvents(List<(string, string, string)> errorList, string branchName)
         {
-            List<(string,string, string)> eventErrors = new();
-            
+            List<(string, string, string)> eventErrors = new();
+
             if (isStressed.isEventing && isStressed.DayIndex >= EndingBranch.StartingDay && !DoesEventConflictExpectedEnd(isStressed.DayIndex))
             {
                 var stress = EndingBranch.AllActions.FirstOrDefault(a => a.TargetAction.DayPart == 0 && a.TargetAction.DayIndex == isStressed.DayIndex);
@@ -652,12 +650,12 @@ namespace NSOEndingTreeMaker
                 branch.StreamIdeaList.Insert(0, new(1, 2, CmdType.Zatudan_1));
             for (int i = 0; i < EndingBranch.AllActions.Count; i++)
             {
-                if (i == 0) 
+                if (i == 0)
                 {
                     EndingBranch.AllActions[i].CommandResult = new CommandAction();
                     SetStressFlag(EndingBranch.AllActions[i]);
                     expectedEnding = branch.CheckIfEndingAchieved(null, EndingBranch.AllActions[i], ReallyStressed.Item2, Horror.Item2, VisitParents.Item2, NoMeds.Item2, isMaxFollowers.Item2, IgnoreNightEndings);
-                    continue; 
+                    continue;
                 }
                 ChangePresentCmdBasedOnPastStats(EndingBranch.AllActions[i - 1], EndingBranch.AllActions[i]);
                 if (EndingBranch.AllActions[i].TargetAction.DayPart != 3) EndingBranch.AllActions[i].CommandResult = NSOCommandManager.CmdTypeToCommand(EndingBranch.AllActions[i].Command);
@@ -766,10 +764,10 @@ namespace NSOEndingTreeMaker
             branchWindow?.SetExtraMilestoneGraphic(branch);
             branchWindow?.SetGuessedEnding(branch, expectedEnding);
             branchWindow?.SetActionCounterText(branch);
-            
+
             void SetStressFlag(TargetActionData action)
             {
-                bool isNotBeforeBreakdownDay = !(action.TargetAction.DayIndex == 15 && action.TargetAction.DayPart + action.CommandResult.daypart >= 3 && action.TargetAction.DayPart <3);
+                bool isNotBeforeBreakdownDay = !(action.TargetAction.DayIndex == 15 && action.TargetAction.DayPart + action.CommandResult.daypart >= 3 && action.TargetAction.DayPart < 3);
                 if (action.Stress >= 100
                    && isNotBeforeBreakdownDay
                   && (Stressed.Item2 || (isStressed.isEventing && isStressed.DayIndex <= EndingBranch.StartingDay && action.TargetAction.DayIndex != isStressed.DayIndex))
@@ -1033,7 +1031,7 @@ namespace NSOEndingTreeMaker
                     return (action.TargetAction.DayIndex, 2, EndingType.Ending_Sukisuki);
                 if (action.Affection == 0)
                     return (action.TargetAction.DayIndex, 2, EndingType.Ending_Ntr);
-                if (paperDay.DayIndex != 30 && action.TargetAction.DayIndex >= paperDay.DayIndex && action.TargetAction.DayPart + action.CommandResult.daypart == 2 && !StreamIdeaExistsBeforeAction(action,CmdType.Error))
+                if (paperDay.DayIndex != 30 && action.TargetAction.DayIndex >= paperDay.DayIndex && action.TargetAction.DayPart + action.CommandResult.daypart == 2 && !StreamIdeaExistsBeforeAction(action, CmdType.Error))
                     return (action.TargetAction.DayIndex, 2, EndingType.Ending_Meta);
             }
             if (action.TargetAction.DayIndex == 29 && (action.TargetAction.DayPart + action.CommandResult.daypart >= 3))

@@ -34,6 +34,8 @@
             this.Day2Exp_Check = new System.Windows.Forms.CheckBox();
             this.Notes_Title = new System.Windows.Forms.Label();
             this.Notes = new System.Windows.Forms.TextBox();
+            this.MoveBranchDown_Button = new System.Windows.Forms.Button();
+            this.MoveBranchUp_Button = new System.Windows.Forms.Button();
             this.EditEndingBranch = new System.Windows.Forms.Button();
             this.DeleteEndingBranch = new System.Windows.Forms.Button();
             this.EndingListView = new System.Windows.Forms.ListView();
@@ -93,15 +95,13 @@
             this.OpenNSOwSteam_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PlayGame_Button = new System.Windows.Forms.ToolStripMenuItem();
             this.UnvalidBranches_Label = new System.Windows.Forms.Label();
-            this.MoveBranchUp_Button = new System.Windows.Forms.Button();
-            this.MoveBranchDown_Button = new System.Windows.Forms.Button();
             this.CurrentEndingTree_Group.SuspendLayout();
             this.EndingTree_MenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // AddEndingButton
             // 
-            this.AddEndingButton.Location = new System.Drawing.Point(19, 19);
+            this.AddEndingButton.Location = new System.Drawing.Point(15, 19);
             this.AddEndingButton.Name = "AddEndingButton";
             this.AddEndingButton.Size = new System.Drawing.Size(218, 35);
             this.AddEndingButton.TabIndex = 4;
@@ -111,6 +111,7 @@
             // 
             // CurrentEndingTree_Group
             // 
+            this.CurrentEndingTree_Group.BackColor = System.Drawing.Color.Transparent;
             this.CurrentEndingTree_Group.Controls.Add(this.Day2Exp_Check);
             this.CurrentEndingTree_Group.Controls.Add(this.Notes_Title);
             this.CurrentEndingTree_Group.Controls.Add(this.Notes);
@@ -121,14 +122,14 @@
             this.CurrentEndingTree_Group.Controls.Add(this.AddEndingButton);
             this.CurrentEndingTree_Group.Location = new System.Drawing.Point(14, 27);
             this.CurrentEndingTree_Group.Name = "CurrentEndingTree_Group";
-            this.CurrentEndingTree_Group.Size = new System.Drawing.Size(260, 445);
+            this.CurrentEndingTree_Group.Size = new System.Drawing.Size(248, 445);
             this.CurrentEndingTree_Group.TabIndex = 9;
             this.CurrentEndingTree_Group.TabStop = false;
             // 
             // Day2Exp_Check
             // 
             this.Day2Exp_Check.AutoSize = true;
-            this.Day2Exp_Check.Location = new System.Drawing.Point(19, 417);
+            this.Day2Exp_Check.Location = new System.Drawing.Point(15, 417);
             this.Day2Exp_Check.Name = "Day2Exp_Check";
             this.Day2Exp_Check.Size = new System.Drawing.Size(213, 17);
             this.Day2Exp_Check.TabIndex = 12;
@@ -140,7 +141,7 @@
             // Notes_Title
             // 
             this.Notes_Title.AutoSize = true;
-            this.Notes_Title.Location = new System.Drawing.Point(16, 256);
+            this.Notes_Title.Location = new System.Drawing.Point(12, 256);
             this.Notes_Title.Name = "Notes_Title";
             this.Notes_Title.Size = new System.Drawing.Size(35, 13);
             this.Notes_Title.TabIndex = 7;
@@ -148,17 +149,38 @@
             // 
             // Notes
             // 
-            this.Notes.Location = new System.Drawing.Point(19, 277);
+            this.Notes.Location = new System.Drawing.Point(15, 277);
             this.Notes.Multiline = true;
             this.Notes.Name = "Notes";
             this.Notes.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.Notes.Size = new System.Drawing.Size(218, 132);
             this.Notes.TabIndex = 7;
+            this.Notes.Click += new System.EventHandler(this.Notes_Click);
             this.Notes.TextChanged += new System.EventHandler(this.Notes_TextChanged);
+            // 
+            // MoveBranchDown_Button
+            // 
+            this.MoveBranchDown_Button.Location = new System.Drawing.Point(15, 199);
+            this.MoveBranchDown_Button.Name = "MoveBranchDown_Button";
+            this.MoveBranchDown_Button.Size = new System.Drawing.Size(218, 35);
+            this.MoveBranchDown_Button.TabIndex = 6;
+            this.MoveBranchDown_Button.Text = "Move Branch Down";
+            this.MoveBranchDown_Button.UseVisualStyleBackColor = true;
+            this.MoveBranchDown_Button.Click += new System.EventHandler(this.MoveBranchDown_Button_Click);
+            // 
+            // MoveBranchUp_Button
+            // 
+            this.MoveBranchUp_Button.Location = new System.Drawing.Point(15, 158);
+            this.MoveBranchUp_Button.Name = "MoveBranchUp_Button";
+            this.MoveBranchUp_Button.Size = new System.Drawing.Size(218, 35);
+            this.MoveBranchUp_Button.TabIndex = 6;
+            this.MoveBranchUp_Button.Text = "Move Branch Up";
+            this.MoveBranchUp_Button.UseVisualStyleBackColor = true;
+            this.MoveBranchUp_Button.Click += new System.EventHandler(this.MoveBranchUp_Button_Click);
             // 
             // EditEndingBranch
             // 
-            this.EditEndingBranch.Location = new System.Drawing.Point(19, 97);
+            this.EditEndingBranch.Location = new System.Drawing.Point(15, 97);
             this.EditEndingBranch.Name = "EditEndingBranch";
             this.EditEndingBranch.Size = new System.Drawing.Size(218, 35);
             this.EditEndingBranch.TabIndex = 6;
@@ -168,7 +190,7 @@
             // 
             // DeleteEndingBranch
             // 
-            this.DeleteEndingBranch.Location = new System.Drawing.Point(19, 58);
+            this.DeleteEndingBranch.Location = new System.Drawing.Point(15, 58);
             this.DeleteEndingBranch.Name = "DeleteEndingBranch";
             this.DeleteEndingBranch.Size = new System.Drawing.Size(218, 35);
             this.DeleteEndingBranch.TabIndex = 5;
@@ -640,26 +662,6 @@
             this.UnvalidBranches_Label.Text = "Unvalidated Ending Branches Detected";
             this.UnvalidBranches_Label.VisibleChanged += new System.EventHandler(this.UnvalidBranch_LabelToggle);
             // 
-            // MoveBranchUp_Button
-            // 
-            this.MoveBranchUp_Button.Location = new System.Drawing.Point(19, 158);
-            this.MoveBranchUp_Button.Name = "MoveBranchUp_Button";
-            this.MoveBranchUp_Button.Size = new System.Drawing.Size(218, 35);
-            this.MoveBranchUp_Button.TabIndex = 6;
-            this.MoveBranchUp_Button.Text = "Move Branch Up";
-            this.MoveBranchUp_Button.UseVisualStyleBackColor = true;
-            this.MoveBranchUp_Button.Click += new System.EventHandler(this.MoveBranchUp_Button_Click);
-            // 
-            // MoveBranchDown_Button
-            // 
-            this.MoveBranchDown_Button.Location = new System.Drawing.Point(19, 199);
-            this.MoveBranchDown_Button.Name = "MoveBranchDown_Button";
-            this.MoveBranchDown_Button.Size = new System.Drawing.Size(218, 35);
-            this.MoveBranchDown_Button.TabIndex = 6;
-            this.MoveBranchDown_Button.Text = "Move Branch Down";
-            this.MoveBranchDown_Button.UseVisualStyleBackColor = true;
-            this.MoveBranchDown_Button.Click += new System.EventHandler(this.MoveBranchDown_Button_Click);
-            // 
             // EndingTreeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -677,6 +679,7 @@
             this.Text = "Main Ending Tree";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.EndingTreeForm_FormClosing);
             this.Load += new System.EventHandler(this.EndingTreeForm_Load);
+            this.Click += new System.EventHandler(this.EndingTreeForm_Click);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.EndingTreeForm_KeyDown);
             this.Leave += new System.EventHandler(this.EndingTreeForm_Leave);
             this.CurrentEndingTree_Group.ResumeLayout(false);

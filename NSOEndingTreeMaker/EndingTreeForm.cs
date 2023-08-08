@@ -6,9 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Windows.Forms;
 
@@ -103,15 +100,15 @@ namespace NSOEndingTreeMaker
             EndingListView.Items.Clear();
             List<(string, string, string)> errorList = new();
             for (int i = 0; i < CurrentEndingTree.EndingsList.Count; i++)
-            {   
+            {
                 var list = new List<(string, string, string)>();
                 var branch = CurrentEndingTree.EndingsList[i];
-                string futureBranchName = $"Branch {i + 1}. {NSODataManager.EndingNames[branch.EndingBranch.EndingToGet]}";            
+                string futureBranchName = $"Branch {i + 1}. {NSODataManager.EndingNames[branch.EndingBranch.EndingToGet]}";
                 if (CurrentEndingTree.isDay2Exp && branch.EndingBranch.AllActions.Exists(a => a.TargetAction.DayIndex == 2 && a.TargetAction.DayPart == -1 && a.Command == CmdType.None))
                 {
                     list.Add(new("", "", "Day 2 Extra Action must have an action if Day 2 Extra Action is enabled."));
                 }
-                if (i == 0) 
+                if (i == 0)
                 {
                     InitializeEndingList(i, errorList, futureBranchName);
                     continue;
@@ -122,7 +119,7 @@ namespace NSOEndingTreeMaker
                     list.Add(new(futureBranchName, "", $"Tried to initialize starting stats for this branch's starting day, however no valid day exists to set stats."));
                 else branch.EndingBranch.AllActions[0] = startAction;
                 ResetStartingDayData(branch, i - 1);
-                InitializeEndingList(i,errorList,futureBranchName);
+                InitializeEndingList(i, errorList, futureBranchName);
             }
             if (errorList.Count > 0) UnvalidBranches_Label.Visible = true;
             else UnvalidBranches_Label.Visible = false;
@@ -143,7 +140,7 @@ namespace NSOEndingTreeMaker
                 errorList.AddRange(list);
             }
         }
-        
+
         bool IsExpectedMatchesEndingToGet(EndingBranchData branch)
         {
             if (branch.EndingBranch.AllActions[0].Followers == 0)
@@ -201,10 +198,10 @@ namespace NSOEndingTreeMaker
         private void MoveBranchToNextIndex()
         {
             int maxListCount = CurrentEndingTree.EndingsList.Count;
-            if (SelectedEnding == null || EndingListView.SelectedIndices.Count == 0 || EndingListView.SelectedIndices[0] == maxListCount -1)
+            if (SelectedEnding == null || EndingListView.SelectedIndices.Count == 0 || EndingListView.SelectedIndices[0] == maxListCount - 1)
                 return;
             int branchIndex = CurrentEndingTree.EndingsList.IndexOf(SelectedEnding);
-            MoveBranchToNewIndex(SelectedEnding, branchIndex+1);
+            MoveBranchToNewIndex(SelectedEnding, branchIndex + 1);
         }
         private void MoveBranchToNewIndex(EndingBranchData endingData, int newIndex)
         {
@@ -212,7 +209,7 @@ namespace NSOEndingTreeMaker
             var newBranch = new EndingBranchData(endingData);
             CurrentEndingTree.EndingsList.RemoveAt(branchIndex);
             EndingListView.Items.RemoveAt(branchIndex);
-            CurrentEndingTree.EndingsList.Insert(newIndex,newBranch);
+            CurrentEndingTree.EndingsList.Insert(newIndex, newBranch);
             InsertEndingToListView(newBranch, newIndex);
             SetEndingListViewData();
         }
@@ -231,10 +228,10 @@ namespace NSOEndingTreeMaker
                 return;
             }
             var confirm = MessageBox.Show($"Are you sure you want to delete {(selectedEndings.Count > 1 ? "these endings" : "this ending")}? \n\nThis action can't be undone.", "Delete Ending?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (confirm == DialogResult.No) 
+            if (confirm == DialogResult.No)
             {
                 ResetSelectedEnding();
-                return; 
+                return;
             }
             for (int i = selectedEndings.Count - 1; i >= 0; i--)
             {
@@ -294,11 +291,11 @@ namespace NSOEndingTreeMaker
                 List<TargetActionData> actions = refBranch.EndingBranch.AllActions;
                 if (branch.EndingBranch.StartingDay > actions[actions.Count - 1].TargetAction.DayIndex)
                 {
-                   break;
+                    break;
                 }
                 for (int j = actions.Count - 1; j >= 0; j--)
                 {
-                    bool foundReferenceDay = actions[j].TargetAction.DayIndex == branch.EndingBranch.StartingDay || (actions[j].TargetAction.DayIndex == (branch.EndingBranch.StartingDay-1) && actions[j].TargetAction.DayPart + actions[j].CommandResult.daypart >= 3);
+                    bool foundReferenceDay = actions[j].TargetAction.DayIndex == branch.EndingBranch.StartingDay || (actions[j].TargetAction.DayIndex == (branch.EndingBranch.StartingDay - 1) && actions[j].TargetAction.DayPart + actions[j].CommandResult.daypart >= 3);
                     bool isNoEndingExpected = (refBranch.ExpectedDayOfEnd.Item3 == EndingType.Ending_None || (actions[j].TargetAction.DayIndex <= refBranch.ExpectedDayOfEnd.Item1 && !(refBranch.isHorror.isEventing && actions[j].TargetAction.DayIndex >= refBranch.isHorror.DayIndex)));
                     if (foundReferenceDay && isNoEndingExpected)
                     {
@@ -431,7 +428,7 @@ namespace NSOEndingTreeMaker
                     if ((endingToImport.is500M.DayIndex <= branch.EndingBranch.StartingDay) && endingToImport.is500M.isEventing)
                         branch.is500M = endingToImport.is500M;
                     else branch.is500M = new(0, false);
-                    if ((endingToImport.isMaxFollowers.DayIndex <= branch.isMaxFollowers.DayIndex) && endingToImport.isMaxFollowers.isEventing) 
+                    if ((endingToImport.isMaxFollowers.DayIndex <= branch.isMaxFollowers.DayIndex) && endingToImport.isMaxFollowers.isEventing)
                         branch.isMaxFollowers = endingToImport.isMaxFollowers;
                     else branch.isMaxFollowers = new(0, false);
                     return;
@@ -447,7 +444,7 @@ namespace NSOEndingTreeMaker
             bool isValidated = true;
             string errorMsg = "";
             List<string> endings = new List<string>();
-            int oldLatestIndex = CurrentEndingTree.EndingsList[index].EndingBranch.AllActions.Count -1;
+            int oldLatestIndex = CurrentEndingTree.EndingsList[index].EndingBranch.AllActions.Count - 1;
             int oldLatestDay = CurrentEndingTree.EndingsList[index].EndingBranch.AllActions[oldLatestIndex].TargetAction.DayIndex;
             for (int i = index; i < CurrentEndingTree.EndingsList.Count; i++)
             {
@@ -486,7 +483,7 @@ namespace NSOEndingTreeMaker
                 CurrentEndingTree.isBroken = true;
                 BranchErrorDetails errorDetails = new BranchErrorDetails(errorList, false);
                 errorDetails.ErrorIntro.Text = "Branches in this tree contains validation errors. Are you sure you want to proceed?";
-                isConfirm = errorDetails.ShowDialog() == DialogResult.Yes ? true : false;               
+                isConfirm = errorDetails.ShowDialog() == DialogResult.Yes ? true : false;
                 return isConfirm;
             }
             CurrentEndingTree.isBroken = false;
@@ -554,7 +551,7 @@ namespace NSOEndingTreeMaker
                 {
                     _directoryToOpen = Path.GetDirectoryName(saveEndingTree.FileName);
                     Properties.Settings.Default.Directory = _directoryToOpen;
-                    stream.Write(Encoding.UTF8.GetBytes(treeData), 0, Encoding.UTF8.GetByteCount(treeData));                 
+                    stream.Write(Encoding.UTF8.GetBytes(treeData), 0, Encoding.UTF8.GetByteCount(treeData));
                     _currentFile = saveEndingTree.FileName;
                     _currentExp = CurrentEndingTree.isDay2Exp;
                     _currentNotes = CurrentEndingTree.Notes;
@@ -576,31 +573,31 @@ namespace NSOEndingTreeMaker
         {
             if (string.IsNullOrEmpty(pathToTree)) return false;
             try
-                {
+            {
                 var fileContent = File.OpenRead(pathToTree);
                 using (StreamReader reader = new StreamReader(fileContent))
-                    {
-                        var importedTreeData = reader.ReadToEnd();
-                        var newTreeData = JsonConvert.DeserializeObject<EndingTreeData>(importedTreeData);
-                        CurrentEndingTree = newTreeData;
+                {
+                    var importedTreeData = reader.ReadToEnd();
+                    var newTreeData = JsonConvert.DeserializeObject<EndingTreeData>(importedTreeData);
+                    CurrentEndingTree = newTreeData;
                     _currentNotes = CurrentEndingTree.Notes;
                     _currentExp = CurrentEndingTree.isDay2Exp;
                     SetEndingListViewData(true);
-                        DeleteEndingBranch.Enabled = false;
-                        EditEndingBranch.Enabled = false;
-                        if (!string.IsNullOrEmpty(_currentFile)) _recentlyClosed = _currentFile;
-                        _currentFile = pathToTree;
+                    DeleteEndingBranch.Enabled = false;
+                    EditEndingBranch.Enabled = false;
+                    if (!string.IsNullOrEmpty(_currentFile)) _recentlyClosed = _currentFile;
+                    _currentFile = pathToTree;
                     Day2ExtraAction();
                     _isNotesEdited = false;
                     isBranchEdited = false;
                     ChangeFormTitle();
                     ChangeFileLabelIfUnsaved();
                     return true;
-                    }
                 }
-            catch 
-            { 
-                MessageBox.Show("Could not open JSON file, either the JSON file is invalid or the JSON file does not represent an Ending Tree.", "Could not read JSON file", MessageBoxButtons.OK, MessageBoxIcon.Error); 
+            }
+            catch
+            {
+                MessageBox.Show("Could not open JSON file, either the JSON file is invalid or the JSON file does not represent an Ending Tree.", "Could not read JSON file", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             return false;
 
@@ -628,7 +625,7 @@ namespace NSOEndingTreeMaker
                         CurrentEndingTree = newTreeData;
                         SetEndingListViewData(true);
                         DeleteEndingBranch.Enabled = false;
-                        EditEndingBranch.Enabled = false;                       
+                        EditEndingBranch.Enabled = false;
                         _currentFile = openEndingTree.FileName;
                         _currentNotes = CurrentEndingTree.Notes;
                         _currentExp = CurrentEndingTree.isDay2Exp;
@@ -641,7 +638,7 @@ namespace NSOEndingTreeMaker
                         return true;
                     }
                 }
-                catch { MessageBox.Show("Could not open JSON file, either the JSON file is invalid or the JSON file does not represent an Ending Tree.", "Could not read JSON file", MessageBoxButtons.OK, MessageBoxIcon.Error); } 
+                catch { MessageBox.Show("Could not open JSON file, either the JSON file is invalid or the JSON file does not represent an Ending Tree.", "Could not read JSON file", MessageBoxButtons.OK, MessageBoxIcon.Error); }
             }
             return false;
         }
@@ -677,10 +674,10 @@ namespace NSOEndingTreeMaker
                     MoveBranchUp_Button.Enabled = false;
                     return;
                 }
-                if (selectedEndings[0] != CurrentEndingTree.EndingsList.Count -1)
+                if (selectedEndings[0] != CurrentEndingTree.EndingsList.Count - 1)
                     MoveBranchDown_Button.Enabled = true;
                 if (selectedEndings[0] > 1)
-                   MoveBranchUp_Button.Enabled = true;
+                    MoveBranchUp_Button.Enabled = true;
                 return;
             }
             if (selectedEndings.Count == 0)
@@ -774,13 +771,13 @@ namespace NSOEndingTreeMaker
 
         private void EndingTreeForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (!IsCloseIfUnsaved()) 
+            if (!IsCloseIfUnsaved())
             {
                 e.Cancel = true;
                 return;
             }
-            SaveNewSlotPathsToSettings();  
-            if (!string.IsNullOrEmpty(_currentFile)) 
+            SaveNewSlotPathsToSettings();
+            if (!string.IsNullOrEmpty(_currentFile))
                 Properties.Settings.Default.RecentClosedEndingTree = _currentFile;
             Properties.Settings.Default.Save();
         }
@@ -799,11 +796,11 @@ namespace NSOEndingTreeMaker
             SetSlotFour_MenuItem.Enabled = !string.IsNullOrEmpty(_slots[4]);
             SetSlotFive_MenuItem.Enabled = !string.IsNullOrEmpty(_slots[5]);
 
-            Slot1_Name.Text = !string.IsNullOrEmpty(_slots[1]) ? Path.GetFileName(_slots[1]): "(none)" ;
-            Slot2_Name.Text = !string.IsNullOrEmpty(_slots[2]) ? Path.GetFileName(_slots[2]): "(none)" ;
-            Slot3_Name.Text = !string.IsNullOrEmpty(_slots[3]) ? Path.GetFileName(_slots[3]): "(none)" ;
-            Slot4_Name.Text = !string.IsNullOrEmpty(_slots[4]) ? Path.GetFileName(_slots[4]): "(none)" ;
-            Slot5_Name.Text = !string.IsNullOrEmpty(_slots[5]) ? Path.GetFileName(_slots[5]): "(none)" ;
+            Slot1_Name.Text = !string.IsNullOrEmpty(_slots[1]) ? Path.GetFileName(_slots[1]) : "(none)";
+            Slot2_Name.Text = !string.IsNullOrEmpty(_slots[2]) ? Path.GetFileName(_slots[2]) : "(none)";
+            Slot3_Name.Text = !string.IsNullOrEmpty(_slots[3]) ? Path.GetFileName(_slots[3]) : "(none)";
+            Slot4_Name.Text = !string.IsNullOrEmpty(_slots[4]) ? Path.GetFileName(_slots[4]) : "(none)";
+            Slot5_Name.Text = !string.IsNullOrEmpty(_slots[5]) ? Path.GetFileName(_slots[5]) : "(none)";
         }
 
         private void SavePathToSlot(int slot)
@@ -1104,7 +1101,7 @@ namespace NSOEndingTreeMaker
             {
                 try
                 {
-                   Process.Start(InitializeValidGamePath() + @"\Windose.exe");
+                    Process.Start(InitializeValidGamePath() + @"\Windose.exe");
                 }
                 catch { MessageBox.Show("Could not open the game from the Steam path: either the game doesn't exist, has been moved to another location, or is corrupted.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
             }
@@ -1140,7 +1137,7 @@ namespace NSOEndingTreeMaker
                         }
                         if (i == 0 && allActions.Count >= 2 && allActions[1].TargetAction.DayIndex != 2 && allActions[1].TargetAction.DayPart != -1)
                         {
-                            allActions.Insert(1, new TargetActionData(2,-1,CmdType.None));
+                            allActions.Insert(1, new TargetActionData(2, -1, CmdType.None));
                             continue;
                         }
                         if (i == 0 && allActions.Count >= 2 && allActions[1].TargetAction.DayIndex == 2 && allActions[1].TargetAction.DayPart == -1 && !allActions[1].TargetAction.IgnoreDM)
@@ -1156,7 +1153,7 @@ namespace NSOEndingTreeMaker
                     }
                     break;
                 case false:
-                    for (int i =0; i < CurrentEndingTree.EndingsList.Count; i++)
+                    for (int i = 0; i < CurrentEndingTree.EndingsList.Count; i++)
                     {
                         var allActions = CurrentEndingTree.EndingsList[i].EndingBranch.AllActions;
                         if (i == 0 && allActions.Count >= 2 && allActions[1].TargetAction.DayIndex == 2 && allActions[1].TargetAction.DayPart == -1)
@@ -1172,7 +1169,7 @@ namespace NSOEndingTreeMaker
                     break;
             }
             SetEndingListViewData();
-            
+
         }
 
         private void Day2Exp_Check_MouseClick(object sender, MouseEventArgs e)
@@ -1212,6 +1209,16 @@ namespace NSOEndingTreeMaker
         private void File_MenuItem_DropDownOpened(object sender, EventArgs e)
         {
             OpenRecent_MenuItem.Text = $"Open Recent Ending Tree: {Path.GetFileName(_recentlyClosed)}"; ;
+        }
+
+        private void EndingTreeForm_Click(object sender, EventArgs e)
+        {
+            EndingListView.SelectedIndices.Clear();
+        }
+
+        private void Notes_Click(object sender, EventArgs e)
+        {
+            EndingListView.SelectedIndices.Clear();
         }
     }
 }

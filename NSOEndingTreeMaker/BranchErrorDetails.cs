@@ -59,7 +59,7 @@ namespace NSOEndingTreeMaker
 
         private void YesConfirm_Click(object sender, EventArgs e)
         {
-            DialogResult= DialogResult.Yes;
+            DialogResult = DialogResult.Yes;
             Close();
         }
 

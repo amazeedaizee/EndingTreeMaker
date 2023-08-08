@@ -422,7 +422,7 @@ namespace NSOEndingTreeMaker
             if ((IsNoMeds || (branch.NoMeds.isEventing && branch.NoMeds.DayIndex <= presentAction.TargetAction.DayIndex)) && presentAction.TargetAction.Action == ActionType.Haishin)
                 addStress = 0;
             presentAction.Stress = pastAction.Stress + addStress;
-            presentAction.Affection =pastAction.Affection + presentAction.CommandResult.affection;
+            presentAction.Affection = pastAction.Affection + presentAction.CommandResult.affection;
             presentAction.Darkness = pastAction.Darkness + presentAction.CommandResult.darkness;
             if (pastAction.TargetAction.DayIndex != presentAction.TargetAction.DayIndex && presentAction.TargetAction.Action != ActionType.InternetPoketter)
             {

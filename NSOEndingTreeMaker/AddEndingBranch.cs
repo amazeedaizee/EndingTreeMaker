@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace NSOEndingTreeMaker
@@ -35,7 +34,7 @@ namespace NSOEndingTreeMaker
             IsStressfulBreakdown_CheckAdd.Checked = NewEnding.EndingBranch.IsStressfulBressdown;
         }
 
-        public void CreateNewEndingBranch()
+        public bool CreateNewEndingBranch()
         {
             if (NewEnding.EndingBranch.StartingDay == 1)
             {
@@ -53,7 +52,7 @@ namespace NSOEndingTreeMaker
                     {
                         var confirm = MessageBox.Show("Chosen starting day does not exist in the branch list, or is currently inaccessible based on the previous branches. (ending is queued to be on a day, etc)\n\nAre you sure you want to continue?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                         if (confirm == DialogResult.No)
-                            return;
+                            return false;
                     }
                     if (mainForm.CurrentEndingTree.isDay2Exp && NewEnding.EndingBranch.StartingDay == 2)
                     {
@@ -63,7 +62,7 @@ namespace NSOEndingTreeMaker
                     switch (isAdvanced)
                     {
                         case true:
-                            mainForm.ResetStartingDayData(NewEnding, endingIndex-1);
+                            mainForm.ResetStartingDayData(NewEnding, endingIndex - 1);
                             mainForm.CurrentEndingTree.EndingsList.Insert(endingIndex, NewEnding);
                             mainForm.InsertEndingToListView(NewEnding, endingIndex);
                             break;
@@ -76,11 +75,14 @@ namespace NSOEndingTreeMaker
                 }
                 mainForm.SetEndingListViewData();
                 mainForm.isBranchEdited = true;
+                return true;
             }
+            return false;
         }
         private void AddEndingButton_Click(object sender, EventArgs e)
         {
-            CreateNewEndingBranch();
+            if (!CreateNewEndingBranch())
+                return;
             OnNewBranchCreated?.Invoke();
             this.Close();
 
@@ -115,7 +117,7 @@ namespace NSOEndingTreeMaker
             if (!isAdvanced)
             {
                 isAdvanced = true;
-                Size = new System.Drawing.Size(450,230);
+                Size = new System.Drawing.Size(450, 230);
             }
             else
             {
@@ -130,7 +132,7 @@ namespace NSOEndingTreeMaker
 
         private void InsertAtEndingIndex_Numeric_ValueChanged(object sender, EventArgs e)
         {
-            endingIndex = ((int)InsertAtEndingIndex_Numeric.Value-1);
+            endingIndex = ((int)InsertAtEndingIndex_Numeric.Value - 1);
         }
     }
 }

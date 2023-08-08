@@ -623,7 +623,7 @@ namespace NSOEndingTreeMaker
 
         public static bool IsOverdoseAction(TargetActionData action)
         {
-            if (action == null) 
+            if (action == null)
                 return false;
             var a = action.TargetAction.Action;
             return a.ToString().Contains("Okusuri") &&
@@ -634,8 +634,8 @@ namespace NSOEndingTreeMaker
 
         public static bool IsEndingOnSameDay(EndingType ending)
         {
-            List<EndingType> conditions = new List<EndingType>() 
-            { 
+            List<EndingType> conditions = new List<EndingType>()
+            {
                 EndingType.Ending_Healthy,
                 EndingType.Ending_Sukisuki,
                 EndingType.Ending_Jine,
@@ -662,71 +662,71 @@ namespace NSOEndingTreeMaker
             {
 
                 case ActionType.EntameGame:
-                    if (CanGetStreamIdea(1,AlphaType.Gamejikkyou)) 
+                    if (CanGetStreamIdea(1, AlphaType.Gamejikkyou))
                         return (day, dayPart, CmdType.Gamejikkyou_1);
-                    if (CanGetStreamIdea(5, AlphaType.Gamejikkyou)) 
+                    if (CanGetStreamIdea(5, AlphaType.Gamejikkyou))
                         return (day, dayPart, CmdType.Gamejikkyou_5);
-                    if (CanGetStreamIdea(2, AlphaType.Imbouron)) 
+                    if (CanGetStreamIdea(2, AlphaType.Imbouron))
                         return (day, dayPart, CmdType.Imbouron_2);
-                    if (CanGetStreamIdea(3, AlphaType.Kaisetu)) 
+                    if (CanGetStreamIdea(3, AlphaType.Kaisetu))
                         return (day, dayPart, CmdType.Kaisetu_3);
-                    if (CanGetStreamIdea(3, AlphaType.PR)) 
+                    if (CanGetStreamIdea(3, AlphaType.PR))
                         return (day, dayPart, CmdType.PR_3);
                     break;
                 case ActionType.PlayIchatuku:
-                    if (CanGetStreamIdea(2, AlphaType.ASMR)) 
+                    if (CanGetStreamIdea(2, AlphaType.ASMR))
                         return (day, dayPart, CmdType.ASMR_2);
-                    if (CanGetStreamIdea(1, AlphaType.Hnahaisin)) 
+                    if (CanGetStreamIdea(1, AlphaType.Hnahaisin))
                         return (day, dayPart, CmdType.Hnahaisin_1);
-                    if (CanGetStreamIdea(2, AlphaType.Kaisetu)) 
+                    if (CanGetStreamIdea(2, AlphaType.Kaisetu))
                         return (day, dayPart, CmdType.Kaisetu_2);
-                    if (CanGetStreamIdea(5,AlphaType.Taiken)) 
+                    if (CanGetStreamIdea(5, AlphaType.Taiken))
                         return (day, dayPart, CmdType.Taiken_5);
-                    if (CanGetStreamIdea(3,AlphaType.Yamihaishin)) 
+                    if (CanGetStreamIdea(3, AlphaType.Yamihaishin))
                         return (day, dayPart, CmdType.Yamihaishin_3);
                     if (CanGetStreamIdea(4, AlphaType.PR))
                         return (day, dayPart, CmdType.PR_4);
                     break;
                 case ActionType.PlayMakeLove:
-                    if (CanGetStreamIdea(3,AlphaType.ASMR)) 
+                    if (CanGetStreamIdea(3, AlphaType.ASMR))
                         return (day, dayPart, CmdType.ASMR_3);
-                    if (CanGetStreamIdea(2,AlphaType.Hnahaisin)) 
+                    if (CanGetStreamIdea(2, AlphaType.Hnahaisin))
                         return (day, dayPart, CmdType.Hnahaisin_2);
-                    if (CanGetStreamIdea(5,AlphaType.Hnahaisin)) 
+                    if (CanGetStreamIdea(5, AlphaType.Hnahaisin))
                         return (day, dayPart, CmdType.Hnahaisin_5);
                     break;
                 case ActionType.SleepToTwilight:
-                    if (CanGetStreamIdea(3,AlphaType.Otakutalk)) 
+                    if (CanGetStreamIdea(3, AlphaType.Otakutalk))
                         return (day, dayPart, CmdType.Otakutalk_3);
                     break;
                 case ActionType.SleepToTomorrow:
-                    if (CanGetStreamIdea(1,AlphaType.ASMR)) 
+                    if (CanGetStreamIdea(1, AlphaType.ASMR))
                         return (day, dayPart, CmdType.ASMR_1);
                     break;
                 case ActionType.OkusuriDaypassOverdose:
                     if (noMeds.isEventing) break;
-                    if (CanGetStreamIdea(1,AlphaType.Yamihaishin)) 
+                    if (CanGetStreamIdea(1, AlphaType.Yamihaishin))
                         return (day, dayPart, CmdType.Yamihaishin_1);
                     break;
                 case ActionType.OkusuriHiPuronOverdose:
                     if (noMeds.isEventing) break;
-                    if (CanGetStreamIdea(4,AlphaType.Yamihaishin)) 
+                    if (CanGetStreamIdea(4, AlphaType.Yamihaishin))
                         return (day, dayPart, CmdType.Yamihaishin_4);
                     break;
                 case ActionType.OkusuriHappa:
                     if (noMeds.isEventing) break;
-                    if (CanGetStreamIdea(4,AlphaType.Otakutalk)) 
+                    if (CanGetStreamIdea(4, AlphaType.Otakutalk))
                         return (day, dayPart, CmdType.Otakutalk_4);
-                    if (CanGetStreamIdea(5, AlphaType.Yamihaishin)) 
+                    if (CanGetStreamIdea(5, AlphaType.Yamihaishin))
                         return (day, dayPart, CmdType.Yamihaishin_5);
                     break;
                 case ActionType.OkusuriPsyche:
                     if (noMeds.isEventing) break;
-                    if (CanGetStreamIdea(4, AlphaType.Imbouron)) 
+                    if (CanGetStreamIdea(4, AlphaType.Imbouron))
                         return (day, dayPart, CmdType.Imbouron_4);
-                    if (CanGetStreamIdea(5, AlphaType.Imbouron)) 
+                    if (CanGetStreamIdea(5, AlphaType.Imbouron))
                         return (day, dayPart, CmdType.Imbouron_5);
-                    if (CanGetStreamIdea(6, AlphaType.Imbouron)) 
+                    if (CanGetStreamIdea(6, AlphaType.Imbouron))
                         return (day, dayPart, CmdType.Error);
                     if (CanGetStreamIdea(5, AlphaType.Kaisetu))
                         return (day, dayPart, CmdType.Kaisetu_5);
@@ -847,7 +847,7 @@ namespace NSOEndingTreeMaker
                     return !branch.StreamIdeaExistsBeforeAction(presentAction, streamIdea);
                 else
                 {
-                    var pastStream = (CmdType)Enum.Parse(typeof(CmdType), $"{streamTopic}_{streamLevelToGet-1}");
+                    var pastStream = (CmdType)Enum.Parse(typeof(CmdType), $"{streamTopic}_{streamLevelToGet - 1}");
                     return pastAction.Followers >= followerReq && branch.UsedStreamExistsBeforeAction(presentAction, pastStream) && !branch.StreamIdeaExistsBeforeAction(presentAction, streamIdea);
                 }
             }
@@ -868,7 +868,7 @@ namespace NSOEndingTreeMaker
                 action.MilestoneIdea = CmdType.None;
                 return;
             }
-            if (action.Followers >= 10000 && !branch.StreamIdeaExistsBeforeAction(action,CmdType.Angel_1))
+            if (action.Followers >= 10000 && !branch.StreamIdeaExistsBeforeAction(action, CmdType.Angel_1))
             {
                 ideas.Add(new(action.TargetAction.DayIndex, action.TargetAction.DayPart, CmdType.Angel_1));
                 action.MilestoneIdea = CmdType.Angel_1;

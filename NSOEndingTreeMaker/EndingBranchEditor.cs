@@ -3,13 +3,9 @@ using ngov3;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.Design;
 using System.Linq;
-using System.Reflection;
 using System.Windows.Forms;
 using static NSOEndingTreeMaker.EndingBranchSubData;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Menu;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
 
 namespace NSOEndingTreeMaker
 {
@@ -1246,7 +1242,7 @@ namespace NSOEndingTreeMaker
                     nextDay++;
                     nextDayPart = 0;
                 }
-                  
+
                 ActionListView.SelectedIndices.Clear();
                 var nextAction = ActionList.FindIndex(a => a.TargetAction.DayIndex == nextDay && a.TargetAction.DayPart == nextDayPart);
                 if (nextAction > -1)
@@ -1254,7 +1250,7 @@ namespace NSOEndingTreeMaker
                     ActionListView.SelectedIndices.Add(nextAction);
                 }
             }
-            
+
 
             bool InitializeSelectedStartDay()
             {
@@ -1404,7 +1400,7 @@ namespace NSOEndingTreeMaker
                 StreamTopic_Dropdown.Enabled = toggle;
             }
         }
-    
+
 
         private void ForceMandatoryNewAction(TargetActionData action)
         {
@@ -1439,7 +1435,7 @@ namespace NSOEndingTreeMaker
                 if (DayPart_Dropdown.SelectedIndex == 0 && !IsMandatoryActionExist(veryLove.DayIndex, 0, CmdType.OdekakeZikka))
                 {
                     action.Command = CmdType.OdekakeZikka;
-                    
+
                 }
             }
             if (musicVideo.isEventing && DayIndexNumeric.Value == musicVideo.DayIndex)
@@ -1472,12 +1468,12 @@ namespace NSOEndingTreeMaker
         }
 
         private void PreventEditForCertainActionsWhenMultiSelect()
-        {           
+        {
             if (ParentAction_Dropdown.SelectedIndex == 0 || ParentAction_Dropdown.SelectedIndex == 6)
                 TargetActionButton.Enabled = false;
             else if (ParentAction_Dropdown.SelectedIndex == 5 && Action_Dropdown.SelectedIndex >= 16)
                 TargetActionButton.Enabled = false;
-            else { TargetActionButton.Enabled = true;}
+            else { TargetActionButton.Enabled = true; }
         }
 
         private void ParentAction_DropdownOnSelectedIndexChanged(object sender, EventArgs e)
@@ -1508,7 +1504,7 @@ namespace NSOEndingTreeMaker
             IgnoreDMCheck.Enabled = true;
             var selectedActions = ActionListView.SelectedIndices;
             if (selectedActions.Count == 1)
-            {             
+            {
                 try
                 {
                     if (selectedActions[0] >= 0 && SelectedAction != ActionList[selectedActions[0]])
@@ -1598,8 +1594,8 @@ namespace NSOEndingTreeMaker
                     ChangeActionEnableBool(false);
                     TargetActionButton.Enabled = false;
                     return;
-                }        
-                else 
+                }
+                else
                 {
                     ChangeActionEnableBool(true);
                     TargetActionButton.Enabled = true;
@@ -1725,13 +1721,13 @@ namespace NSOEndingTreeMaker
             }
 
         }
-        
+
         private void DisableSubmitIfActionNull()
         {
             if (ParentAction_Dropdown.SelectedIndex == -1)
                 TargetActionButton.Enabled = false;
-            else if (Action_Dropdown.SelectedIndex == -1 && ParentAction_Dropdown.SelectedIndex > 0)           
-                TargetActionButton.Enabled = false;           
+            else if (Action_Dropdown.SelectedIndex == -1 && ParentAction_Dropdown.SelectedIndex > 0)
+                TargetActionButton.Enabled = false;
             else TargetActionButton.Enabled = true;
         }
         private void MakeActionOrStreamDropdownVisible(bool enableStream)
@@ -1761,7 +1757,7 @@ namespace NSOEndingTreeMaker
         }
 
         private void DisableNewSubmitIfDayExists()
-        {            
+        {
             if (ActionList.Exists(a => a.TargetAction.DayIndex == DayIndexNumeric.Value && a.TargetAction.DayPart == DayPart_Dropdown.SelectedIndex) && DayPart_Dropdown.SelectedIndex != -1 && ActionListView.SelectedIndices.Count == 0 && ActionListView.Items.Count > 0 && SelectedAction == null)
             {
                 TargetActionButton.Enabled = false;
@@ -1809,13 +1805,13 @@ namespace NSOEndingTreeMaker
                 {
                     ConfirmSaveEndingBranch(closeAfter);
                     return true;
-                }                  
-                return false;                         
+                }
+                return false;
             }
             if (branchConflicts.Item2 && isChanged)
             {
                 var msgHasFutureBranchStartDays = MessageBox.Show($"Some future branches rely on this branch for stats, stream ideas, etc. By changing this branch, some of those future branches might become broken.\n\nAre you sure you want to proceed?", "Caution", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-                if (msgHasFutureBranchStartDays == DialogResult.No) 
+                if (msgHasFutureBranchStartDays == DialogResult.No)
                     return false;
             }
             (int, int, EndingType) checkEnding = UnsavedEndingBranchData.ExpectedDayOfEnd;
@@ -1845,7 +1841,7 @@ namespace NSOEndingTreeMaker
                         {
                             case DialogResult.Yes:
                                 UnsavedEndingBranchData.EndingBranch.EndingToGet = checkEnding.Item3;
-                                EndingToGet_Dropdown.SelectedIndex = NSODataManager.EndingsList.IndexOf(UnsavedEndingBranchData.EndingBranch.EndingToGet); 
+                                EndingToGet_Dropdown.SelectedIndex = NSODataManager.EndingsList.IndexOf(UnsavedEndingBranchData.EndingBranch.EndingToGet);
                                 break;
                             case DialogResult.No: break;
                             default: return false;
@@ -1879,7 +1875,7 @@ namespace NSOEndingTreeMaker
 
         private bool MsgIfBranchUnsaved(bool closeAfter = true)
         {
-            
+
             var confirm = MessageBox.Show($"You have unsaved changes in this ending branch. \nDo you want to save this branch?.", "Unsaved changes detected!", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
             if (confirm == DialogResult.Yes)
             {
@@ -2004,9 +2000,9 @@ namespace NSOEndingTreeMaker
         }
 
         void SetStreamNumericBasedOnIdea()
-        {          
+        {
             int index = StreamTopic_Dropdown.SelectedIndex;
-            if (index == -1 || StreamLevelNumeric.Value == -1) 
+            if (index == -1 || StreamLevelNumeric.Value == -1)
                 return;
             var ideas = UnsavedEndingBranchData.StreamIdeaList;
             AlphaType streamTopic = NSODataManager.StreamTopicList[index];
@@ -2067,7 +2063,7 @@ namespace NSOEndingTreeMaker
             for (int i = 0; i < ActionListView.SelectedIndices.Count; i++)
             {
                 TargetActionData copiedAction = ActionList[ActionListView.SelectedIndices[i]];
-                if (copiedAction.TargetAction.DayPart == -1 && !(MainForm.CurrentEndingTree.isDay2Exp  && ActionList[i].TargetAction.DayIndex == 2 && ActionList[i].TargetAction.DayPart == -1) || copiedAction.TargetAction.DayPart == 3 || copiedAction.TargetAction.DayIndex == 1) continue;
+                if (copiedAction.TargetAction.DayPart == -1 && !(MainForm.CurrentEndingTree.isDay2Exp && ActionList[i].TargetAction.DayIndex == 2 && ActionList[i].TargetAction.DayPart == -1) || copiedAction.TargetAction.DayPart == 3 || copiedAction.TargetAction.DayIndex == 1) continue;
                 copiedActions.Add(new TargetActionData(copiedAction.TargetAction.DayIndex, copiedAction.TargetAction.DayPart, copiedAction.Command, copiedAction.TargetAction.IgnoreDM));
             }
             return copiedActions;
@@ -2119,10 +2115,11 @@ namespace NSOEndingTreeMaker
                 TargetActionData[] pasteList = getCopiedData as TargetActionData[];
                 for (int i = 0; i < pasteList.Length; i++)
                 {
-                    if (pasteList[i].TargetAction.DayIndex < UnsavedEndingBranchData.EndingBranch.StartingDay) 
+                    if (pasteList[i].TargetAction.DayIndex < UnsavedEndingBranchData.EndingBranch.StartingDay)
                     {
                         hasPasteLowerThanStart = true;
-                        continue; }
+                        continue;
+                    }
 
                     if (!MainForm.CurrentEndingTree.isDay2Exp && ActionList[i].TargetAction.DayIndex == 2 && ActionList[i].TargetAction.DayPart == -1) continue;
                     if (ActionList.Exists(a => a.TargetAction.DayPart == pasteList[i].TargetAction.DayPart && a.TargetAction.DayIndex == pasteList[i].TargetAction.DayIndex))
@@ -2145,7 +2142,7 @@ namespace NSOEndingTreeMaker
                 }
                 if (hasPasteLowerThanStart && listForUndoHistory.Count == 0)
                 {
-                    MessageBox.Show("Could not post anything as the attempted pasted actions have their days earlier than the Starting Day of this branch.","Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                    MessageBox.Show("Could not post anything as the attempted pasted actions have their days earlier than the Starting Day of this branch.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
                 if (listForUndoHistory.Count > 0)
@@ -2207,7 +2204,7 @@ namespace NSOEndingTreeMaker
         }
 
         void RedoActionEdit()
-        { 
+        {
             if (EditHistory.redoActions.Count == 0) return;
             var redoActions = EditHistory.redoActions[EditHistory.redoActions.Count - 1];
             List<ActionHistoryObj> undoActions = new();
@@ -2298,7 +2295,7 @@ namespace NSOEndingTreeMaker
                         redoType = EditType.Delete;
                         break;
                 }
-                
+
                 var redoAction = new ActionHistoryObj(redoType, listToUse[i].ActionIndex, listToUse[i].Action);
                 var index = 0;
                 index = listToUse[i].ActionIndex;
@@ -2330,7 +2327,7 @@ namespace NSOEndingTreeMaker
             if (isChanged ||
                 UnsavedEndingBranchData.EndingBranch.IsStressfulBressdown != SelectedEndingBranch.EndingBranch.IsStressfulBressdown ||
                 UnsavedEndingBranchData.IgnoreNightEndings != SelectedEndingBranch.IgnoreNightEndings)
-                {
+            {
                 var confirm = MsgIfBranchUnsaved(false);
                 if (!confirm)
                 {
@@ -2355,7 +2352,7 @@ namespace NSOEndingTreeMaker
         {
             var tree = MainForm.CurrentEndingTree;
             int index = SelectedEndingIndex;
-            if (index == tree.EndingsList.Count -1)
+            if (index == tree.EndingsList.Count - 1)
                 return;
             SwitchToOtherEndingBranch(index + 1);
         }
@@ -2526,7 +2523,7 @@ namespace NSOEndingTreeMaker
         private void Branch_ContextMenuStrip_Opening(object sender, CancelEventArgs e)
         {
             int index = SelectedEndingIndex;
-            if (MainForm.CurrentEndingTree.EndingsList.Count ==1)
+            if (MainForm.CurrentEndingTree.EndingsList.Count == 1)
             {
                 PreviousBranch_MenuItem.Enabled = false;
                 NextBranch_MenuItem.Enabled = false;
@@ -2577,28 +2574,43 @@ namespace NSOEndingTreeMaker
         {
             if (ActionListView.SelectedItems.Count == 0)
                 return;
+            if (isChanged ||
+    UnsavedEndingBranchData.EndingBranch.IsStressfulBressdown != SelectedEndingBranch.EndingBranch.IsStressfulBressdown ||
+    UnsavedEndingBranchData.IgnoreNightEndings != SelectedEndingBranch.IgnoreNightEndings)
+            {
+                var confirm = MsgIfBranchUnsaved(false);
+                if (!confirm)
+                {
+                    return;
+                }
+            }
             var selectedDay = FindStartingDayFromSelected();
+            if (selectedDay < 2)
+            {
+                MessageBox.Show("Cannot create new Ending Branch, current selected actions are invalid.","Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             EndingBranchData newBranch = null;
             int newBranchIndex = SelectedEndingIndex;
             int maxBranchIndex = MainForm.CurrentEndingTree.EndingsList.Count + 1;
-            AddEndingBranch newBranchWindow = new(MainForm, false, SelectedEndingIndex+1);
+            AddEndingBranch newBranchWindow = new(MainForm, false, SelectedEndingIndex + 1);
             newBranchWindow.branchEditor = this;
             newBranchWindow.StartingDayNumeric.Value = selectedDay;
             newBranchWindow.StartingDayNumeric.Enabled = false;
-            newBranchWindow.InsertAtEndingIndex_Numeric.Minimum = SelectedEndingIndex + 1;
-            newBranchWindow.InsertAtEndingIndex_Numeric.Value = SelectedEndingIndex + 1;
+            newBranchWindow.InsertAtEndingIndex_Numeric.Minimum = SelectedEndingIndex + 2;
+            newBranchWindow.InsertAtEndingIndex_Numeric.Value = SelectedEndingIndex + 2;
             for (int i = SelectedEndingIndex; i < MainForm.CurrentEndingTree.EndingsList.Count; i++)
             {
                 if (i == SelectedEndingIndex) continue;
                 var otherBranch = MainForm.CurrentEndingTree.EndingsList[i];
                 if (otherBranch.EndingBranch.AllActions.Exists(hasValidStartDay))
                 {
-                    maxBranchIndex = i+1;
+                    maxBranchIndex = i + 1;
                     break;
                 }
             }
             newBranchWindow.InsertAtEndingIndex_Numeric.Maximum = maxBranchIndex;
-            newBranchWindow.OnNewBranchCreated += () => 
+            newBranchWindow.OnNewBranchCreated += () =>
             {
                 newBranch = newBranchWindow.NewEnding;
                 newBranchIndex = newBranchWindow.endingIndex;
@@ -2611,25 +2623,11 @@ namespace NSOEndingTreeMaker
             }
             var list = CreateListCopy();
             if (list != null && list.Count > 0)
-               newBranch.EndingBranch.AllActions.AddRange(list);
+                newBranch.EndingBranch.AllActions.AddRange(list);
             MainForm.SetEndingListViewData();
             MainForm.isBranchEdited = true;
             SwitchToOtherEndingBranch(newBranchIndex);
             newBranchWindow.Dispose();
-
-            List<TargetActionData> SetNewActions()
-            {
-                List<TargetActionData> list = new();
-                int selectedDayIndex = ActionList.FindIndex(a => a.TargetAction.DayIndex == selectedDay && a.TargetAction.DayPart > -1 && a.TargetAction.DayPart != 3);
-                if (selectedDayIndex == -1)
-                    return null;
-                for (int i = selectedDayIndex; i < ActionList.Count; i++) 
-                {
-                    TargetActionData dupAction = new(ActionList[i]);
-                    list.Add(ActionList[i]);
-                }
-                return list;
-            }
 
             int FindStartingDayFromSelected()
             {
@@ -2637,9 +2635,11 @@ namespace NSOEndingTreeMaker
                 if (ActionListView.SelectedIndices.Count == 1)
                     return SelectedAction.TargetAction.DayIndex;
                 List<TargetActionData> list = CreateListCopy();
+                if (list.Count == 0)
+                    return -1;
                 for (int i = 2; i < 30; i++)
                 {
-                    if (!list.Exists(a => a.TargetAction.DayIndex == i)) 
+                    if (!list.Exists(a => a.TargetAction.DayIndex == i))
                         continue;
                     startingDay = i;
                     break;
@@ -2647,9 +2647,9 @@ namespace NSOEndingTreeMaker
                 return startingDay;
             }
 
-            bool hasValidStartDay(TargetActionData a) 
-            { 
-                return a.TargetAction.DayIndex <= selectedDay || (a.TargetAction.DayIndex == selectedDay - 1 && a.TargetAction.DayPart + a.CommandResult.daypart >= 3); 
+            bool hasValidStartDay(TargetActionData a)
+            {
+                return a.TargetAction.DayIndex <= selectedDay || (a.TargetAction.DayIndex == selectedDay - 1 && a.TargetAction.DayPart + a.CommandResult.daypart >= 3);
             }
 
         }
