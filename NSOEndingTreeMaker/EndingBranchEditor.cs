@@ -2549,7 +2549,9 @@ namespace NSOEndingTreeMaker
             newBranchWindow.OnNewBranchCreated += () =>
             {
                 newBranch = newBranchWindow.NewEnding;
-                newBranchIndex = newBranchWindow.endingIndex;
+                if (newBranchWindow.isAdvanced)
+                    newBranchIndex = newBranchWindow.endingIndex;
+                else newBranchIndex = MainForm.CurrentEndingTree.EndingsList.Count - 1;
             };
             newBranchWindow.ShowDialog();
             if (newBranch == null)
