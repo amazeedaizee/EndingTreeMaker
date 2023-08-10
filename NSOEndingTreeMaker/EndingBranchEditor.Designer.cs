@@ -1162,7 +1162,7 @@
             this.PreviousBranch_MenuItem,
             this.NextBranch_MenuItem});
             this.Branch_ContextMenuStrip.Name = "Branch_ContextMenuStrip";
-            this.Branch_ContextMenuStrip.Size = new System.Drawing.Size(335, 192);
+            this.Branch_ContextMenuStrip.Size = new System.Drawing.Size(335, 170);
             this.Branch_ContextMenuStrip.Closed += new System.Windows.Forms.ToolStripDropDownClosedEventHandler(this.Branch_ContextMenuStrip_Closed);
             this.Branch_ContextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.Branch_ContextMenuStrip_Opening);
             // 
@@ -1269,7 +1269,6 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.EndingBranchEditor_FormClosing);
             this.Load += new System.EventHandler(this.EndingBranchEditorOnLoad);
             this.Click += new System.EventHandler(this.EndingBranchEditorOnClick);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.EndingBranchEditor_KeyDown);
             this.EndingToGet_Group.ResumeLayout(false);
             this.EndingToGet_Group.PerformLayout();
             this.ActionStatDelta.ResumeLayout(false);

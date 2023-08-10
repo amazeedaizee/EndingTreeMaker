@@ -2450,10 +2450,6 @@ namespace NSOEndingTreeMaker
              SwitchToPreviousBranch();
         }
 
-        private void EndingBranchEditor_KeyDown(object sender, KeyEventArgs e)
-        {
-        }
-
         private void Branch_ContextMenuStrip_Opening(object sender, CancelEventArgs e)
         {
             int index = SelectedEndingIndex;

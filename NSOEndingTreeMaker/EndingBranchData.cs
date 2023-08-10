@@ -661,73 +661,9 @@ namespace NSOEndingTreeMaker
                 NSOCommandManager.CalculateStats(this, EndingBranch.AllActions[i - 1], EndingBranch.AllActions[i], NoMeds.Item2);
                 AddIdeaOrUsedStream(EndingBranch.AllActions[i - 1], EndingBranch.AllActions[i]);
                 EndingBranch.AllActions[i].SetStatsToMaxOrMin(this);
-                if (EndingBranch.AllActions[i].TargetAction.Action == ActionType.PlayMakeLove)
-                {
-                    branch.LoveCounter.Add(new(EndingBranch.AllActions[i].TargetAction.DayIndex, EndingBranch.AllActions[i].TargetAction.DayPart));
-                }
-                if (EndingBranch.AllActions[i].TargetAction.Action == ActionType.OkusuriPsyche)
-                {
-                    branch.PsycheCounter.Add(new(EndingBranch.AllActions[i].TargetAction.DayIndex, EndingBranch.AllActions[i].TargetAction.DayPart));
-                }
-                if (EndingBranch.AllActions[i].TargetAction.IgnoreDM)
-                {
-                    branch.IgnoreCounter.Add(new(EndingBranch.AllActions[i].TargetAction.DayIndex, EndingBranch.AllActions[i].TargetAction.DayPart));
-                    EndingBranch.AllActions[i].Stress += 4;
-                    EndingBranch.AllActions[i].Affection += -5;
-                    EndingBranch.AllActions[i].SetStatsToMaxOrMin(this);
-                }
-
-                if (EndingBranch.AllActions[i].TargetAction.DayIndex == 15 && EndingBranch.AllActions[i].TargetAction.DayPart == 3)
-                {
-                    if (EndingBranch.AllActions[i - 1].Affection >= 60 && EndingBranch.AllActions[i - 1].Darkness >= 60 && !Trauma.Item2)
-                    {
-                        Trauma.Item1 = EndingBranch.AllActions[i].TargetAction.DayIndex + 1;
-                        Trauma.Item2 = true;
-                    }
-                }
-                if (EndingBranch.AllActions[i].TargetAction.DayIndex == 23 && EndingBranch.AllActions[i].TargetAction.DayPart + EndingBranch.AllActions[i].CommandResult.daypart >= 3 && EndingBranch.AllActions[i].Affection >= 80 && !VisitParents.Item2)
-                {
-                    VisitParents.Item1 = EndingBranch.AllActions[i].TargetAction.DayIndex + 1;
-                    VisitParents.Item2 = true;
-
-                }
-                if (EndingBranch.AllActions[i].TargetAction.DayIndex == 26 && EndingBranch.AllActions[i].TargetAction.DayPart + EndingBranch.AllActions[i].CommandResult.daypart >= 3)
-                {
-                    if (EndingBranch.AllActions[i].Followers >= 500000 && !MusicVideo.Item2)
-                    {
-                        MusicVideo.Item1 = EndingBranch.AllActions[i].TargetAction.DayIndex + 1;
-                        MusicVideo.Item2 = true;
-                    }
-                }
-                if (branch.StreamUsedList.Exists(s => s.DayIndex <= EndingBranch.AllActions[i].TargetAction.DayIndex && s.UsedStream == CmdType.Kaidan_5) && branch.IsNotMidnightEvents(EndingBranch.AllActions[i], HasGalaxy, is150M, is300M, is500M) && !HasGalaxy.Item2)
-                {
-                    HasGalaxy.Item1 = EndingBranch.AllActions[i].TargetAction.DayIndex + 1;
-                    if (branch.IsNotMidnightEvents(EndingBranch.AllActions[i], HasGalaxy, is150M, is300M, is500M))
-                    {
-                        HasGalaxy.Item2 = true;
-                    }
-
-                }
-                if (EndingBranch.AllActions[i].Followers >= 1500000 && !is150M.Item2 && branch.IsNotMidnightEvents(EndingBranch.AllActions[i], HasGalaxy, is150M, is300M, is500M))
-                {
-                    is150M.Item1 = EndingBranch.AllActions[i].TargetAction.DayIndex + 1;
-                    is150M.Item2 = true;
-                }
-                if (EndingBranch.AllActions[i].Followers >= 3000000 && !is300M.Item2 && branch.IsNotMidnightEvents(EndingBranch.AllActions[i], HasGalaxy, is150M, is300M, is500M))
-                {
-                    is300M.Item1 = EndingBranch.AllActions[i].TargetAction.DayIndex + 1;
-                    is300M.Item2 = true;
-                }
-                if (EndingBranch.AllActions[i].Followers >= 5000000 && !is500M.Item2 && branch.IsNotMidnightEvents(EndingBranch.AllActions[i], HasGalaxy, is150M, is300M, is500M))
-                {
-                    is500M.Item1 = EndingBranch.AllActions[i].TargetAction.DayIndex + 1;
-                    is500M.Item2 = true;
-                }
-                if (EndingBranch.AllActions[i].Followers >= 9999999 && branch.IsNotMidnightEvents(EndingBranch.AllActions[i], HasGalaxy, is150M, is300M, is500M))
-                {
-                    isMaxFollowers.Item1 = EndingBranch.AllActions[i].TargetAction.DayIndex;
-                    isMaxFollowers.Item2 = true;
-                }
+                SetActionCounterFlags(EndingBranch.AllActions[i]);
+                SetMidnightEventFlags(EndingBranch.AllActions[i - 1], EndingBranch.AllActions[i]);
+                SetExtraMilestoneFlags(EndingBranch.AllActions[i]);
                 if (EndingBranch.AllActions[i].TargetAction.DayIndex == 24 && (EndingBranch.AllActions[i].TargetAction.DayPart + EndingBranch.AllActions[i].CommandResult.daypart) >= 3)
                 {
                     if (EndingBranch.AllActions[i].Stress >= 80 && ((ReallyStressed.Item2 && ReallyStressed.Item1 < 25) || (branch.isReallyStressed.isEventing && branch.isReallyStressed.DayIndex < 25)) && !Horror.Item2)
@@ -764,6 +700,83 @@ namespace NSOEndingTreeMaker
             branchWindow?.SetGuessedEnding(branch, expectedEnding);
             branchWindow?.SetActionCounterText(branch);
 
+            void SetActionCounterFlags(TargetActionData action)
+            {
+                if (action.TargetAction.Action == ActionType.PlayMakeLove)
+                {
+                    branch.LoveCounter.Add(new(action.TargetAction.DayIndex, action.TargetAction.DayPart));
+                }
+                if (action.TargetAction.Action == ActionType.OkusuriPsyche)
+                {
+                    branch.PsycheCounter.Add(new(action.TargetAction.DayIndex, action.TargetAction.DayPart));
+                }
+                if (action.TargetAction.IgnoreDM)
+                {
+                    branch.IgnoreCounter.Add(new(action.TargetAction.DayIndex, action.TargetAction.DayPart));
+                    action.Stress += 4;
+                    action.Affection += -5;
+                    action.SetStatsToMaxOrMin(this);
+                }
+            }
+
+            void SetMidnightEventFlags(TargetActionData pastAction, TargetActionData action)
+            {
+                if (action.TargetAction.DayIndex == 15 && action.TargetAction.DayPart == 3)
+                {
+                    if (pastAction.Affection >= 60 && pastAction.Darkness >= 60 && !Trauma.Item2)
+                    {
+                        Trauma.Item1 = action.TargetAction.DayIndex + 1;
+                        Trauma.Item2 = true;
+                    }
+                }
+                if (action.TargetAction.DayIndex == 23 && action.TargetAction.DayPart + action.CommandResult.daypart >= 3 && action.Affection >= 80 && !VisitParents.Item2)
+                {
+                    VisitParents.Item1 = action.TargetAction.DayIndex + 1;
+                    VisitParents.Item2 = true;
+
+                }
+                if (action.TargetAction.DayIndex == 26 && action.TargetAction.DayPart + action.CommandResult.daypart >= 3)
+                {
+                    if (action.Followers >= 500000 && !MusicVideo.Item2)
+                    {
+                        MusicVideo.Item1 = action.TargetAction.DayIndex + 1;
+                        MusicVideo.Item2 = true;
+                    }
+                }
+                if (branch.StreamUsedList.Exists(s => s.DayIndex <= action.TargetAction.DayIndex && s.UsedStream == CmdType.Kaidan_5) && branch.IsNotMidnightEvents(action, HasGalaxy, is150M, is300M, is500M) && !HasGalaxy.Item2)
+                {
+                    HasGalaxy.Item1 = action.TargetAction.DayIndex + 1;
+                    if (branch.IsNotMidnightEvents(action, HasGalaxy, is150M, is300M, is500M))
+                    {
+                        HasGalaxy.Item2 = true;
+                    }
+
+                }
+            }
+
+            void SetExtraMilestoneFlags(TargetActionData action)
+            {
+                if (action.Followers >= 1500000 && !is150M.Item2 && branch.IsNotMidnightEvents(action, HasGalaxy, is150M, is300M, is500M))
+                {
+                    is150M.Item1 = action.TargetAction.DayIndex + 1;
+                    is150M.Item2 = true;
+                }
+                if (action.Followers >= 3000000 && !is300M.Item2 && branch.IsNotMidnightEvents(action, HasGalaxy, is150M, is300M, is500M))
+                {
+                    is300M.Item1 = action.TargetAction.DayIndex + 1;
+                    is300M.Item2 = true;
+                }
+                if (action.Followers >= 5000000 && !is500M.Item2 && branch.IsNotMidnightEvents(action, HasGalaxy, is150M, is300M, is500M))
+                {
+                    is500M.Item1 = action.TargetAction.DayIndex + 1;
+                    is500M.Item2 = true;
+                }
+                if (action.Followers >= 9999999 && branch.IsNotMidnightEvents(action, HasGalaxy, is150M, is300M, is500M))
+                {
+                    isMaxFollowers.Item1 = action.TargetAction.DayIndex;
+                    isMaxFollowers.Item2 = true;
+                }
+            }
             void SetStressFlag(TargetActionData action)
             {
                 bool isNotBeforeBreakdownDay = !(action.TargetAction.DayIndex == 15 && action.TargetAction.DayPart + action.CommandResult.daypart >= 3 && action.TargetAction.DayPart < 3);
