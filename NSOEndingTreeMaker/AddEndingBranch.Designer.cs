@@ -228,10 +228,10 @@
         private System.Windows.Forms.Label StartingDay_Label;
         private System.Windows.Forms.Label AddEnding_Label;
         private System.Windows.Forms.CheckBox IsStressfulBreakdown_CheckAdd;
-        private System.Windows.Forms.LinkLabel Advanced_Button;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         internal System.Windows.Forms.NumericUpDown InsertAtEndingIndex_Numeric;
         internal System.Windows.Forms.NumericUpDown StartingDayNumeric;
+        internal System.Windows.Forms.LinkLabel Advanced_Button;
     }
 }

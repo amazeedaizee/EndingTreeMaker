@@ -2535,6 +2535,7 @@ namespace NSOEndingTreeMaker
             newBranchWindow.StartingDayNumeric.Enabled = false;
             newBranchWindow.InsertAtEndingIndex_Numeric.Minimum = SelectedEndingIndex + 2;
             newBranchWindow.InsertAtEndingIndex_Numeric.Value = SelectedEndingIndex + 2;
+            newBranchWindow.Advanced_Button.Enabled = false;
             for (int i = SelectedEndingIndex; i < MainForm.CurrentEndingTree.EndingsList.Count; i++)
             {
                 if (i == SelectedEndingIndex) continue;
