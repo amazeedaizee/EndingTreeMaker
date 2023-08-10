@@ -170,7 +170,7 @@ namespace NSOEndingTreeMaker
         {
             var excludedCmds = new List<CmdType>() { CmdType.DarknessS2, CmdType.Darkness_1, CmdType.Darkness_2, CmdType.OdekakeOdaiba, CmdType.OdekakeZikka };
             if (!presentAction.TargetAction.IgnoreDM) return;
-            if (pastAction.Stress >= 80)
+            if (pastAction.Stress >= 80 && presentAction.MilestoneIdea != CmdType.None)
             {
                 if ((presentAction.TargetAction.DayPart == 0 && IsNotFixedEvents(pastAction, isTrauma.isEventing, isReallyLove.isEventing, isVideo.isEventing) && presentAction.MilestoneIdea == CmdType.None) || (presentAction.TargetAction.DayPart > 0 && presentAction.TargetAction.DayPart != 3))
                     errorList.Add(new(branchName, $"Day {presentAction.TargetAction.DayIndex}, {NSODataManager.DayPartNames[presentAction.TargetAction.DayPart]}: {NSODataManager.CmdName(presentAction.Command)}", $"Can't ignore DM if there's no DM to ignore (Ame won't send a DM if her Stress is 80 or more at the start of a part of a day, save for any fixed or milestone events at Noon.)"));
@@ -237,7 +237,6 @@ namespace NSOEndingTreeMaker
             if (futureAction.TargetAction.DayIndex <= presentDay) return;
             for (int i = presentDay; i < futureAction.TargetAction.DayIndex; i++)
             {
-                Console.WriteLine($"Detected Day {i}");
                 if (EndingBranch.AllActions.Exists(a => a.TargetAction.DayIndex == i)) continue;
                 errorList.Add(new(branchName, "", $"No parts of Day {i} exist."));
             }

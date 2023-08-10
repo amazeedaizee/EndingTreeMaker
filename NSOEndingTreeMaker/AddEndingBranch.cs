@@ -7,7 +7,7 @@ namespace NSOEndingTreeMaker
     public partial class AddEndingBranch : Form
     {
         public EndingBranchData NewEnding;
-        private bool isAdvanced;
+        internal bool isAdvanced;
         internal int endingIndex;
 
         public delegate void NewBranchCreated();

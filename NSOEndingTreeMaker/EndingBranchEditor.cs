@@ -81,7 +81,6 @@ namespace NSOEndingTreeMaker
 
         internal void EditActionVisualData(TargetActionData action)
         {
-            Console.WriteLine(ActionList.Count);
             ListViewItem item = ActionListView.Items[ActionList.IndexOf(action)];
             item.Text = action.TargetAction.DayIndex.ToString();
             item.SubItems[0].Text = action.TargetAction.DayIndex.ToString();
@@ -1714,7 +1713,6 @@ namespace NSOEndingTreeMaker
                         Action_Dropdown.SelectedIndex = NSODataManager.DarknessList.IndexOf(NewAction.Command);
                         break;
                 }
-                Console.WriteLine($"Debug: Dropdown Index - {Action_Dropdown.SelectedIndex}, NewAction ActionType - {NewAction.TargetAction.Action}");
                 DisableSubmitIfActionNull();
                 ForceMandatoryEvents();
                 SetStatChangePreview();
@@ -2074,23 +2072,6 @@ namespace NSOEndingTreeMaker
             if (e.KeyCode == Keys.Delete && ActionListView.SelectedIndices.Count > 0)
             {
                 DeleteSelectedActions();
-            }
-            if (!e.Control) return;
-            if (e.KeyCode == Keys.C && !e.Shift)
-            {
-                if (ActionListView.SelectedIndices.Count > 0)
-                {
-                    CopyActions();
-                }
-                return;
-            }
-            else if (e.KeyCode == Keys.X && !e.Shift)
-            {
-                if (ActionListView.SelectedIndices.Count > 0)
-                {
-                    CutActions();
-                }
-                return;
             }
         }
         void CopyActions()
@@ -2466,58 +2447,11 @@ namespace NSOEndingTreeMaker
 
         private void PreviousBranch_MenuItem_Click(object sender, EventArgs e)
         {
-            SwitchToPreviousBranch();
+             SwitchToPreviousBranch();
         }
 
         private void EndingBranchEditor_KeyDown(object sender, KeyEventArgs e)
         {
-            if (!e.Control) return;
-            if (e.KeyCode == Keys.S && e.Shift)
-            {
-                SaveEndingBranch();
-            }
-            else if (e.KeyCode == Keys.S && !e.Shift)
-            {
-                SaveEndingBranch(false);
-            }
-            else if ((e.KeyCode == Keys.Left || e.KeyCode == Keys.Up) && !e.Shift)
-            {
-                SwitchToPreviousBranch();
-            }
-            else if ((e.KeyCode == Keys.Right || e.KeyCode == Keys.Down) && !e.Shift)
-            {
-                SwitchToNextBranch();
-            }
-            else if (e.KeyCode == Keys.V && !e.Shift)
-            {
-                PasteCopiedActions();
-                return;
-            }
-            else if (e.KeyCode == Keys.V)
-            {
-                PasteAsNewActions();
-                return;
-            }
-            else if ((e.Control && e.Shift && e.KeyCode == Keys.Z) || e.KeyCode == Keys.Y && !e.Shift)
-            {
-                RedoActionEdit();
-                return;
-            }
-            else if (!e.Shift && e.KeyCode == Keys.Z)
-            {
-                UndoActionEdit();
-                return;
-            }
-            else if (!e.Shift && e.KeyCode == Keys.N)
-            {
-                CreateNewBranch();
-                return;
-            }
-            else if (e.Shift && e.KeyCode == Keys.N)
-            {
-                CreateNewBranchFromExistingDay();
-                return;
-            }
         }
 
         private void Branch_ContextMenuStrip_Opening(object sender, CancelEventArgs e)
@@ -2557,7 +2491,9 @@ namespace NSOEndingTreeMaker
             newBranchWindow.OnNewBranchCreated += () =>
             {
                 newBranch = newBranchWindow.NewEnding;
-                newBranchIndex = newBranchWindow.endingIndex;
+                if (newBranchWindow.isAdvanced)
+                    newBranchIndex = newBranchWindow.endingIndex;
+                else newBranchIndex = MainForm.CurrentEndingTree.EndingsList.Count -1;
             };
             newBranchWindow.ShowDialog();
             if (newBranch == null)
@@ -2666,6 +2602,22 @@ namespace NSOEndingTreeMaker
         private void newBranchFromSelectedDayToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CreateNewBranchFromExistingDay();
+        }
+
+        private void Edit_ContextMenuStrip_Closed(object sender, ToolStripDropDownClosedEventArgs e)
+        {
+            for (int i = 0; i < Edit_ContextMenuStrip.Items.Count; i++)
+            {
+                Edit_ContextMenuStrip.Items[i].Enabled = true;
+            }
+        }
+
+        private void Branch_ContextMenuStrip_Closed(object sender, ToolStripDropDownClosedEventArgs e)
+        {
+            for (int i = 0; i < Branch_ContextMenuStrip.Items.Count; i++)
+            {
+                Branch_ContextMenuStrip.Items[i].Enabled = true;
+            }
         }
     }
 }
