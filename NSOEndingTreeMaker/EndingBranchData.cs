@@ -927,7 +927,7 @@ namespace NSOEndingTreeMaker
                     StreamIdeaList.Add(new(idea.DayIndex, idea.DayPart, idea.Idea));
                 }
                 presentAction.StreamIdea = idea.Idea;
-                if (presentAction.TargetAction.DayPart == 2 || (presentAction.TargetAction.DayPart < 2 && presentAction.TargetAction.DayPart + presentAction.CommandResult.daypart >= 3))
+                if ((presentAction.TargetAction.DayPart == 2 || (presentAction.TargetAction.DayPart < 2 && presentAction.TargetAction.DayPart + presentAction.CommandResult.daypart >= 3)) && !(EndingBranch.StartingDay == 1 && presentAction.TargetAction.DayIndex == 2))
                     presentAction.StreamStreak = 0;
             }
         }
