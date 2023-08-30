@@ -442,7 +442,7 @@ namespace NSOEndingTreeMaker
         public static int CalculateFollowers(TargetActionData pastAction, TargetActionData presentAction)
         {
             presentAction.StreamStreak = pastAction.StreamStreak + presentAction.CommandResult.streamstreak;
-            return (int)Math.Ceiling((float)((float)(presentAction.CommandResult.followers * 1f) * Math.Min((float)(Math.Log10(pastAction.Followers) * 25f), Math.Floor(pastAction.Followers / 100.0)) * calculateStreamStreak() * calculatePreBonus() * calculateGame() * calculateMovie() * calculateImpact() * calculateExper() * calculateComm() * calculateTinfoil()));
+            return (int)Math.Ceiling((float)((float)(presentAction.CommandResult.followers * 1f) * Math.Min((float)(Math.Log10(pastAction.Followers) * 25f), Math.Floor(pastAction.Followers / 100d)) * calculateStreamStreak() * calculatePreBonus() * calculateGame() * calculateMovie() * calculateImpact() * calculateExper() * calculateComm() * calculateTinfoil()));
 
             double calculateStreamStreak()
             {
