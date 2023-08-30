@@ -255,7 +255,7 @@ namespace NSOEndingTreeMaker
             if (!ActionList.Exists(a => a.TargetAction.DayIndex == 15 && a.TargetAction.DayPart != 3 && a.TargetAction.DayPart + a.CommandResult.daypart >= 3 && a.TargetAction.DayPart != 3))
                 return null;
             var dayBeforeBreak = ActionList.Find((a => a.TargetAction.DayIndex == 15 && a.TargetAction.DayPart != 3 && a.TargetAction.DayPart + a.CommandResult.daypart >= 3 && a.TargetAction.DayPart != 3));
-            var dayBeforeDayBeforeBreak = ActionList.Find(a => (a.TargetAction.DayIndex == 15 && a.TargetAction.DayPart != 3 && a.TargetAction.DayPart < dayBeforeBreak.TargetAction.DayPart) || a.TargetAction.DayIndex < dayBeforeBreak.TargetAction.DayIndex);
+            var dayBeforeDayBeforeBreak = ActionList.FindLast(a => (a.TargetAction.DayIndex == 15 && a.TargetAction.DayPart != 3 && a.TargetAction.DayPart < dayBeforeBreak.TargetAction.DayPart) || a.TargetAction.DayIndex < dayBeforeBreak.TargetAction.DayIndex);
             NSOCommandManager.CalculateStats(UnsavedEndingBranchData, dayBeforeDayBeforeBreak, dayBeforeBreak);
             return dayBeforeBreak;
         }
@@ -2447,7 +2447,7 @@ namespace NSOEndingTreeMaker
 
         private void PreviousBranch_MenuItem_Click(object sender, EventArgs e)
         {
-             SwitchToPreviousBranch();
+            SwitchToPreviousBranch();
         }
 
         private void Branch_ContextMenuStrip_Opening(object sender, CancelEventArgs e)
@@ -2489,7 +2489,7 @@ namespace NSOEndingTreeMaker
                 newBranch = newBranchWindow.NewEnding;
                 if (newBranchWindow.isAdvanced)
                     newBranchIndex = newBranchWindow.endingIndex;
-                else newBranchIndex = MainForm.CurrentEndingTree.EndingsList.Count -1;
+                else newBranchIndex = MainForm.CurrentEndingTree.EndingsList.Count - 1;
             };
             newBranchWindow.ShowDialog();
             if (newBranch == null)
@@ -2519,7 +2519,7 @@ namespace NSOEndingTreeMaker
             var selectedDay = FindStartingDayFromSelected();
             if (selectedDay < 2)
             {
-                MessageBox.Show("Cannot create new Ending Branch, current selected actions are invalid.","Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Cannot create new Ending Branch, current selected actions are invalid.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             EndingBranchData newBranch = null;
