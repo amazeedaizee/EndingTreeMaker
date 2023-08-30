@@ -935,14 +935,14 @@ namespace NSOEndingTreeMaker
         public bool StreamIdeaExistsBeforeAction(TargetActionData action, CmdType idea)
         {
             if (!idea.ToString().Contains('_') && idea != CmdType.Error)
-                throw new ArgumentOutOfRangeException($"This CmdType isn't a stream.. {idea}");
+                throw new ArgumentOutOfRangeException($"This CmdType isn't a stream.* {idea}");
             return StreamIdeaList.Exists(c => ((c.DayIndex == action.TargetAction.DayIndex && c.DayPart <= action.TargetAction.DayPart) || c.DayIndex < action.TargetAction.DayIndex) && c.Idea == idea);
         }
 
         public bool UsedStreamExistsBeforeAction(TargetActionData action, CmdType idea)
         {
             if (!idea.ToString().Contains('_') && idea != CmdType.Error)
-                throw new ArgumentOutOfRangeException($"This CmdType isn't a stream... {idea}");
+                throw new ArgumentOutOfRangeException($"This CmdType isn't a stream. {idea}");
             return StreamUsedList.Exists(c => c.DayIndex < action.TargetAction.DayIndex && c.UsedStream == idea);
         }
 
