@@ -942,7 +942,7 @@ namespace NSOEndingTreeMaker
         public bool UsedStreamExistsBeforeAction(TargetActionData action, CmdType idea)
         {
             if (!idea.ToString().Contains('_') && idea != CmdType.Error)
-                throw new ArgumentOutOfRangeException($"This CmdType isn't a stream. {idea}");
+                throw new ArgumentOutOfRangeException($"This CmdType isn't a stream.** {idea}");
             return StreamUsedList.Exists(c => c.DayIndex < action.TargetAction.DayIndex && c.UsedStream == idea);
         }
 
