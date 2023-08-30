@@ -76,13 +76,13 @@ namespace NSOEndingTreeMaker
             CommandResult = NSOCommandManager.CmdTypeToCommand(cmd);
         }
 
-        public void SetStatsToMaxOrMin(EndingBranchData branch)
+        public void SetStatsToMaxOrMin(EndingBranchData branch, bool isStressed, bool isReallyStressed, bool isReallyLove)
         {
             var stressMax = 100;
             var affectionMax = 100;
-            if (branch.isStressed.isEventing && branch.isReallyStressed.isEventing && TargetAction.DayIndex >= branch.isReallyStressed.DayIndex)
+            if ((isStressed && isReallyStressed) || (branch.isStressed.isEventing && branch.isReallyStressed.isEventing && TargetAction.DayIndex >= branch.isReallyStressed.DayIndex))
                 stressMax = 120;
-            if (branch.isReallyLove.isEventing && TargetAction.DayIndex >= branch.isReallyLove.DayIndex)
+            if (isReallyLove || (branch.isReallyLove.isEventing && TargetAction.DayIndex >= branch.isReallyLove.DayIndex))
                 affectionMax = 120;
             Followers = ClampStats(0, Followers, 9999999);
             Stress = ClampStats(0, Stress, stressMax);

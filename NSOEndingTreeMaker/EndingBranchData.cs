@@ -660,7 +660,7 @@ namespace NSOEndingTreeMaker
                 if (EndingBranch.AllActions[i].TargetAction.DayPart != 3) EndingBranch.AllActions[i].CommandResult = NSOCommandManager.CmdTypeToCommand(EndingBranch.AllActions[i].Command);
                 NSOCommandManager.CalculateStats(this, EndingBranch.AllActions[i - 1], EndingBranch.AllActions[i], NoMeds.Item2);
                 AddIdeaOrUsedStream(EndingBranch.AllActions[i - 1], EndingBranch.AllActions[i]);
-                EndingBranch.AllActions[i].SetStatsToMaxOrMin(this);
+                EndingBranch.AllActions[i].SetStatsToMaxOrMin(this, Stressed.Item2, ReallyStressed.Item2, VisitParents.Item2);
                 SetActionCounterFlags(EndingBranch.AllActions[i]);
                 SetMidnightEventFlags(EndingBranch.AllActions[i - 1], EndingBranch.AllActions[i]);
                 SetExtraMilestoneFlags(EndingBranch.AllActions[i]);
@@ -715,7 +715,7 @@ namespace NSOEndingTreeMaker
                     branch.IgnoreCounter.Add(new(action.TargetAction.DayIndex, action.TargetAction.DayPart));
                     action.Stress += 4;
                     action.Affection += -5;
-                    action.SetStatsToMaxOrMin(this);
+                    action.SetStatsToMaxOrMin(this, Stressed.Item2, ReallyStressed.Item2, VisitParents.Item2);
                 }
             }
 
