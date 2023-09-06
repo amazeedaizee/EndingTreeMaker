@@ -69,8 +69,7 @@ namespace NSOEndingTreeMaker
             return ending == EndingType.Ending_Stressful ||
             ending == EndingType.Ending_Healthy ||
             ending == EndingType.Ending_Sukisuki ||
-            ending == EndingType.Ending_Ntr ||
-            ending == EndingType.Ending_Meta;
+            ending == EndingType.Ending_Ntr;
         }
 
         public static bool IsLastDayEnding(EndingType ending)

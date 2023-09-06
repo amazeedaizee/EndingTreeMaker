@@ -935,14 +935,14 @@ namespace NSOEndingTreeMaker
         public bool StreamIdeaExistsBeforeAction(TargetActionData action, CmdType idea)
         {
             if (!idea.ToString().Contains('_') && idea != CmdType.Error)
-                throw new ArgumentOutOfRangeException($"This CmdType isn't a stream.** {idea}");
+                throw new ArgumentOutOfRangeException($"This CmdType isn't a stream...! {idea}");
             return StreamIdeaList.Exists(c => ((c.DayIndex == action.TargetAction.DayIndex && c.DayPart <= action.TargetAction.DayPart) || c.DayIndex < action.TargetAction.DayIndex) && c.Idea == idea);
         }
 
         public bool UsedStreamExistsBeforeAction(TargetActionData action, CmdType idea)
         {
             if (!idea.ToString().Contains('_') && idea != CmdType.Error)
-                throw new ArgumentOutOfRangeException($"This CmdType isn't a stream.** {idea}");
+                throw new ArgumentOutOfRangeException($"This CmdType isn't a stream! {idea}");
             return StreamUsedList.Exists(c => c.DayIndex < action.TargetAction.DayIndex && c.UsedStream == idea);
         }
 
@@ -994,58 +994,57 @@ namespace NSOEndingTreeMaker
             ActionCounter ignoreDay = new(30, 0);
             ActionCounter loveDay = new(30, 0);
             ActionCounter paperDay = new(30, 0);
+            (int, int, EndingType) nightEnd = (0, 0, EndingType.Ending_None);
 
-            var branch = this;
-            var isCultStreamIdeaExists = branch.StreamIdeaList.Exists(u => u.Idea == CmdType.Error);
+            var isCultStreamIdeaExists = StreamIdeaList.Exists(u => u.Idea == CmdType.Error);
 
-            if (branch.IgnoreCounter.Count >= 5) ignoreDay = branch.IgnoreCounter[4];
-            if (branch.LoveCounter.Count >= 7) loveDay = branch.LoveCounter[6];
-            if (branch.PsycheCounter.Count >= 5) paperDay = branch.PsycheCounter[4];
+            if (IgnoreCounter.Count >= 5) ignoreDay = IgnoreCounter[4];
+            if (LoveCounter.Count >= 7) loveDay = LoveCounter[6];
+            if (PsycheCounter.Count >= 5) paperDay = PsycheCounter[4];
 
-            if (branch.isReallyStressed.isEventing && branch.isReallyStressed.DayIndex <= action.TargetAction.DayIndex)
+            if (isReallyStressed.isEventing && isReallyStressed.DayIndex <= action.TargetAction.DayIndex)
                 isVeryVeryStressed = true;
-            if (branch.isHorror.isEventing && (branch.isHorror.DayIndex <= action.TargetAction.DayIndex || (action.TargetAction.DayIndex == 24 && action.TargetAction.DayPart + action.CommandResult.daypart >= 3)))
+            if (this.isHorror.isEventing && (this.isHorror.DayIndex <= action.TargetAction.DayIndex || (action.TargetAction.DayIndex == 24 && action.TargetAction.DayPart + action.CommandResult.daypart >= 3)))
                 isHorror = true;
-            if (branch.isReallyLove.isEventing && branch.isReallyLove.DayIndex <= action.TargetAction.DayIndex)
+            if (isReallyLove.isEventing && isReallyLove.DayIndex <= action.TargetAction.DayIndex)
                 isVeryLove = true;
-            if (branch.NoMeds.isEventing && branch.NoMeds.DayIndex <= action.TargetAction.DayIndex)
+            if (NoMeds.isEventing && NoMeds.DayIndex <= action.TargetAction.DayIndex)
                 isAngelFive = true;
-            if (branch.isMaxFollowers.isEventing && branch.isMaxFollowers.DayIndex <= action.TargetAction.DayIndex)
+            if (isMaxFollowers.isEventing && isMaxFollowers.DayIndex <= action.TargetAction.DayIndex)
                 isMaxFollows = true;
             if (loveDay.DayIndex != 30 && action.TargetAction.DayIndex == loveDay.DayIndex && action.TargetAction.DayPart == loveDay.DayPart)
                 return (action.TargetAction.DayIndex, action.TargetAction.DayPart + 1, EndingType.Ending_Lust);
             if (ignoreDay.DayIndex != 30 && action.TargetAction.DayIndex == ignoreDay.DayIndex && action.TargetAction.DayPart == ignoreDay.DayPart)
                 return (action.TargetAction.DayIndex, action.TargetAction.DayPart + 1, EndingType.Ending_Jine);
             if (NSODataManager.IsOverdoseAction(pastAction) &&
-                branch.StreamUsedList.Exists(a => a.DayIndex < action.TargetAction.DayIndex && a.UsedStream == CmdType.Kaidan_5) && action.Command == CmdType.OdekakeGinga && action.TargetAction.DayPart == 2)
+                StreamUsedList.Exists(a => a.DayIndex < action.TargetAction.DayIndex && a.UsedStream == CmdType.Kaidan_5) && action.Command == CmdType.OdekakeGinga && action.TargetAction.DayPart == 2)
                 return (action.TargetAction.DayIndex, action.TargetAction.DayPart + 1, EndingType.Ending_Ginga);
             if (action.TargetAction.DayIndex == 10 && action.TargetAction.DayPart + action.CommandResult.daypart >= 3 && action.Followers < 10000)
                 return (action.TargetAction.DayIndex, 3, EndingType.Ending_Jikka);
-            if (action.Followers >= 9999999 && isMaxFollows && IsNotMidnightEvents(action, (branch.hasGalacticRail.DayIndex, branch.hasGalacticRail.isEventing), (branch.is150M.DayIndex, branch.is150M.isEventing), (branch.is300M.DayIndex, branch.is300M.isEventing), (branch.is500M.DayIndex, branch.is500M.isEventing)))
+            if (action.Followers >= 9999999 && isMaxFollows && IsNotMidnightEvents(action, (hasGalacticRail.DayIndex, hasGalacticRail.isEventing), (is150M.DayIndex, is150M.isEventing), (is300M.DayIndex, is300M.isEventing), (is500M.DayIndex, is500M.isEventing)))
                 return (action.TargetAction.DayIndex, 3, EndingType.Ending_Ideon);
             if (isVeryVeryStressed && isHorror && action.Stress >= 80)
                 return (25, 0, EndingType.Ending_KowaiInternet);
             if (action.Command == CmdType.Error)
                 return (action.TargetAction.DayIndex, action.TargetAction.DayPart + 1, EndingType.Ending_Kyouso);
+            bool isOrIsFollowingNight = ((action.TargetAction.DayPart + action.CommandResult.daypart == 2 && !EndingBranch.AllActions.Exists(a => a.TargetAction.DayIndex == action.TargetAction.DayIndex && a.TargetAction.DayPart == 2)) || action.TargetAction.DayPart == 2);
+            if (isOrIsFollowingNight && action.TargetAction.DayPart + action.CommandResult.daypart == 2 && !action.Command.ToString().Contains("Darkness"))
+            {
+                nightEnd = CheckIfNightEndingAchieved();
+                if (!isSkipNightEnds && nightEnd.Item3 != EndingType.Ending_None)
+                {
+                    return nightEnd;
+                }
+                if (paperDay.DayIndex != 30 && action.TargetAction.DayIndex >= paperDay.DayIndex && !StreamIdeaExistsBeforeAction(action, CmdType.Error) && nightEnd.Item3 == EndingType.Ending_None)
+                    return (action.TargetAction.DayIndex, 2, EndingType.Ending_Meta);
+            }
+
             if (action.Command == CmdType.Yamihaishin_5)
                 return (action.TargetAction.DayIndex, action.TargetAction.DayPart + 1, EndingType.Ending_Yami);
             if (action.Command == CmdType.Hnahaisin_5)
                 return (action.TargetAction.DayIndex, action.TargetAction.DayPart + 1, EndingType.Ending_Av);
             if (isVeryVeryStressed && action.Command == CmdType.Angel_6)
                 return (action.TargetAction.DayIndex, action.TargetAction.DayPart + 1, EndingType.Ending_DarkAngel);
-            if (action.TargetAction.DayPart + action.CommandResult.daypart == 2 && action.Command != CmdType.DarknessS1 && action.Command != CmdType.DarknessS2 && !isSkipNightEnds)
-            {
-                if (isVeryVeryStressed && action.Stress == 120)
-                    return (action.TargetAction.DayIndex, 2, EndingType.Ending_Stressful);
-                if (action.Darkness == 0)
-                    return (action.TargetAction.DayIndex, 2, EndingType.Ending_Healthy);
-                if ((!isVeryLove && action.Affection == 100) || (isVeryLove && action.Affection == 120))
-                    return (action.TargetAction.DayIndex, 2, EndingType.Ending_Sukisuki);
-                if (action.Affection == 0)
-                    return (action.TargetAction.DayIndex, 2, EndingType.Ending_Ntr);
-                if (paperDay.DayIndex != 30 && action.TargetAction.DayIndex >= paperDay.DayIndex && action.TargetAction.DayPart + action.CommandResult.daypart == 2 && !StreamIdeaExistsBeforeAction(action, CmdType.Error))
-                    return (action.TargetAction.DayIndex, 2, EndingType.Ending_Meta);
-            }
             if (action.TargetAction.DayIndex == 29 && (action.TargetAction.DayPart + action.CommandResult.daypart >= 3))
             {
                 if (isCultStreamIdeaExists)
@@ -1069,6 +1068,19 @@ namespace NSOEndingTreeMaker
             }
 
             return (0, 0, EndingType.Ending_None);
+
+            (int, int, EndingType) CheckIfNightEndingAchieved()
+            {
+                if (isVeryVeryStressed && action.Stress == 120)
+                    return (action.TargetAction.DayIndex, 2, EndingType.Ending_Stressful);
+                if (action.Darkness == 0)
+                    return (action.TargetAction.DayIndex, 2, EndingType.Ending_Healthy);
+                if ((!isVeryLove && action.Affection == 100) || (isVeryLove && action.Affection == 120))
+                    return (action.TargetAction.DayIndex, 2, EndingType.Ending_Sukisuki);
+                if (action.Affection == 0)
+                    return (action.TargetAction.DayIndex, 2, EndingType.Ending_Ntr);
+                return (0, 0, EndingType.Ending_None);
+            }
         }
     }
 
