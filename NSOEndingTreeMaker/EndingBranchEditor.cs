@@ -257,6 +257,14 @@ namespace NSOEndingTreeMaker
             var dayBeforeBreak = ActionList.Find((a => a.TargetAction.DayIndex == 15 && a.TargetAction.DayPart != 3 && a.TargetAction.DayPart + a.CommandResult.daypart >= 3 && a.TargetAction.DayPart != 3));
             var dayBeforeDayBeforeBreak = ActionList.FindLast(a => (a.TargetAction.DayIndex == 15 && a.TargetAction.DayPart != 3 && a.TargetAction.DayPart < dayBeforeBreak.TargetAction.DayPart) || a.TargetAction.DayIndex < dayBeforeBreak.TargetAction.DayIndex);
             NSOCommandManager.CalculateStats(UnsavedEndingBranchData, dayBeforeDayBeforeBreak, dayBeforeBreak);
+            if (dayBeforeBreak.TargetAction.IgnoreDM)
+            {
+                var ignoredAction = new TargetActionData(dayBeforeBreak);
+                ignoredAction.Affection = dayBeforeBreak.Affection;
+                ignoredAction.Darkness = dayBeforeBreak.Darkness;
+                ignoredAction.Affection += -5;
+                dayBeforeBreak = ignoredAction;
+            }
             return dayBeforeBreak;
         }
         private void ToggleBranchLabelIfUnsaved()
