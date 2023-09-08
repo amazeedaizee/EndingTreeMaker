@@ -1037,7 +1037,7 @@ namespace NSOEndingTreeMaker
                     return nightEnd;
                 }
             }
-            if (isOrIsFollowingNight && paperDay.DayIndex != 30 && (action.TargetAction.DayIndex > paperDay.DayIndex || (action.TargetAction.DayIndex == paperDay.DayIndex && action.TargetAction.DayPart > paperDay.DayPart)) && !StreamIdeaExistsBeforeAction(action, CmdType.Error) && nightEnd.Item3 == EndingType.Ending_None)
+            if (isOrIsFollowingNight && paperDay.DayIndex != 30 && (action.TargetAction.DayIndex > paperDay.DayIndex || (action.TargetAction.DayIndex == paperDay.DayIndex && (action.TargetAction.DayPart > paperDay.DayPart || (action.TargetAction.DayPart == paperDay.DayPart && action.TargetAction.DayPart == 0)))) && !StreamIdeaExistsBeforeAction(action, CmdType.Error) && nightEnd.Item3 == EndingType.Ending_None)
                 return (action.TargetAction.DayIndex, 2, EndingType.Ending_Meta);
             if (action.Command == CmdType.Yamihaishin_5)
                 return (action.TargetAction.DayIndex, action.TargetAction.DayPart + 1, EndingType.Ending_Yami);
