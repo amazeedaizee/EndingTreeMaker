@@ -1028,7 +1028,7 @@ namespace NSOEndingTreeMaker
             if (action.Command == CmdType.Error)
                 return (action.TargetAction.DayIndex, action.TargetAction.DayPart + 1, EndingType.Ending_Kyouso);
             bool isOrIsFollowingNight = (action.TargetAction.DayPart + action.CommandResult.daypart == 2 && !EndingBranch.AllActions.Exists(a => a.TargetAction.DayIndex == action.TargetAction.DayIndex && a.TargetAction.DayPart == 2)) || action.TargetAction.DayPart == 2;
-            if (isOrIsFollowingNight && !action.Command.ToString().Contains("Darkness"))
+            if (action.TargetAction.DayPart + action.CommandResult.daypart == 2 && !action.Command.ToString().Contains("Darkness"))
             {
                 if (nightEnd.Item3 == EndingType.Ending_None)
                     nightEnd = CheckIfNightEndingAchieved();
@@ -1036,10 +1036,9 @@ namespace NSOEndingTreeMaker
                 {
                     return nightEnd;
                 }
-                if (paperDay.DayIndex != 30 && (action.TargetAction.DayIndex > paperDay.DayIndex || (action.TargetAction.DayIndex == paperDay.DayIndex && action.TargetAction.DayPart > paperDay.DayPart)) && !StreamIdeaExistsBeforeAction(action, CmdType.Error) && nightEnd.Item3 == EndingType.Ending_None)
-                    return (action.TargetAction.DayIndex, 2, EndingType.Ending_Meta);
             }
-
+            if (isOrIsFollowingNight && paperDay.DayIndex != 30 && (action.TargetAction.DayIndex > paperDay.DayIndex || (action.TargetAction.DayIndex == paperDay.DayIndex && action.TargetAction.DayPart > paperDay.DayPart)) && !StreamIdeaExistsBeforeAction(action, CmdType.Error) && nightEnd.Item3 == EndingType.Ending_None)
+                return (action.TargetAction.DayIndex, 2, EndingType.Ending_Meta);
             if (action.Command == CmdType.Yamihaishin_5)
                 return (action.TargetAction.DayIndex, action.TargetAction.DayPart + 1, EndingType.Ending_Yami);
             if (action.Command == CmdType.Hnahaisin_5)
