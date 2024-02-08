@@ -100,6 +100,7 @@ namespace NSOEndingTreeMaker
         public static CommandAction goOutBase = new CommandAction("Go Out", "", 0, -10, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2);
         public static CommandAction goOutHospital = new CommandAction("Go Out", "Hospital", 0, -10, 6, -10, 0, 0, 0, 0, 0, 0, 0, 0, 2);
         public static CommandAction goOutGalaxy = new CommandAction("Go Out", "Galactic Rail", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        public static CommandAction goOutBeach = new CommandAction("Beach", "Beach", 0, -15, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2);
 
         public static CommandAction darknessOne = new CommandAction("Darkness", "Cut Wrists", 0, -15, -20, 10, 0, 0, 0, 0, 0, 0, 0, 0, 2);
         public static CommandAction darknessTwo = new CommandAction("Darkness", "Go Berserk", 0, -20, -35, 10, 0, 0, 0, 0, 0, 0, 0, 0, 2);
@@ -403,6 +404,8 @@ namespace NSOEndingTreeMaker
                     return darknessOne;
                 case CmdType.DarknessS2:
                     return darknessTwo;
+                case (CmdType)200:
+                    return goOutBeach;
                 default: break;
 
             }

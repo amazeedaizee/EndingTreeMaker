@@ -95,6 +95,8 @@
             this.OpenNSOwSteam_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PlayGame_Button = new System.Windows.Forms.ToolStripMenuItem();
             this.UnvalidBranches_Label = new System.Windows.Forms.Label();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.ImportLog = new System.Windows.Forms.ToolStripMenuItem();
             this.CurrentEndingTree_Group.SuspendLayout();
             this.EndingTree_MenuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -255,6 +257,8 @@
             // 
             this.File_MenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.NewEndingTree_MenuItem,
+            this.toolStripSeparator1,
+            this.ImportLog,
             this.Tree_SepOne,
             this.OpenEndingTree_MenuItem,
             this.OpenRecent_MenuItem,
@@ -662,6 +666,19 @@
             this.UnvalidBranches_Label.Text = "Unvalidated Ending Branches Detected";
             this.UnvalidBranches_Label.VisibleChanged += new System.EventHandler(this.UnvalidBranch_LabelToggle);
             // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(309, 6);
+            // 
+            // ImportLog
+            // 
+            this.ImportLog.Name = "ImportLog";
+            this.ImportLog.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
+            this.ImportLog.Size = new System.Drawing.Size(312, 22);
+            this.ImportLog.Text = "Import Playthrough Log";
+            this.ImportLog.Click += new System.EventHandler(this.ImportLog_Click);
+            // 
             // EndingTreeForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -758,5 +775,7 @@
         private System.Windows.Forms.ToolStripMenuItem OpenNSOwSteam_MenuItem;
         private System.Windows.Forms.Button MoveBranchDown_Button;
         private System.Windows.Forms.Button MoveBranchUp_Button;
+        private System.Windows.Forms.ToolStripMenuItem ImportLog;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
     }
 }

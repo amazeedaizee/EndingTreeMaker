@@ -476,6 +476,10 @@ namespace NSOEndingTreeMaker
             {
                 return ActionType.Darkness;
             }
+            if (cmd == (CmdType)200)
+            {
+                return (ActionType)200;
+            }
             return ActionType.None;
         }
 
@@ -611,6 +615,8 @@ namespace NSOEndingTreeMaker
                     return "Go Berserk";
                 case CmdType.Error:
                     return "Conspiracy Theories 6";
+                case (CmdType)200:
+                    return "Beach";
                 default: break;
             }
             if (cmdName.Contains("Odekake"))

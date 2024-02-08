@@ -118,5 +118,17 @@ namespace NSOEndingTreeMaker.Properties {
                 this["SlotFive"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PlayLogDirectory {
+            get {
+                return ((string)(this["PlayLogDirectory"]));
+            }
+            set {
+                this["PlayLogDirectory"] = value;
+            }
+        }
     }
 }

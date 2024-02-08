@@ -879,7 +879,7 @@ namespace NSOEndingTreeMaker
             return false;
         }
 
-        private void ChangeFileLabelIfUnsaved()
+        internal void ChangeFileLabelIfUnsaved()
         {
             if (isBranchEdited || _isNotesEdited || _isExpEdited)
                 File_MenuItem.Text = "File*";
@@ -1219,6 +1219,12 @@ namespace NSOEndingTreeMaker
         private void Notes_Click(object sender, EventArgs e)
         {
             EndingListView.SelectedIndices.Clear();
+        }
+
+        private void ImportLog_Click(object sender, EventArgs e)
+        {
+            PlayLogViewer logViewer = new PlayLogViewer(this);
+            logViewer.ShowDialog();
         }
     }
 }

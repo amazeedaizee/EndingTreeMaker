@@ -156,8 +156,8 @@ namespace NSOEndingTreeMaker
         public TargetAction_Stub() { }
         public TargetAction_Stub(int dayIndex, int dayPart, AlphaType stream, bool ignoreDM = false)
         {
-            DayIndex = dayIndex;
-            DayPart = dayPart;
+            DayIndex = dayIndex > 30 ? 30 : dayIndex;
+            DayPart = dayPart > 3 ? 3 : dayPart;
             Action = ActionType.Haishin;
             Stream = stream;
             IgnoreDM = ignoreDM;
@@ -165,8 +165,8 @@ namespace NSOEndingTreeMaker
 
         public TargetAction_Stub(int dayIndex, int dayPart, ActionType action, bool ignoreDM = false)
         {
-            DayIndex = dayIndex;
-            DayPart = dayPart;
+            DayIndex = dayIndex > 30 ? 30 : dayIndex;
+            DayPart = dayPart > 3 ? 3 : dayPart;
             Action = action;
             Stream = AlphaType.none;
             IgnoreDM = ignoreDM;
