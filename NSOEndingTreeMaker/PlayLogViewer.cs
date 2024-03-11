@@ -116,9 +116,9 @@ namespace NSOEndingTreeMaker
             dataOneEnds.Clear();
             dataTwoEnds.Clear();
             dataThreeEnds.Clear();
-            DataOneEndings.Clear();
-            DataTwoEndings.Clear();
-            DataThreeEndings.Clear();
+            DataOneEndings.Items.Clear();
+            DataTwoEndings.Items.Clear();
+            DataThreeEndings.Items.Clear();
         }
 
         void ListAllEnds(ListView list, int data)
