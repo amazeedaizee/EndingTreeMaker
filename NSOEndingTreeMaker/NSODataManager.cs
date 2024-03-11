@@ -709,24 +709,24 @@ namespace NSOEndingTreeMaker
                         return (day, dayPart, CmdType.ASMR_1);
                     break;
                 case ActionType.OkusuriDaypassOverdose:
-                    if (noMeds.isEventing) break;
+                    if (noMeds.isEventing && day >= noMeds.DayIndex) break;
                     if (CanGetStreamIdea(1, AlphaType.Yamihaishin))
                         return (day, dayPart, CmdType.Yamihaishin_1);
                     break;
                 case ActionType.OkusuriHiPuronOverdose:
-                    if (noMeds.isEventing) break;
+                    if (noMeds.isEventing && day >= noMeds.DayIndex) break;
                     if (CanGetStreamIdea(4, AlphaType.Yamihaishin))
                         return (day, dayPart, CmdType.Yamihaishin_4);
                     break;
                 case ActionType.OkusuriHappa:
-                    if (noMeds.isEventing) break;
+                    if (noMeds.isEventing && day >= noMeds.DayIndex) break;
                     if (CanGetStreamIdea(4, AlphaType.Otakutalk))
                         return (day, dayPart, CmdType.Otakutalk_4);
                     if (CanGetStreamIdea(5, AlphaType.Yamihaishin))
                         return (day, dayPart, CmdType.Yamihaishin_5);
                     break;
                 case ActionType.OkusuriPsyche:
-                    if (noMeds.isEventing) break;
+                    if (noMeds.isEventing && day >= noMeds.DayIndex) break;
                     if (CanGetStreamIdea(4, AlphaType.Imbouron))
                         return (day, dayPart, CmdType.Imbouron_4);
                     if (CanGetStreamIdea(5, AlphaType.Imbouron))
