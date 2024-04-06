@@ -40,6 +40,7 @@ namespace NSOEndingTreeMaker
         public EndingTreeForm()
         {
             InitializeComponent();
+
         }
 
         private void ChangeFormTitle()
@@ -376,7 +377,7 @@ namespace NSOEndingTreeMaker
             branch.IgnoreCounter.RemoveAll(i => i.DayIndex < branch.EndingBranch.StartingDay);
 
             if (index == -1)
-                index = CurrentEndingTree.EndingsList.IndexOf(branch) - 1;
+                index = CurrentEndingTree.EndingsList.IndexOf(branch);
             for (int i = index; i >= 0; i--)
             {
                 EndingBranchData endingToImport = CurrentEndingTree.EndingsList[i];

@@ -155,29 +155,72 @@ namespace NSOEndingTreeMaker
 
         List<EndingBranchData> ImportBranchesFromLog(PlaythroughLog log, int data)
         {
+
             List<EndingBranchData> branches = new List<EndingBranchData>();
+            int currCount;
             switch (data)
             {
                 case 1:
                     for (int i = 0; i < log.DataOnes.Count; i++)
                     {
+                        if (i < log.DataOnes.Count - 1)
+                        {
+                            if (CheckForBlazingHell(log.DataOnes[i], log.DataOnes[i + 1]))
+                                log.DataOnes.RemoveAt(i + 1);
+                        }
                         branches.Add(ImportPlayData(log.DataOnes[i]));
                     }
                     break;
                 case 2:
                     for (int i = 0; i < log.DataTwos.Count; i++)
                     {
+                        if (i < log.DataTwos.Count - 1)
+                        {
+                            if (CheckForBlazingHell(log.DataTwos[i], log.DataTwos[i + 1]))
+                                log.DataTwos.RemoveAt(i + 1);
+                        }
                         branches.Add(ImportPlayData(log.DataTwos[i]));
                     }
                     break;
                 case 3:
                     for (int i = 0; i < log.DataThrees.Count; i++)
                     {
+                        if (i < log.DataThrees.Count - 1)
+                        {
+                            if (CheckForBlazingHell(log.DataThrees[i], log.DataThrees[i + 1]))
+                                log.DataThrees.RemoveAt(i + 1);
+                        }
                         branches.Add(ImportPlayData(log.DataThrees[i]));
                     }
                     break;
             }
+            currCount = branches.Count;
+            //for (int j = 0; j < currCount; j++)
+            //{
+            //    if (branches[j].EndingBranch.EndingToGet == EndingType.Ending_Jisatu)
+            //    {
+            //        branches[j + 1].EndingBranch.AllActions.RemoveAt(0);
+            //        branches[j + 1].EndingBranch.AllActions.InsertRange(0, branches[j + 1].CopyActionListFromExistingBranch(branches[j]));
+            //        branches[j + 1].EndingBranch.AllActions[0].TargetAction.DayIndex = branches[j].EndingBranch.AllActions[0].TargetAction.DayIndex;
+            //        branches[j + 1].EndingBranch.StartingDay = branches[j].EndingBranch.StartingDay;
+            //        branches.RemoveAt(j);
+            //        currCount = branches.Count;
+            //        j--;
+            //    }
+            //}
             return branches;
+        }
+
+        bool CheckForBlazingHell(DataInfo currData, DataInfo afterData)
+        {
+            int dataLen = currData.Days.Count;
+            int commandLen = currData.Days[dataLen - 1].Commands.Count;
+            if (currData.Days[dataLen - 1].Commands[commandLen - 1].Ending == EndingType.Ending_Jisatu)
+            {
+                currData.Days.AddRange(afterData.Days);
+                return true;
+            }
+            return false;
         }
 
         EndingBranchData ImportPlayData(DataInfo data)
@@ -216,6 +259,7 @@ namespace NSOEndingTreeMaker
 
         List<TargetActionData> ImportActionsFromDays(List<DayInfo> days)
         {
+            var dummy = new TargetActionData(1, 0, CmdType.None);
             List<TargetActionData> targetActions = new List<TargetActionData>();
             CmdType cmd;
             for (int i = 0; i < days.Count; i++)
@@ -227,11 +271,20 @@ namespace NSOEndingTreeMaker
                     {
                         cmd = CmdType.Error;
                     }
+                    else if (com.Command == CmdType.None && com.Ending != EndingType.Ending_None)
+                    {
+                        break;
+                    }
                     else cmd = com.Command;
-                    targetActions.Add(new TargetActionData
-                        (days[i].Day, com.DayPart, cmd, com.SkippedDM));
+                    if (days[i].Day < 30)
+                    {
+                        targetActions.Add(new TargetActionData
+    (days[i].Day, com.DayPart, cmd, com.SkippedDM));
+                    }
+
                 }
             }
+            targetActions.Insert(0, dummy);
             return targetActions;
         }
 

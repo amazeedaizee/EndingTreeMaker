@@ -651,6 +651,10 @@ namespace NSOEndingTreeMaker
             {
                 if (i == 0)
                 {
+                    if (EndingBranch.AllActions[0].TargetAction.DayIndex == 1)
+                    {
+                        EndingBranch.AllActions[0].ResetActionStats();
+                    }
                     EndingBranch.AllActions[i].CommandResult = new CommandAction();
                     SetStressFlag(EndingBranch.AllActions[i]);
                     expectedEnding = branch.CheckIfEndingAchieved(null, EndingBranch.AllActions[i], ReallyStressed.Item2, Horror.Item2, VisitParents.Item2, NoMeds.Item2, isMaxFollowers.Item2, IgnoreNightEndings);
