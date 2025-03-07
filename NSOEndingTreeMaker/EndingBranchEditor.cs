@@ -1114,7 +1114,10 @@ namespace NSOEndingTreeMaker
                     ChangeMultipleActions();
                     return;
                 }
-                if (ActionList.Exists(a => (a.TargetAction.DayIndex == (int)DayIndexNumeric.Value) && (a.TargetAction.DayPart == DayPart_Dropdown.SelectedIndex) && a != SelectedAction) && ActionListView.SelectedIndices[0] != 0)
+                if (ActionList.Exists(
+                    a => (a.TargetAction.DayIndex == (int)DayIndexNumeric.Value)
+                    && (a.TargetAction.DayPart == DayPart_Dropdown.SelectedIndex)
+                    && a != SelectedAction) && ActionListView.SelectedIndices.Count > 0 && ActionListView.SelectedIndices[0] != 0)
                 {
                     MessageBox.Show("This action sames the same day and time of day as another action.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
@@ -1870,11 +1873,11 @@ namespace NSOEndingTreeMaker
         private void ConfirmSaveEndingBranch(bool closeAfter = true)
         {
             isSaving = true;
+            bool changed = isChanged || UnsavedEndingBranchData.EndingBranch.IsStressfulBressdown != SelectedEndingBranch.EndingBranch.IsStressfulBressdown || UnsavedEndingBranchData.IgnoreNightEndings != SelectedEndingBranch.IgnoreNightEndings;
             int index = SelectedEndingIndex;
             UnsavedEndingBranchData.EndingBranch.AllActions = ActionList;
             MainForm.CurrentEndingTree.EndingsList[index] = new EndingBranchData(UnsavedEndingBranchData);
             SelectedEndingBranch = MainForm.CurrentEndingTree.EndingsList[index];
-            bool changed = isChanged || UnsavedEndingBranchData.EndingBranch.IsStressfulBressdown != SelectedEndingBranch.EndingBranch.IsStressfulBressdown || UnsavedEndingBranchData.IgnoreNightEndings != SelectedEndingBranch.IgnoreNightEndings;
             if (changed && !MainForm.isBranchEdited) MainForm.isBranchEdited = true;
             isChanged = false;
             MainForm.SetEndingListViewData();
@@ -2579,6 +2582,7 @@ namespace NSOEndingTreeMaker
             MainForm.SetEndingListViewData();
             MainForm.isBranchEdited = true;
             SwitchToOtherEndingBranch(newBranchIndex);
+            ActionListView.SelectedIndices.Add(list.Count);
             newBranchWindow.Dispose();
 
             int FindStartingDayFromSelected()
