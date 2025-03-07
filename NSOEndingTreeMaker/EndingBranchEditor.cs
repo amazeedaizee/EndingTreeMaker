@@ -2331,7 +2331,7 @@ namespace NSOEndingTreeMaker
             SelectedEndingIndex = branchIndex;
             ResetEndingBranch(false);
             ActionListView.SelectedIndices.Clear();
-            OnBranchChanged.Invoke(this, new EventArgs());
+            OnBranchChanged?.Invoke(this, null);
         }
 
         private void SwitchToPreviousBranch()
