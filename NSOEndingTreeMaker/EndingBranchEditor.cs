@@ -19,6 +19,10 @@ namespace NSOEndingTreeMaker
         public EndingBranchData UnsavedEndingBranchData;
         public List<TargetActionData> ActionList = new();
 
+        public delegate void BranchChangedEvent(object sender, EventArgs e);
+
+        public event BranchChangedEvent OnBranchChanged;
+
 
         public (int DayIndex, int DayPart, EndingType ending) ExpectedEnding;
 
@@ -2327,6 +2331,7 @@ namespace NSOEndingTreeMaker
             SelectedEndingIndex = branchIndex;
             ResetEndingBranch(false);
             ActionListView.SelectedIndices.Clear();
+            OnBranchChanged.Invoke(this, new EventArgs());
         }
 
         private void SwitchToPreviousBranch()

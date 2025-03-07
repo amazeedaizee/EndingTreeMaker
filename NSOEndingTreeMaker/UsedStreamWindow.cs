@@ -12,7 +12,7 @@ namespace NSOEndingTreeMaker
         public UsedStreamWindow(EndingBranchEditor window)
         {
             branchWindow = window;
-            UsedList = branchWindow.UnsavedEndingBranchData.StreamUsedList;
+            branchWindow.OnBranchChanged += UsedStreamWindow_Load;
             InitializeComponent();
         }
 
@@ -29,12 +29,14 @@ namespace NSOEndingTreeMaker
         }
         private void UsedStreamWindow_Load(object sender, EventArgs e)
         {
+            UsedList = branchWindow.UnsavedEndingBranchData.StreamUsedList;
             UsedStream_ListView.BeginUpdate();
             UpdateUsed();
         }
 
         private void UsedStreamWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
+            branchWindow.OnBranchChanged -= UsedStreamWindow_Load;
             if (branchWindow.usedWindow != null) { branchWindow.usedWindow = null; }
         }
 

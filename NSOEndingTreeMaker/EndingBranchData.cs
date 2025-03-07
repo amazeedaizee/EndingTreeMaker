@@ -682,9 +682,10 @@ namespace NSOEndingTreeMaker
                     NoMeds.Item1 = EndingBranch.AllActions[i].TargetAction.DayIndex + 1;
                     NoMeds.Item2 = true;
                 }
+                EndingBranch.AllActions[i].MilestoneIdea = CmdType.None;
                 if (branch.IsNotFixedEvents(EndingBranch.AllActions[i - 1], Trauma.Item2, VisitParents.Item2, MusicVideo.Item2) && branch.IsNotStressEvents(EndingBranch.AllActions[i - 1], Stressed, ReallyStressed))
                 {
-                    if (ReallyStressed.Item2 && EndingBranch.AllActions.Exists(a => a.Command == CmdType.DarknessS2 && a.TargetAction.DayIndex == ReallyStressed.Item1) && i > ReallyStressed.Item1) isDarkAngel = true;
+                    if (ReallyStressed.Item2 && EndingBranch.AllActions[i].TargetAction.DayIndex >= ReallyStressed.Item1 && EndingBranch.AllActions.Exists(a => a.Command == CmdType.DarknessS2 && a.TargetAction.DayIndex == ReallyStressed.Item1)) isDarkAngel = true;
                     NSODataManager.InitializeMilestoneIdea(EndingBranch.AllActions[i], branch, isDarkAngel);
                 }
                 if (expectedEnding.Item1 == 0)
@@ -940,14 +941,17 @@ namespace NSOEndingTreeMaker
         {
             if (!idea.ToString().Contains('_') && idea != CmdType.Error)
                 throw new ArgumentOutOfRangeException($"This CmdType isn't a stream...! {idea}");
-            return StreamIdeaList.Exists(c => ((c.DayIndex == action.TargetAction.DayIndex && c.DayPart <= action.TargetAction.DayPart) || c.DayIndex < action.TargetAction.DayIndex) && c.Idea == idea);
+            var isExist = StreamIdeaList.Exists(c => ((c.DayIndex == action.TargetAction.DayIndex && c.DayPart <= action.TargetAction.DayPart) || c.DayIndex < action.TargetAction.DayIndex) && c.Idea == idea);
+            return isExist;
         }
 
         public bool UsedStreamExistsBeforeAction(TargetActionData action, CmdType idea)
         {
+
             if (!idea.ToString().Contains('_') && idea != CmdType.Error)
                 throw new ArgumentOutOfRangeException($"This CmdType isn't a stream! {idea}");
-            return StreamUsedList.Exists(c => c.DayIndex < action.TargetAction.DayIndex && c.UsedStream == idea);
+            var isExist = StreamUsedList.Exists(c => c.DayIndex < action.TargetAction.DayIndex && c.UsedStream == idea);
+            return isExist;
         }
 
         public void ValidateNightEvents(TargetActionData pastAction, TargetActionData action, List<(string branch, string action, string errorMsg)> errorList, string branchName)

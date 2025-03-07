@@ -13,15 +13,17 @@ namespace NSOEndingTreeMaker
 {
     public partial class EndingTreeForm : Form
     {
-        internal bool isBranchEdited;
-        private bool _isNotesEdited;
-        private bool _isExpEdited;
+        internal bool isBranchEdited = false;
+        private bool _isNotesEdited = false;
+        private bool _isExpEdited = false;
         private bool _currentExp;
+        private bool loadingFile = false;
         private string _currentNotes;
         private string _directoryToOpen = Properties.Settings.Default.Directory;
         private string _directoryToExport = Properties.Settings.Default.ExportDirectory;
         private string _currentFile = "";
         private string _recentlyClosed = Properties.Settings.Default.RecentClosedEndingTree;
+
         public EndingTreeData CurrentEndingTree;
         public EndingBranchData SelectedEnding;
 
@@ -271,6 +273,7 @@ namespace NSOEndingTreeMaker
 
             void ResetSelectedEnding()
             {
+                isBranchEdited = true;
                 SelectedEnding = null;
                 DeleteEndingBranch.Enabled = false;
                 EditEndingBranch.Enabled = false;
@@ -572,41 +575,51 @@ namespace NSOEndingTreeMaker
 
         private bool LoadExistingEndingTree(string pathToTree)
         {
-            if (string.IsNullOrEmpty(pathToTree)) return false;
+            if (string.IsNullOrEmpty(pathToTree) || !IsCancelActionDialog()) return false;
             try
             {
                 var fileContent = File.OpenRead(pathToTree);
                 using (StreamReader reader = new StreamReader(fileContent))
                 {
+                    loadingFile = true;
                     var importedTreeData = reader.ReadToEnd();
-                    var newTreeData = JsonConvert.DeserializeObject<EndingTreeData>(importedTreeData);
-                    CurrentEndingTree = newTreeData;
-                    _currentNotes = CurrentEndingTree.Notes;
-                    _currentExp = CurrentEndingTree.isDay2Exp;
-                    SetEndingListViewData(true);
-                    DeleteEndingBranch.Enabled = false;
-                    EditEndingBranch.Enabled = false;
-                    if (!string.IsNullOrEmpty(_currentFile)) _recentlyClosed = _currentFile;
                     _currentFile = pathToTree;
-                    Day2ExtraAction();
-                    _isNotesEdited = false;
-                    isBranchEdited = false;
-                    ChangeFormTitle();
-                    ChangeFileLabelIfUnsaved();
+                    ConvertDataToTree(importedTreeData);
+                    loadingFile = false;
                     return true;
                 }
             }
             catch
             {
-                MessageBox.Show("Could not open JSON file, either the JSON file is invalid or the JSON file does not represent an Ending Tree.", "Could not read JSON file", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Could not open file, either the file is invalid or the file does not represent an Ending Tree.", "Could not read file", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            loadingFile = false;
             return false;
 
 
         }
 
+        private void ConvertDataToTree(string data)
+        {
+            var newTreeData = JsonConvert.DeserializeObject<EndingTreeData>(data);
+            CurrentEndingTree = newTreeData;
+            _currentNotes = CurrentEndingTree.Notes;
+            _currentExp = CurrentEndingTree.isDay2Exp;
+            SetEndingListViewData(true);
+            DeleteEndingBranch.Enabled = false;
+            EditEndingBranch.Enabled = false;
+            if (!string.IsNullOrEmpty(_currentFile)) _recentlyClosed = _currentFile;
+            Day2ExtraAction();
+            _isNotesEdited = false;
+            isBranchEdited = false;
+            _isExpEdited = false;
+            ChangeFormTitle();
+            ChangeFileLabelIfUnsaved();
+        }
+
         private bool LoadEndingTree()
         {
+            if (!IsCancelActionDialog()) return false;
             OpenFileDialog openEndingTree = new OpenFileDialog();
             openEndingTree.InitialDirectory = !string.IsNullOrEmpty(_directoryToOpen) ? _directoryToOpen : PathToGameModOrDocuments();
             openEndingTree.Filter = "JSON File (*.json)|*.json";
@@ -621,6 +634,7 @@ namespace NSOEndingTreeMaker
                     Properties.Settings.Default.Directory = _directoryToOpen;
                     using (StreamReader reader = new StreamReader(fileContent))
                     {
+                        loadingFile = true;
                         var importedTreeData = reader.ReadToEnd();
                         var newTreeData = JsonConvert.DeserializeObject<EndingTreeData>(importedTreeData);
                         CurrentEndingTree = newTreeData;
@@ -636,11 +650,13 @@ namespace NSOEndingTreeMaker
                         openEndingTree.Dispose();
                         ChangeFormTitle();
                         ChangeFileLabelIfUnsaved();
+                        loadingFile = false;
                         return true;
                     }
                 }
                 catch { MessageBox.Show("Could not open JSON file, either the JSON file is invalid or the JSON file does not represent an Ending Tree.", "Could not read JSON file", MessageBoxButtons.OK, MessageBoxIcon.Error); }
             }
+            loadingFile = false;
             return false;
         }
 
@@ -733,13 +749,14 @@ namespace NSOEndingTreeMaker
         private void Notes_TextChanged(object sender, EventArgs e)
         {
             CurrentEndingTree.Notes = Notes.Text;
-            if (CurrentEndingTree.Notes != _currentNotes) _isNotesEdited = true;
+            if (CurrentEndingTree.Notes != _currentNotes && !loadingFile) _isNotesEdited = true;
             else _isNotesEdited = false;
             ChangeFileLabelIfUnsaved();
         }
 
         private void ExportEndingTreeToCSV()
         {
+            if (!ConfirmSave()) return;
             SaveFileDialog saveEndingTree = new SaveFileDialog();
             saveEndingTree.InitialDirectory = !string.IsNullOrEmpty(_directoryToExport) ? _directoryToExport : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             saveEndingTree.Filter = "CSV File (*.csv)|*.csv";
@@ -772,7 +789,7 @@ namespace NSOEndingTreeMaker
 
         private void EndingTreeForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (!IsCloseIfUnsaved())
+            if (!IsCancelActionDialog())
             {
                 e.Cancel = true;
                 return;
@@ -858,7 +875,7 @@ namespace NSOEndingTreeMaker
 
         private bool ConfirmSave()
         {
-            if (!(isBranchEdited || _isNotesEdited || _isExpEdited) && !string.IsNullOrEmpty(_currentFile)) return true;
+            if (!(isBranchEdited || _isNotesEdited)) return true;
             var confirm = MessageBox.Show($"Saving is required before proceeding. Do you want to save?", "Confirm Save", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
             if (confirm == DialogResult.Yes)
             {
@@ -867,9 +884,9 @@ namespace NSOEndingTreeMaker
             }
             return false;
         }
-        private bool IsCloseIfUnsaved()
+        private bool IsCancelActionDialog()
         {
-            if (!(isBranchEdited || _isNotesEdited || _isExpEdited)) return true;
+            if (!(isBranchEdited || _isNotesEdited)) return true;
             var confirm = MessageBox.Show($"Ending tree isn't saved yet. Do you want to save?", "Confirm Save", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
             if (confirm == DialogResult.Yes)
             {
@@ -882,7 +899,7 @@ namespace NSOEndingTreeMaker
 
         internal void ChangeFileLabelIfUnsaved()
         {
-            if (isBranchEdited || _isNotesEdited || _isExpEdited)
+            if (isBranchEdited || _isNotesEdited)
                 File_MenuItem.Text = "File*";
             else File_MenuItem.Text = "File";
         }
@@ -1005,14 +1022,17 @@ namespace NSOEndingTreeMaker
 
         private void CreateNewEndingTree()
         {
-            if (ConfirmSave())
+            if (IsCancelActionDialog())
             {
-                _isNotesEdited = false;
-                isBranchEdited = false;
+                loadingFile = true;
                 _recentlyClosed = _currentFile;
                 _currentFile = "";
                 CurrentEndingTree = MakeFirstTree();
+                _isNotesEdited = false;
+                isBranchEdited = false;
                 SetEndingListViewData();
+                ChangeFormTitle();
+                loadingFile = false;
                 return;
             }
         }
@@ -1226,6 +1246,38 @@ namespace NSOEndingTreeMaker
         {
             PlayLogViewer logViewer = new PlayLogViewer(this);
             logViewer.ShowDialog();
+        }
+
+        private void EndingListView_DragDrop(object sender, DragEventArgs e)
+        {
+
+            var data = e.Data;
+            if (data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var tree = (string[])data.GetData(DataFormats.FileDrop);
+                if (tree != null)
+                    LoadExistingEndingTree(tree[0]);
+            }
+
+        }
+
+        private void EndingTreeForm_DragDrop(object sender, DragEventArgs e)
+        {
+
+
+        }
+
+        private void EndingTreeForm_DragEnter(object sender, DragEventArgs e)
+        {
+
+        }
+
+        private void EndingListView_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                e.Effect = DragDropEffects.Copy;
+            else
+                e.Effect = DragDropEffects.None;
         }
     }
 }

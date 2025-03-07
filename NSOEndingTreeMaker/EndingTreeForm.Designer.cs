@@ -46,6 +46,8 @@
             this.EndingTree_MenuStrip = new System.Windows.Forms.MenuStrip();
             this.File_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.NewEndingTree_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.ImportLog = new System.Windows.Forms.ToolStripMenuItem();
             this.Tree_SepOne = new System.Windows.Forms.ToolStripSeparator();
             this.OpenEndingTree_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.OpenRecent_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -95,8 +97,6 @@
             this.OpenNSOwSteam_MenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PlayGame_Button = new System.Windows.Forms.ToolStripMenuItem();
             this.UnvalidBranches_Label = new System.Windows.Forms.Label();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.ImportLog = new System.Windows.Forms.ToolStripMenuItem();
             this.CurrentEndingTree_Group.SuspendLayout();
             this.EndingTree_MenuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -202,6 +202,7 @@
             // 
             // EndingListView
             // 
+            this.EndingListView.AllowDrop = true;
             this.EndingListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.EndingNameColumn,
             this.StartingDayColumn,
@@ -218,6 +219,8 @@
             this.EndingListView.UseCompatibleStateImageBehavior = false;
             this.EndingListView.View = System.Windows.Forms.View.Details;
             this.EndingListView.SelectedIndexChanged += new System.EventHandler(this.EndingListView_SelectedIndexChanged);
+            this.EndingListView.DragDrop += new System.Windows.Forms.DragEventHandler(this.EndingListView_DragDrop);
+            this.EndingListView.DragEnter += new System.Windows.Forms.DragEventHandler(this.EndingListView_DragEnter);
             this.EndingListView.DoubleClick += new System.EventHandler(this.EndingListView_DoubleClick);
             this.EndingListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.EndingListView_KeyDown);
             // 
@@ -278,20 +281,36 @@
             // 
             this.NewEndingTree_MenuItem.Name = "NewEndingTree_MenuItem";
             this.NewEndingTree_MenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.NewEndingTree_MenuItem.Size = new System.Drawing.Size(312, 22);
+            this.NewEndingTree_MenuItem.Size = new System.Drawing.Size(314, 22);
             this.NewEndingTree_MenuItem.Text = "New Ending Tree";
             this.NewEndingTree_MenuItem.Click += new System.EventHandler(this.NewTree_MenuItem);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(311, 6);
+            // 
+            // ImportLog
+            // 
+            this.ImportLog.Enabled = false;
+            this.ImportLog.Name = "ImportLog";
+            this.ImportLog.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
+            this.ImportLog.Size = new System.Drawing.Size(314, 22);
+            this.ImportLog.Text = "Import Playthrough Log";
+            this.ImportLog.Visible = false;
+            this.ImportLog.Click += new System.EventHandler(this.ImportLog_Click);
             // 
             // Tree_SepOne
             // 
             this.Tree_SepOne.Name = "Tree_SepOne";
-            this.Tree_SepOne.Size = new System.Drawing.Size(309, 6);
+            this.Tree_SepOne.Size = new System.Drawing.Size(311, 6);
+            this.Tree_SepOne.Visible = false;
             // 
             // OpenEndingTree_MenuItem
             // 
             this.OpenEndingTree_MenuItem.Name = "OpenEndingTree_MenuItem";
             this.OpenEndingTree_MenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.OpenEndingTree_MenuItem.Size = new System.Drawing.Size(312, 22);
+            this.OpenEndingTree_MenuItem.Size = new System.Drawing.Size(314, 22);
             this.OpenEndingTree_MenuItem.Text = "Open Ending Tree";
             this.OpenEndingTree_MenuItem.Click += new System.EventHandler(this.openEndingTreeToolStripMenuItem_Click);
             // 
@@ -300,20 +319,20 @@
             this.OpenRecent_MenuItem.Name = "OpenRecent_MenuItem";
             this.OpenRecent_MenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.O)));
-            this.OpenRecent_MenuItem.Size = new System.Drawing.Size(312, 22);
+            this.OpenRecent_MenuItem.Size = new System.Drawing.Size(314, 22);
             this.OpenRecent_MenuItem.Text = "Open Recent Ending Tree:";
             this.OpenRecent_MenuItem.Click += new System.EventHandler(this.openRecentEndingTreeToolStripMenuItem_Click);
             // 
             // Tree_SepTwo
             // 
             this.Tree_SepTwo.Name = "Tree_SepTwo";
-            this.Tree_SepTwo.Size = new System.Drawing.Size(309, 6);
+            this.Tree_SepTwo.Size = new System.Drawing.Size(311, 6);
             // 
             // SaveEndingTree_MenuItem
             // 
             this.SaveEndingTree_MenuItem.Name = "SaveEndingTree_MenuItem";
             this.SaveEndingTree_MenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.SaveEndingTree_MenuItem.Size = new System.Drawing.Size(312, 22);
+            this.SaveEndingTree_MenuItem.Size = new System.Drawing.Size(314, 22);
             this.SaveEndingTree_MenuItem.Text = "Save Ending Tree";
             this.SaveEndingTree_MenuItem.Click += new System.EventHandler(this.saveEndingTreeToolStripMenuItem_Click);
             // 
@@ -322,34 +341,34 @@
             this.SaveEndingTreeAs_MenuItem.Name = "SaveEndingTreeAs_MenuItem";
             this.SaveEndingTreeAs_MenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.S)));
-            this.SaveEndingTreeAs_MenuItem.Size = new System.Drawing.Size(312, 22);
+            this.SaveEndingTreeAs_MenuItem.Size = new System.Drawing.Size(314, 22);
             this.SaveEndingTreeAs_MenuItem.Text = "Save Ending Tree as...";
             this.SaveEndingTreeAs_MenuItem.Click += new System.EventHandler(this.saveEndingTreeAsToolStripMenuItem_Click);
             // 
             // Tree_SepThree
             // 
             this.Tree_SepThree.Name = "Tree_SepThree";
-            this.Tree_SepThree.Size = new System.Drawing.Size(309, 6);
+            this.Tree_SepThree.Size = new System.Drawing.Size(311, 6);
             // 
             // ExportAsCSV_MenuItem
             // 
             this.ExportAsCSV_MenuItem.Name = "ExportAsCSV_MenuItem";
             this.ExportAsCSV_MenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-            this.ExportAsCSV_MenuItem.Size = new System.Drawing.Size(312, 22);
+            this.ExportAsCSV_MenuItem.Size = new System.Drawing.Size(314, 22);
             this.ExportAsCSV_MenuItem.Text = "Export Ending Tree as CSV";
             this.ExportAsCSV_MenuItem.Click += new System.EventHandler(this.exportTreeAsCSVToolStripMenuItem_Click);
             // 
             // Tree_SepFour
             // 
             this.Tree_SepFour.Name = "Tree_SepFour";
-            this.Tree_SepFour.Size = new System.Drawing.Size(309, 6);
+            this.Tree_SepFour.Size = new System.Drawing.Size(311, 6);
             // 
             // ResetEndingTree_MenuItem
             // 
             this.ResetEndingTree_MenuItem.Name = "ResetEndingTree_MenuItem";
             this.ResetEndingTree_MenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.Z)));
-            this.ResetEndingTree_MenuItem.Size = new System.Drawing.Size(312, 22);
+            this.ResetEndingTree_MenuItem.Size = new System.Drawing.Size(314, 22);
             this.ResetEndingTree_MenuItem.Text = "Reset Ending Tree To Last Saved";
             this.ResetEndingTree_MenuItem.Click += new System.EventHandler(this.ResetEndingTree_MenuCLick);
             // 
@@ -380,19 +399,19 @@
             // 
             this.Slot1_Name.Enabled = false;
             this.Slot1_Name.Name = "Slot1_Name";
-            this.Slot1_Name.Size = new System.Drawing.Size(220, 22);
+            this.Slot1_Name.Size = new System.Drawing.Size(222, 22);
             this.Slot1_Name.Text = "(none)";
             // 
             // SlotOneSep
             // 
             this.SlotOneSep.Name = "SlotOneSep";
-            this.SlotOneSep.Size = new System.Drawing.Size(217, 6);
+            this.SlotOneSep.Size = new System.Drawing.Size(219, 6);
             // 
             // saveTreeToSlot1_MenuItem
             // 
             this.saveTreeToSlot1_MenuItem.Name = "saveTreeToSlot1_MenuItem";
             this.saveTreeToSlot1_MenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F1)));
-            this.saveTreeToSlot1_MenuItem.Size = new System.Drawing.Size(220, 22);
+            this.saveTreeToSlot1_MenuItem.Size = new System.Drawing.Size(222, 22);
             this.saveTreeToSlot1_MenuItem.Text = "Save Tree To Slot 1";
             this.saveTreeToSlot1_MenuItem.Click += new System.EventHandler(this.SaveToSLot1);
             // 
@@ -400,7 +419,7 @@
             // 
             this.loadTreeFromSlot1_MenuItem.Name = "loadTreeFromSlot1_MenuItem";
             this.loadTreeFromSlot1_MenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.loadTreeFromSlot1_MenuItem.Size = new System.Drawing.Size(220, 22);
+            this.loadTreeFromSlot1_MenuItem.Size = new System.Drawing.Size(222, 22);
             this.loadTreeFromSlot1_MenuItem.Text = "Load Tree From Slot 1";
             this.loadTreeFromSlot1_MenuItem.Click += new System.EventHandler(this.LoadToSlot1);
             // 
@@ -419,19 +438,19 @@
             // 
             this.Slot2_Name.Enabled = false;
             this.Slot2_Name.Name = "Slot2_Name";
-            this.Slot2_Name.Size = new System.Drawing.Size(220, 22);
+            this.Slot2_Name.Size = new System.Drawing.Size(222, 22);
             this.Slot2_Name.Text = "(none)";
             // 
             // SlotTwoSep
             // 
             this.SlotTwoSep.Name = "SlotTwoSep";
-            this.SlotTwoSep.Size = new System.Drawing.Size(217, 6);
+            this.SlotTwoSep.Size = new System.Drawing.Size(219, 6);
             // 
             // saveTreeToSlot2_MenuItem
             // 
             this.saveTreeToSlot2_MenuItem.Name = "saveTreeToSlot2_MenuItem";
             this.saveTreeToSlot2_MenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F2)));
-            this.saveTreeToSlot2_MenuItem.Size = new System.Drawing.Size(220, 22);
+            this.saveTreeToSlot2_MenuItem.Size = new System.Drawing.Size(222, 22);
             this.saveTreeToSlot2_MenuItem.Text = "Save Tree To Slot 2";
             this.saveTreeToSlot2_MenuItem.Click += new System.EventHandler(this.SaveToSlot2);
             // 
@@ -439,7 +458,7 @@
             // 
             this.loadTreeFromSlot2_MenuItem.Name = "loadTreeFromSlot2_MenuItem";
             this.loadTreeFromSlot2_MenuItem.ShortcutKeys = System.Windows.Forms.Keys.F2;
-            this.loadTreeFromSlot2_MenuItem.Size = new System.Drawing.Size(220, 22);
+            this.loadTreeFromSlot2_MenuItem.Size = new System.Drawing.Size(222, 22);
             this.loadTreeFromSlot2_MenuItem.Text = "Load Tree From Slot 2";
             this.loadTreeFromSlot2_MenuItem.Click += new System.EventHandler(this.LoadToSlot2);
             // 
@@ -458,19 +477,19 @@
             // 
             this.Slot3_Name.Enabled = false;
             this.Slot3_Name.Name = "Slot3_Name";
-            this.Slot3_Name.Size = new System.Drawing.Size(220, 22);
+            this.Slot3_Name.Size = new System.Drawing.Size(222, 22);
             this.Slot3_Name.Text = "(none)";
             // 
             // SlotThreeSep
             // 
             this.SlotThreeSep.Name = "SlotThreeSep";
-            this.SlotThreeSep.Size = new System.Drawing.Size(217, 6);
+            this.SlotThreeSep.Size = new System.Drawing.Size(219, 6);
             // 
             // saveTreeToSlot3_MenuItem
             // 
             this.saveTreeToSlot3_MenuItem.Name = "saveTreeToSlot3_MenuItem";
             this.saveTreeToSlot3_MenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F3)));
-            this.saveTreeToSlot3_MenuItem.Size = new System.Drawing.Size(220, 22);
+            this.saveTreeToSlot3_MenuItem.Size = new System.Drawing.Size(222, 22);
             this.saveTreeToSlot3_MenuItem.Text = "Save Tree To Slot 3";
             this.saveTreeToSlot3_MenuItem.Click += new System.EventHandler(this.SaveToSlot3);
             // 
@@ -478,7 +497,7 @@
             // 
             this.loadTreeFromSlot3_MenuItem.Name = "loadTreeFromSlot3_MenuItem";
             this.loadTreeFromSlot3_MenuItem.ShortcutKeys = System.Windows.Forms.Keys.F3;
-            this.loadTreeFromSlot3_MenuItem.Size = new System.Drawing.Size(220, 22);
+            this.loadTreeFromSlot3_MenuItem.Size = new System.Drawing.Size(222, 22);
             this.loadTreeFromSlot3_MenuItem.Text = "Load Tree From Slot 3";
             this.loadTreeFromSlot3_MenuItem.Click += new System.EventHandler(this.LoadToSlot3);
             // 
@@ -497,19 +516,19 @@
             // 
             this.Slot4_Name.Enabled = false;
             this.Slot4_Name.Name = "Slot4_Name";
-            this.Slot4_Name.Size = new System.Drawing.Size(220, 22);
+            this.Slot4_Name.Size = new System.Drawing.Size(222, 22);
             this.Slot4_Name.Text = "(none)";
             // 
             // SlotFourSep
             // 
             this.SlotFourSep.Name = "SlotFourSep";
-            this.SlotFourSep.Size = new System.Drawing.Size(217, 6);
+            this.SlotFourSep.Size = new System.Drawing.Size(219, 6);
             // 
             // saveTreeToSlot5_MenuItem
             // 
             this.saveTreeToSlot5_MenuItem.Name = "saveTreeToSlot5_MenuItem";
             this.saveTreeToSlot5_MenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F4)));
-            this.saveTreeToSlot5_MenuItem.Size = new System.Drawing.Size(220, 22);
+            this.saveTreeToSlot5_MenuItem.Size = new System.Drawing.Size(222, 22);
             this.saveTreeToSlot5_MenuItem.Text = "Save Tree To Slot 4";
             this.saveTreeToSlot5_MenuItem.Click += new System.EventHandler(this.SaveToSlot4);
             // 
@@ -517,7 +536,7 @@
             // 
             this.loadTreeFromSlot4_MenuItem.Name = "loadTreeFromSlot4_MenuItem";
             this.loadTreeFromSlot4_MenuItem.ShortcutKeys = System.Windows.Forms.Keys.F4;
-            this.loadTreeFromSlot4_MenuItem.Size = new System.Drawing.Size(220, 22);
+            this.loadTreeFromSlot4_MenuItem.Size = new System.Drawing.Size(222, 22);
             this.loadTreeFromSlot4_MenuItem.Text = "Load Tree From Slot 4";
             this.loadTreeFromSlot4_MenuItem.Click += new System.EventHandler(this.LoadToSLot4);
             // 
@@ -536,19 +555,19 @@
             // 
             this.Slot5_Name.Enabled = false;
             this.Slot5_Name.Name = "Slot5_Name";
-            this.Slot5_Name.Size = new System.Drawing.Size(220, 22);
+            this.Slot5_Name.Size = new System.Drawing.Size(222, 22);
             this.Slot5_Name.Text = "(none)";
             // 
             // SlotFiveSep
             // 
             this.SlotFiveSep.Name = "SlotFiveSep";
-            this.SlotFiveSep.Size = new System.Drawing.Size(217, 6);
+            this.SlotFiveSep.Size = new System.Drawing.Size(219, 6);
             // 
             // saveTreeToSlot5_MenuItem1
             // 
             this.saveTreeToSlot5_MenuItem1.Name = "saveTreeToSlot5_MenuItem1";
             this.saveTreeToSlot5_MenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F5)));
-            this.saveTreeToSlot5_MenuItem1.Size = new System.Drawing.Size(220, 22);
+            this.saveTreeToSlot5_MenuItem1.Size = new System.Drawing.Size(222, 22);
             this.saveTreeToSlot5_MenuItem1.Text = "Save Tree To Slot 5";
             this.saveTreeToSlot5_MenuItem1.Click += new System.EventHandler(this.SaveToSlot5);
             // 
@@ -556,7 +575,7 @@
             // 
             this.loadTreeFromSlot5_MenuItem.Name = "loadTreeFromSlot5_MenuItem";
             this.loadTreeFromSlot5_MenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.loadTreeFromSlot5_MenuItem.Size = new System.Drawing.Size(220, 22);
+            this.loadTreeFromSlot5_MenuItem.Size = new System.Drawing.Size(222, 22);
             this.loadTreeFromSlot5_MenuItem.Text = "Load Tree From Slot 5";
             this.loadTreeFromSlot5_MenuItem.Click += new System.EventHandler(this.LoadToSlot5);
             // 
@@ -575,65 +594,65 @@
             this.OpenNSOwSteam_MenuItem,
             this.PlayGame_Button});
             this.EndingSim_MenuItem.Name = "EndingSim_MenuItem";
-            this.EndingSim_MenuItem.Size = new System.Drawing.Size(134, 20);
+            this.EndingSim_MenuItem.Size = new System.Drawing.Size(135, 20);
             this.EndingSim_MenuItem.Text = "Ending Tree Simulator";
             // 
             // SetCurrent_MenuItem
             // 
             this.SetCurrent_MenuItem.Name = "SetCurrent_MenuItem";
-            this.SetCurrent_MenuItem.Size = new System.Drawing.Size(441, 22);
+            this.SetCurrent_MenuItem.Size = new System.Drawing.Size(442, 22);
             this.SetCurrent_MenuItem.Text = "Set Current Tree as Main Simulation";
             this.SetCurrent_MenuItem.Click += new System.EventHandler(this.SetCurrent_MenuItem_Click);
             // 
             // Simu_SepOne
             // 
             this.Simu_SepOne.Name = "Simu_SepOne";
-            this.Simu_SepOne.Size = new System.Drawing.Size(438, 6);
+            this.Simu_SepOne.Size = new System.Drawing.Size(439, 6);
             // 
             // SetSlotOne_MenuItem
             // 
             this.SetSlotOne_MenuItem.Name = "SetSlotOne_MenuItem";
-            this.SetSlotOne_MenuItem.Size = new System.Drawing.Size(441, 22);
+            this.SetSlotOne_MenuItem.Size = new System.Drawing.Size(442, 22);
             this.SetSlotOne_MenuItem.Text = "Set Slot 1 Tree as Main Simulation";
             this.SetSlotOne_MenuItem.Click += new System.EventHandler(this.SetSlot1_MenuItem_Click);
             // 
             // SetSlotTwo_MenuItem
             // 
             this.SetSlotTwo_MenuItem.Name = "SetSlotTwo_MenuItem";
-            this.SetSlotTwo_MenuItem.Size = new System.Drawing.Size(441, 22);
+            this.SetSlotTwo_MenuItem.Size = new System.Drawing.Size(442, 22);
             this.SetSlotTwo_MenuItem.Text = "Set Slot 2 Tree as Main Simulation";
             this.SetSlotTwo_MenuItem.Click += new System.EventHandler(this.SetSlot2_MenuItem_Click);
             // 
             // SetSlotThree_MenuItem
             // 
             this.SetSlotThree_MenuItem.Name = "SetSlotThree_MenuItem";
-            this.SetSlotThree_MenuItem.Size = new System.Drawing.Size(441, 22);
+            this.SetSlotThree_MenuItem.Size = new System.Drawing.Size(442, 22);
             this.SetSlotThree_MenuItem.Text = "Set Slot 3 Tree as Main Simulation";
             this.SetSlotThree_MenuItem.Click += new System.EventHandler(this.SetSlot3_MenuItem_Click);
             // 
             // SetSlotFour_MenuItem
             // 
             this.SetSlotFour_MenuItem.Name = "SetSlotFour_MenuItem";
-            this.SetSlotFour_MenuItem.Size = new System.Drawing.Size(441, 22);
+            this.SetSlotFour_MenuItem.Size = new System.Drawing.Size(442, 22);
             this.SetSlotFour_MenuItem.Text = "Set Slot 4 Tree as Main Simulation";
             this.SetSlotFour_MenuItem.Click += new System.EventHandler(this.SetSlot4_MenuItem_Click);
             // 
             // SetSlotFive_MenuItem
             // 
             this.SetSlotFive_MenuItem.Name = "SetSlotFive_MenuItem";
-            this.SetSlotFive_MenuItem.Size = new System.Drawing.Size(441, 22);
+            this.SetSlotFive_MenuItem.Size = new System.Drawing.Size(442, 22);
             this.SetSlotFive_MenuItem.Text = "Set Slot 5 Tree as Main Simulation";
             this.SetSlotFive_MenuItem.Click += new System.EventHandler(this.SetSlot5_MenuItem_Click);
             // 
             // Simu_SepTwo
             // 
             this.Simu_SepTwo.Name = "Simu_SepTwo";
-            this.Simu_SepTwo.Size = new System.Drawing.Size(438, 6);
+            this.Simu_SepTwo.Size = new System.Drawing.Size(439, 6);
             // 
             // OpenLogs_MenuItem
             // 
             this.OpenLogs_MenuItem.Name = "OpenLogs_MenuItem";
-            this.OpenLogs_MenuItem.Size = new System.Drawing.Size(441, 22);
+            this.OpenLogs_MenuItem.Size = new System.Drawing.Size(442, 22);
             this.OpenLogs_MenuItem.Text = "Open Simulation Logs";
             this.OpenLogs_MenuItem.Click += new System.EventHandler(this.openSimulationLogsToolStripMenuItem_Click);
             // 
@@ -642,7 +661,7 @@
             this.OpenNSOwSteam_MenuItem.Name = "OpenNSOwSteam_MenuItem";
             this.OpenNSOwSteam_MenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.P)));
-            this.OpenNSOwSteam_MenuItem.Size = new System.Drawing.Size(441, 22);
+            this.OpenNSOwSteam_MenuItem.Size = new System.Drawing.Size(442, 22);
             this.OpenNSOwSteam_MenuItem.Text = "Open NEEDY STREAMER OVERLOAD with Steam";
             this.OpenNSOwSteam_MenuItem.Click += new System.EventHandler(this.OpenSteamNSO);
             // 
@@ -652,7 +671,7 @@
             this.PlayGame_Button.ShortcutKeys = ((System.Windows.Forms.Keys)((((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Alt) 
             | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.P)));
-            this.PlayGame_Button.Size = new System.Drawing.Size(441, 22);
+            this.PlayGame_Button.Size = new System.Drawing.Size(442, 22);
             this.PlayGame_Button.Text = "Open NEEDY STREAMER OVERLOAD without Steam";
             this.PlayGame_Button.Click += new System.EventHandler(this.PlayGame_Button_Click);
             // 
@@ -666,21 +685,9 @@
             this.UnvalidBranches_Label.Text = "Unvalidated Ending Branches Detected";
             this.UnvalidBranches_Label.VisibleChanged += new System.EventHandler(this.UnvalidBranch_LabelToggle);
             // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(309, 6);
-            // 
-            // ImportLog
-            // 
-            this.ImportLog.Name = "ImportLog";
-            this.ImportLog.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
-            this.ImportLog.Size = new System.Drawing.Size(312, 22);
-            this.ImportLog.Text = "Import Playthrough Log";
-            this.ImportLog.Click += new System.EventHandler(this.ImportLog_Click);
-            // 
             // EndingTreeForm
             // 
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(766, 500);
@@ -697,6 +704,8 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.EndingTreeForm_FormClosing);
             this.Load += new System.EventHandler(this.EndingTreeForm_Load);
             this.Click += new System.EventHandler(this.EndingTreeForm_Click);
+            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.EndingTreeForm_DragDrop);
+            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.EndingTreeForm_DragEnter);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.EndingTreeForm_KeyDown);
             this.Leave += new System.EventHandler(this.EndingTreeForm_Leave);
             this.CurrentEndingTree_Group.ResumeLayout(false);

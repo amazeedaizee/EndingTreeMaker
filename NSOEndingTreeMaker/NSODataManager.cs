@@ -903,12 +903,6 @@ namespace NSOEndingTreeMaker
                 action.MilestoneIdea = CmdType.Angel_4;
                 return;
             }
-            if (((!isReallyStress && !isReallyStressed_EventCounter.isEventing) || (isReallyStress || isReallyStressed_EventCounter.isEventing && isReallyStressed_EventCounter.DayIndex > action.TargetAction.DayIndex)) && action.Followers >= 1000000 && !branch.StreamIdeaExistsBeforeAction(action, CmdType.Angel_5) && !branch.StreamIdeaExistsBeforeAction(action, CmdType.Angel_6))
-            {
-                ideas.Add(new(action.TargetAction.DayIndex, action.TargetAction.DayPart, CmdType.Angel_5));
-                action.MilestoneIdea = CmdType.Angel_5;
-                return;
-            }
             if (isReallyStress || (isReallyStressed_EventCounter.isEventing && isReallyStressed_EventCounter.DayIndex < action.TargetAction.DayIndex))
             {
                 if (branch.StreamIdeaExistsBeforeAction(action, CmdType.Angel_5) && branch.UsedStreamExistsBeforeAction(action, CmdType.Angel_5))
@@ -922,8 +916,16 @@ namespace NSOEndingTreeMaker
                     action.MilestoneIdea = CmdType.Angel_6;
                     return;
                 }
+                action.MilestoneIdea = CmdType.None;
                 return;
             }
+            else if (((!isReallyStress && !isReallyStressed_EventCounter.isEventing) || (isReallyStress || isReallyStressed_EventCounter.isEventing && isReallyStressed_EventCounter.DayIndex > action.TargetAction.DayIndex)) && action.Followers >= 1000000 && !branch.StreamIdeaExistsBeforeAction(action, CmdType.Angel_5) && !branch.StreamIdeaExistsBeforeAction(action, CmdType.Angel_6))
+            {
+                ideas.Add(new(action.TargetAction.DayIndex, action.TargetAction.DayPart, CmdType.Angel_5));
+                action.MilestoneIdea = CmdType.Angel_5;
+                return;
+            }
+
             action.MilestoneIdea = CmdType.None;
         }
     }

@@ -12,7 +12,7 @@ namespace NSOEndingTreeMaker
         public StreamIdeasWindow(EndingBranchEditor window)
         {
             branchWindow = window;
-            IdeaList = branchWindow.UnsavedEndingBranchData.StreamIdeaList;
+            branchWindow.OnBranchChanged += StreamIdeasWindow_Load;
             InitializeComponent();
         }
 
@@ -125,11 +125,13 @@ namespace NSOEndingTreeMaker
 
         private void StreamIdeasWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
+            branchWindow.OnBranchChanged -= StreamIdeasWindow_Load;
             if (branchWindow.ideasWindow != null) { branchWindow.ideasWindow = null; }
         }
 
         private void StreamIdeasWindow_Load(object sender, EventArgs e)
         {
+            IdeaList = branchWindow.UnsavedEndingBranchData.StreamIdeaList;
             StreamIdeas_ListView.BeginUpdate();
             StreamTopic_ListView.BeginUpdate();
             SetListData();
