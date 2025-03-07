@@ -390,6 +390,10 @@ namespace NSOEndingTreeMaker
             {
                 endedDayPart = 3;
             }
+            else if (ExpectedEnding.ending == EndingType.Ending_DarkAngel)
+            {
+                endedDayPart = 0;
+            }
             else endedDayPart -= 1;
             EndingGuesser.Text = ExpectedEnding.ending == EndingType.Ending_None ? "Ending To Expect: None" : $"Ending To Expect: {NSODataManager.EndingNames[ExpectedEnding.ending]} on Day {endedDay}, {NSODataManager.DayPartNames[endedDayPart]}";
         }
