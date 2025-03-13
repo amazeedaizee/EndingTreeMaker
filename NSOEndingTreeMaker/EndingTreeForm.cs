@@ -313,7 +313,7 @@ namespace NSOEndingTreeMaker
                         newAction.Affection = refAction.Affection;
                         newAction.Darkness = refAction.Darkness;
                         newAction.StreamStreak = refAction.StreamStreak;
-                        newAction.PreAlertBonus = refAction.PreAlertBonus;
+                        //newAction.PreAlertBonus = refAction.PreAlertBonus;
                         newAction.Cinephile = refAction.Cinephile;
                         newAction.Impact = refAction.Impact;
                         newAction.GamerGirl = refAction.GamerGirl;

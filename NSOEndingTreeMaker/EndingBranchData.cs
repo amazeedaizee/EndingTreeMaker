@@ -1021,6 +1021,7 @@ namespace NSOEndingTreeMaker
                 isAngelFive = true;
             if (isMaxFollowers.isEventing && isMaxFollowers.DayIndex <= action.TargetAction.DayIndex)
                 isMaxFollows = true;
+
             if (loveDay.DayIndex != 30 && action.TargetAction.DayIndex == loveDay.DayIndex && action.TargetAction.DayPart == loveDay.DayPart)
                 return (action.TargetAction.DayIndex, action.TargetAction.DayPart + 1, EndingType.Ending_Lust);
             if (ignoreDay.DayIndex != 30 && action.TargetAction.DayIndex == ignoreDay.DayIndex && action.TargetAction.DayPart == ignoreDay.DayPart)
@@ -1030,8 +1031,7 @@ namespace NSOEndingTreeMaker
                 return (action.TargetAction.DayIndex, action.TargetAction.DayPart + 1, EndingType.Ending_Ginga);
             if (action.TargetAction.DayIndex == 10 && action.TargetAction.DayPart + action.CommandResult.daypart >= 3 && action.Followers < 10000)
                 return (action.TargetAction.DayIndex, 3, EndingType.Ending_Jikka);
-            if (action.Followers >= 9999999 && isMaxFollows && IsNotMidnightEvents(action, (hasGalacticRail.DayIndex, hasGalacticRail.isEventing), (is150M.DayIndex, is150M.isEventing), (is300M.DayIndex, is300M.isEventing), (is500M.DayIndex, is500M.isEventing)))
-                return (action.TargetAction.DayIndex, 3, EndingType.Ending_Ideon);
+
             if (action.Command == CmdType.Error)
                 return (action.TargetAction.DayIndex, action.TargetAction.DayPart + 1, EndingType.Ending_Kyouso);
             bool isOrIsFollowingNight = (action.TargetAction.DayPart + action.CommandResult.daypart == 2 && !EndingBranch.AllActions.Exists(a => a.TargetAction.DayIndex == action.TargetAction.DayIndex && a.TargetAction.DayPart == 2)) || action.TargetAction.DayPart == 2;
@@ -1050,6 +1050,8 @@ namespace NSOEndingTreeMaker
                 return (action.TargetAction.DayIndex, action.TargetAction.DayPart + 1, EndingType.Ending_Yami);
             if (action.Command == CmdType.Hnahaisin_5)
                 return (action.TargetAction.DayIndex, action.TargetAction.DayPart + 1, EndingType.Ending_Av);
+            if (action.Followers >= 9999999 && isMaxFollows && IsNotMidnightEvents(action, (hasGalacticRail.DayIndex, hasGalacticRail.isEventing), (is150M.DayIndex, is150M.isEventing), (is300M.DayIndex, is300M.isEventing), (is500M.DayIndex, is500M.isEventing)))
+                return (action.TargetAction.DayIndex, 3, EndingType.Ending_Ideon);
             if (isVeryVeryStressed && action.Command == CmdType.Angel_6)
                 return (action.TargetAction.DayIndex + 1, 0, EndingType.Ending_DarkAngel);
             if (isVeryVeryStressed && isHorror && action.Stress >= 80)
