@@ -651,6 +651,7 @@ namespace NSOEndingTreeMaker
             {
                 if (i == 0)
                 {
+                    EndingBranch.AllActions[i].PreAlertBonus = false;
                     if (EndingBranch.AllActions[0].TargetAction.DayIndex == 1)
                     {
                         EndingBranch.AllActions[0].ResetActionStats();
