@@ -224,6 +224,7 @@ namespace NSOEndingTreeMaker
             DeletingEndings = true;
             bool remove = false;
             var selectedEndings = EndingListView.SelectedIndices;
+            List<string> depEnds = [];
             if (selectedEndings.Count == 0)
             {
                 return;
@@ -256,24 +257,23 @@ namespace NSOEndingTreeMaker
                             if (CurrentEndingTree.EndingsList[index].EndingBranch.AllActions.Exists(a => a.TargetAction.DayIndex == CurrentEndingTree.EndingsList[k].EndingBranch.StartingDay) &&
                                 (CurrentEndingTree.EndingsList[k].EndingBranch.StartingDay - 1) <= CurrentEndingTree.EndingsList[index].EndingBranch.AllActions[CurrentEndingTree.EndingsList[index].EndingBranch.AllActions.Count - 1].TargetAction.DayIndex) continue;
                             checkIfValid = false;
-
+                            break;
                         }
                         if (!checkIfValid)
-                        {
-                            var confirmAgain = MessageBox.Show($"Are you really sure? \n\nOne or more future ending branches relies on only this branch for their Starting Days.\n\nEnding Branch To Delete: Branch {index + 1} \nEnding To Get: {NSODataManager.EndingNames[CurrentEndingTree.EndingsList[index].EndingBranch.EndingToGet]}", "Confirm Again", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-                            if (confirmAgain == DialogResult.No)
-                            {
-                                ResetSelectedEnding();
-                                return;
-                            }
-                            else
-                            {
-                                remove = true;
-                                break;
-                            }
-                        }
+                            depEnds.Add($"{j + 1}: {NSODataManager.EndingNames[CurrentEndingTree.EndingsList[j].EndingBranch.EndingToGet]}");
+
                     }
-                    if (remove) break;
+
+
+                }
+                if (depEnds.Count > 0)
+                {
+                    var confirmAgain = MessageBox.Show($"Are you really sure? \n\nOne or more future ending branches relies on only this ({index + 1}: {NSODataManager.EndingNames[CurrentEndingTree.EndingsList[index].EndingBranch.EndingToGet]}) branch for their Starting Days.\n\nDependent Branches:\n\n{string.Join("\n", depEnds)}", "Confirm Again", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                    if (confirmAgain == DialogResult.No)
+                    {
+                        ResetSelectedEnding();
+                        return;
+                    }
                 }
                 CurrentEndingTree.EndingsList.RemoveAt(index);
                 EndingListView.Items.RemoveAt(index);
@@ -310,7 +310,7 @@ namespace NSOEndingTreeMaker
                 for (int j = actions.Count - 1; j >= 0; j--)
                 {
                     bool foundReferenceDay = actions[j].TargetAction.DayIndex == branch.EndingBranch.StartingDay || (actions[j].TargetAction.DayIndex == (branch.EndingBranch.StartingDay - 1) && actions[j].TargetAction.DayPart + actions[j].CommandResult.daypart >= 3);
-                    bool isNoEndingExpected = (refBranch.ExpectedDayOfEnd.Item3 == EndingType.Ending_None || (actions[j].TargetAction.DayIndex <= refBranch.ExpectedDayOfEnd.Item1 && !(refBranch.isHorror.isEventing && actions[j].TargetAction.DayIndex >= refBranch.isHorror.DayIndex)));
+                    bool isNoEndingExpected = (refBranch.ExpectedDayOfEnd.Item3 == EndingType.Ending_None || ((actions[j].TargetAction.DayIndex <= refBranch.ExpectedDayOfEnd.Item1 || (actions[j].TargetAction.DayIndex == refBranch.ExpectedDayOfEnd.Item1 && refBranch.ExpectedDayOfEnd.Item2 != 0)) && !(refBranch.isHorror.isEventing && actions[j].TargetAction.DayIndex >= refBranch.isHorror.DayIndex)));
                     if (foundReferenceDay && isNoEndingExpected)
                     {
                         foundValidDay = true;
