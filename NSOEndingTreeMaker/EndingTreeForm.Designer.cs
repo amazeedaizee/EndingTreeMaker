@@ -31,7 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(EndingTreeForm));
             this.AddEndingButton = new System.Windows.Forms.Button();
             this.CurrentEndingTree_Group = new System.Windows.Forms.GroupBox();
-            this.Day2Exp_Check = new System.Windows.Forms.CheckBox();
+            this.Experiment_Check = new System.Windows.Forms.CheckBox();
             this.Notes_Title = new System.Windows.Forms.Label();
             this.Notes = new System.Windows.Forms.TextBox();
             this.MoveBranchDown_Button = new System.Windows.Forms.Button();
@@ -114,7 +114,7 @@
             // CurrentEndingTree_Group
             // 
             this.CurrentEndingTree_Group.BackColor = System.Drawing.Color.Transparent;
-            this.CurrentEndingTree_Group.Controls.Add(this.Day2Exp_Check);
+            this.CurrentEndingTree_Group.Controls.Add(this.Experiment_Check);
             this.CurrentEndingTree_Group.Controls.Add(this.Notes_Title);
             this.CurrentEndingTree_Group.Controls.Add(this.Notes);
             this.CurrentEndingTree_Group.Controls.Add(this.MoveBranchDown_Button);
@@ -128,17 +128,16 @@
             this.CurrentEndingTree_Group.TabIndex = 9;
             this.CurrentEndingTree_Group.TabStop = false;
             // 
-            // Day2Exp_Check
+            // Experiment_Check
             // 
-            this.Day2Exp_Check.AutoSize = true;
-            this.Day2Exp_Check.Location = new System.Drawing.Point(15, 417);
-            this.Day2Exp_Check.Name = "Day2Exp_Check";
-            this.Day2Exp_Check.Size = new System.Drawing.Size(213, 17);
-            this.Day2Exp_Check.TabIndex = 12;
-            this.Day2Exp_Check.Text = "Add Day 2 Extra Action To Ending Tree";
-            this.Day2Exp_Check.UseVisualStyleBackColor = true;
-            this.Day2Exp_Check.Visible = false;
-            this.Day2Exp_Check.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Day2Exp_Check_MouseClick);
+            this.Experiment_Check.AutoSize = true;
+            this.Experiment_Check.Location = new System.Drawing.Point(15, 417);
+            this.Experiment_Check.Name = "Experiment_Check";
+            this.Experiment_Check.Size = new System.Drawing.Size(116, 17);
+            this.Experiment_Check.TabIndex = 12;
+            this.Experiment_Check.Text = "Experimental Mode";
+            this.Experiment_Check.UseVisualStyleBackColor = true;
+            this.Experiment_Check.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Day2Exp_Check_MouseClick);
             // 
             // Notes_Title
             // 
@@ -780,7 +779,7 @@
         private System.Windows.Forms.ToolStripMenuItem NewEndingTree_MenuItem;
         private System.Windows.Forms.ToolStripSeparator Tree_SepFour;
         private System.Windows.Forms.Label UnvalidBranches_Label;
-        private System.Windows.Forms.CheckBox Day2Exp_Check;
+        private System.Windows.Forms.CheckBox Experiment_Check;
         private System.Windows.Forms.ToolStripMenuItem OpenNSOwSteam_MenuItem;
         private System.Windows.Forms.Button MoveBranchDown_Button;
         private System.Windows.Forms.Button MoveBranchUp_Button;

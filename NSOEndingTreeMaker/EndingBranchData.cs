@@ -72,6 +72,8 @@ namespace NSOEndingTreeMaker
             for (int i = 0; i < endingBranch.EndingBranch.AllActions.Count; i++)
             {
                 TargetActionData action = new TargetActionData(allActions[i].TargetAction.DayIndex, allActions[i].TargetAction.DayPart, allActions[i].Command, allActions[i].TargetAction.IgnoreDM);
+                action.TargetAction.Action = allActions[i].TargetAction.Action;
+                action.TargetAction.Stream = allActions[i].TargetAction.Stream;
                 action.ActionName = allActions[i].ActionName;
                 action.ChangeStats(allActions[i].Followers, allActions[i].Stress, allActions[i].Affection, allActions[i].Darkness, allActions[i].StreamStreak, allActions[i].PreAlertBonus, allActions[i].Communication, allActions[i].Experience, allActions[i].Impact, allActions[i].GamerGirl, allActions[i].Cinephile, allActions[i].RabbitHole);
                 action.CommandResult = allActions[i].CommandResult;
@@ -363,6 +365,7 @@ namespace NSOEndingTreeMaker
         private (bool, string) ValidateStream(TargetActionData action)
         {
             if (action.TargetAction.Action != ActionType.Haishin) return (true, "");
+            if (action.Command == (CmdType)1000) return (true, "");
             if (action.Command == CmdType.Darkness_1 || action.Command == CmdType.Darkness_2) return (true, "");
             bool ideaExists = StreamIdeaList.Exists(i => i.Idea == action.Command);
             var breakdownThree = StreamUsedList.FirstOrDefault(u => u.UsedStream == CmdType.Yamihaishin_3);
@@ -662,7 +665,7 @@ namespace NSOEndingTreeMaker
                     continue;
                 }
                 ChangePresentCmdBasedOnPastStats(EndingBranch.AllActions[i - 1], EndingBranch.AllActions[i]);
-                if (EndingBranch.AllActions[i].TargetAction.DayPart != 3) EndingBranch.AllActions[i].CommandResult = NSOCommandManager.CmdTypeToCommand(EndingBranch.AllActions[i].Command);
+                if (EndingBranch.AllActions[i].TargetAction.DayPart != 3 && EndingBranch.AllActions[i].Command != (CmdType)1000) EndingBranch.AllActions[i].CommandResult = NSOCommandManager.CmdTypeToCommand(EndingBranch.AllActions[i].Command);
                 NSOCommandManager.CalculateStats(this, EndingBranch.AllActions[i - 1], EndingBranch.AllActions[i], NoMeds.Item2);
                 AddIdeaOrUsedStream(EndingBranch.AllActions[i - 1], EndingBranch.AllActions[i]);
                 EndingBranch.AllActions[i].SetStatsToMaxOrMin(this, Stressed.Item2, ReallyStressed.Item2, VisitParents.Item2);
@@ -830,6 +833,7 @@ namespace NSOEndingTreeMaker
         {
             var a = presentAction.TargetAction.Action;
             if (presentAction.TargetAction.DayPart == 3) return;
+            if (presentAction.Command == (CmdType)1000) return;
             if (a == ActionType.PlayIchatuku)
             {
                 if (pastAction.Affection < 40)

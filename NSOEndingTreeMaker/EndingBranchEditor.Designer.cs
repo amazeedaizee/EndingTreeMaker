@@ -266,6 +266,7 @@
             this.ActionListView.View = System.Windows.Forms.View.Details;
             this.ActionListView.ItemMouseHover += new System.Windows.Forms.ListViewItemMouseHoverEventHandler(this.ActionListViewOnItemMouseHover);
             this.ActionListView.SelectedIndexChanged += new System.EventHandler(this.ActionListViewOnSelectedIndexChanged);
+            this.ActionListView.DoubleClick += new System.EventHandler(this.ActionListView_DoubleClick);
             this.ActionListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.ActionListViewOnKeyUp);
             this.ActionListView.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ShowMilestoneTooltip);
             // 
@@ -356,7 +357,8 @@
             "Medication",
             "Internet",
             "Go Out",
-            "Darkness"});
+            "Darkness",
+            "..."});
             this.ParentAction_Dropdown.Location = new System.Drawing.Point(9, 88);
             this.ParentAction_Dropdown.Name = "ParentAction_Dropdown";
             this.ParentAction_Dropdown.Size = new System.Drawing.Size(217, 21);
@@ -1316,7 +1318,6 @@
         private System.Windows.Forms.ComboBox ParentAction_Dropdown;
         private System.Windows.Forms.Label ParentAction_Label;
         private System.Windows.Forms.Label DayIndex_Label;
-        private System.Windows.Forms.CheckBox IgnoreDMCheck;
         private System.Windows.Forms.ComboBox DayPart_Dropdown;
         private System.Windows.Forms.Button TargetActionButton;
         private System.Windows.Forms.Label DayPart_Label;
@@ -1397,5 +1398,6 @@
         private System.Windows.Forms.ToolStripMenuItem NewEndingBranch_MenuItem;
         private System.Windows.Forms.ToolStripMenuItem NewEndingBranchFromSelected_MenuItem;
         private System.Windows.Forms.ToolStripSeparator NewBranch_Seperator;
+        internal System.Windows.Forms.CheckBox IgnoreDMCheck;
     }
 }

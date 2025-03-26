@@ -41,6 +41,24 @@ namespace NSOEndingTreeMaker
             this.tinfoil = tinfoil;
             this.daypart = daypart;
         }
+        public CommandAction(CommandAction c)
+        {
+            this.id = c.id;
+            this.name = c.name;
+            this.followers = c.followers;
+            this.stress = c.stress;
+            this.affection = c.affection;
+            this.darkness = c.darkness;
+            this.impact = c.impact;
+            this.experience = c.experience;
+            this.streamstreak = c.streamstreak;
+            this.prebonus = c.prebonus;
+            this.gamer = c.gamer;
+            this.movie = c.movie;
+            this.communication = c.communication;
+            this.tinfoil = c.tinfoil;
+            this.daypart = c.daypart;
+        }
     }
     public class NSOCommandManager
     {
@@ -445,6 +463,8 @@ namespace NSOEndingTreeMaker
         public static int CalculateFollowers(TargetActionData pastAction, TargetActionData presentAction)
         {
             presentAction.StreamStreak = pastAction.StreamStreak + presentAction.CommandResult.streamstreak;
+            if (presentAction.Command == (CmdType)1000 && presentAction.TargetAction.Action != ActionType.Haishin)
+                return presentAction.CommandResult.followers;
             return (int)Math.Ceiling((float)((float)(presentAction.CommandResult.followers * 1f) * Math.Min((float)(Math.Log10(pastAction.Followers) * 25f), Math.Floor(pastAction.Followers / 100d)) * calculateStreamStreak() * calculatePreBonus() * calculateGame() * calculateMovie() * calculateImpact() * calculateExper() * calculateComm() * calculateTinfoil()));
 
             double calculateStreamStreak()

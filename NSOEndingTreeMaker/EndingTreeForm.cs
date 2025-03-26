@@ -119,7 +119,7 @@ namespace NSOEndingTreeMaker
                 var startAction = SetStartingAction(branch, false, i - 1);
                 branch.EndingBranch.AllActions[0] = startAction;
                 if (startAction.Followers == 0)
-                    list.Add(new(futureBranchName, "", $"Tried to initialize starting stats for this branch's starting day, however no valid day exists to set stats."));
+                    errorList.Add(new(futureBranchName, "", $"Tried to initialize starting stats for this branch's starting day, however no valid day exists to set stats."));
                 else branch.EndingBranch.AllActions[0] = startAction;
                 ResetStartingDayData(branch, i - 1);
                 InitializeEndingList(i, errorList, futureBranchName);
@@ -127,7 +127,7 @@ namespace NSOEndingTreeMaker
             if (errorList.Count > 0) UnvalidBranches_Label.Visible = true;
             else UnvalidBranches_Label.Visible = false;
             Notes.Text = CurrentEndingTree.Notes;
-            Day2Exp_Check.Checked = CurrentEndingTree.isDay2Exp;
+            //Experiment_Check.Checked = CurrentEndingTree.isDay2Exp;
             ChangeFileLabelIfUnsaved();
             return errorList;
 
@@ -138,6 +138,8 @@ namespace NSOEndingTreeMaker
                 branch.InitializeActionStats();
                 AddExpectedErrorToErrorList(branch, list, branchName);
                 list.AddRange(branch.ValidateBranch(branchName));
+                var customEvents = ValidateCustomEvents(branchIndex);
+                if (customEvents.Item2 != "") errorList.Add((branchName, "", customEvents.Item2));
                 AddEndingToListView(branch);
                 if (list.Count > 0) EndingListView.Items[branchIndex].SubItems[0].Text += " (!)";
                 errorList.AddRange(list);
@@ -228,6 +230,7 @@ namespace NSOEndingTreeMaker
             if (selectedEndings[0] == 0)
             {
                 MessageBox.Show($"Deleting the first branch of the tree isn't allowed.", "No", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                DeletingEndings = false;
                 return;
             }
             var confirm = MessageBox.Show($"Are you sure you want to delete {(selectedEndings.Count > 1 ? "these endings" : "this ending")}? \n\nThis action can't be undone.", "Delete Ending?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -441,6 +444,55 @@ namespace NSOEndingTreeMaker
             }
         }
 
+        public (bool, string) ValidateCustomEvents(int index = -1, EndingBranchData branch = null)
+        {
+            bool isValidated = true;
+            string errorMsg = "";
+
+            if (index >= CurrentEndingTree.EndingsList.Count) index = CurrentEndingTree.EndingsList.Count - 1;
+            else if (index < -1) index = 0;
+            if (index == -1)
+            {
+                List<string> endings = [];
+                var ends = CurrentEndingTree.EndingsList;
+                for (int i = 0; i < CurrentEndingTree.EndingsList.Count; i++)
+                {
+                    if (ends[i].EndingBranch.AllActions.Exists(a => a.Command == (CmdType)1000))
+                    {
+                        endings.Add($"Branch {i + 1}. {NSODataManager.EndingNames[ends[i].EndingBranch.EndingToGet]}");
+                        break;
+                    }
+
+
+
+                }
+                if (endings.Count > 0)
+                {
+                    isValidated = false;
+                    errorMsg = $"Custom Events are not allowed except in Experimental Mode. \n\nList of branches that contain Custom Events:\n{string.Join("\n", endings)}";
+                }
+            }
+            else
+            {
+                List<string> customs = [];
+                EndingBranchData b = branch ?? CurrentEndingTree.EndingsList[index];
+                var acts = b.EndingBranch.AllActions;
+                for (int i = 0; i < acts.Count; i++)
+                {
+                    if (acts[i].Command == (CmdType)1000)
+                        customs.Add($"Day {acts[i].TargetAction.DayIndex}, {NSODataManager.DayPartNames[acts[i].TargetAction.DayPart]}: {acts[i].ActionName}");
+                }
+                if (customs.Count > 0)
+                {
+                    isValidated = false;
+                    errorMsg = $"Custom Events are not allowed except in Experimental Mode. \n\nList of actions that contain Custom Events:\n{string.Join("\n", customs)}";
+                }
+                ;
+            }
+
+            return (isValidated, errorMsg);
+        }
+
         public (bool, bool, string) ValidateFutureBranchStarts(int index, EndingBranchData branch)
         {
             int minStartingDay = branch.EndingBranch.StartingDay;
@@ -465,7 +517,7 @@ namespace NSOEndingTreeMaker
                 {
                     isValidated = false;
                     endings.Add(futureBranchName);
-                    errorMsg = $"Other branches' starting days are reliant on a day from this branch that now doesn't exist. \n\nList of branches that relied on this branch:\n{string.Join("\n", endings)}";
+
                     continue;
                 }
                 if (futureStartDay <= latestDay && futureStartDay > minStartingDay)
@@ -475,16 +527,19 @@ namespace NSOEndingTreeMaker
                 }
 
             }
+            if (endings.Count > 0) errorMsg = $"Other branches' starting days are reliant on a day from this branch that now doesn't exist. \n\nList of branches that relied on this branch:\n{string.Join("\n", endings)}";
             return (isValidated, hasAnyFutureStartDays, errorMsg);
         }
 
         private bool ValidateEndingTree()
         {
+
             var errorList = SetEndingListViewData();
             if (errorList.Count > 0)
             {
                 bool isConfirm;
                 CurrentEndingTree.isBroken = true;
+                if (Properties.Settings.Default.ExperimentMode) return true;
                 BranchErrorDetails errorDetails = new BranchErrorDetails(errorList, false);
                 errorDetails.ErrorIntro.Text = "Branches in this tree contains validation errors. Are you sure you want to proceed?";
                 isConfirm = errorDetails.ShowDialog() == DialogResult.Yes ? true : false;
@@ -500,6 +555,7 @@ namespace NSOEndingTreeMaker
             var endingTree = MakeFirstTree();
             CurrentEndingTree = endingTree;
             SetEndingListViewData();
+            Experiment_Check.Checked = Properties.Settings.Default.ExperimentMode;
             _currentNotes = CurrentEndingTree.Notes;
             DeleteEndingBranch.Enabled = false;
             EditEndingBranch.Enabled = false;
@@ -1195,16 +1251,25 @@ namespace NSOEndingTreeMaker
 
         private void Day2Exp_Check_MouseClick(object sender, MouseEventArgs e)
         {
-            var confirm = MessageBox.Show("Are you sure you want to change this variable?", "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-            if (confirm == DialogResult.No)
+            var state = Properties.Settings.Default.ExperimentMode;
+            if (!state)
             {
-                Day2Exp_Check.Checked = !Day2Exp_Check.Checked;
-                return;
+                const string msg = "Are you sure you want to change this variable?\n" +
+                   "This will turn off error checking, however you will still be notified if a tree in invalidated.";
+                var confirm = MessageBox.Show(msg, "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+                if (confirm == DialogResult.No)
+                {
+                    Experiment_Check.Checked = false;
+                    return;
+                }
+                else Experiment_Check.Checked = true;
             }
-            CurrentEndingTree.isDay2Exp = Day2Exp_Check.Checked;
-            if (_currentExp != CurrentEndingTree.isDay2Exp) _isExpEdited = true;
-            else _isExpEdited = false;
-            Day2ExtraAction();
+            else Experiment_Check.Checked = false;
+            Properties.Settings.Default.ExperimentMode = Experiment_Check.Checked;
+            //CurrentEndingTree.isDay2Exp = Experiment_Check.Checked;
+            //if (_currentExp != CurrentEndingTree.isDay2Exp) _isExpEdited = true;
+            //else _isExpEdited = false;
+            //Day2ExtraAction();
         }
 
         private void OpenSteamNSO(object sender, EventArgs e)

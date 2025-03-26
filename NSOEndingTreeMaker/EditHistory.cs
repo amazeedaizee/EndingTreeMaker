@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using ngov3;
+using System.Collections.Generic;
 
 namespace NSOEndingTreeMaker
 {
@@ -18,9 +19,20 @@ namespace NSOEndingTreeMaker
         {
             EditType = editType;
             this.ActionIndex = index;
-            Action = new TargetActionData(action.TargetAction.DayIndex, action.TargetAction.DayPart, action.Command, action.TargetAction.IgnoreDM);
+            if (action.Command == (CmdType)1000)
+            {
+                Action = new TargetActionData(action.TargetAction.DayIndex, action.TargetAction.DayPart, action.ActionName, action.CommandResult, action.TargetAction.IgnoreDM);
+            }
+            else Action = new TargetActionData(action.TargetAction.DayIndex, action.TargetAction.DayPart, action.Command, action.TargetAction.IgnoreDM);
             if (actionAfterEdit != null)
-                ActionAfterEdit = new TargetActionData(actionAfterEdit.TargetAction.DayIndex, actionAfterEdit.TargetAction.DayPart, actionAfterEdit.Command, actionAfterEdit.TargetAction.IgnoreDM);
+            {
+                if (actionAfterEdit.Command == (CmdType)1000)
+                {
+                    ActionAfterEdit = new TargetActionData(action.TargetAction.DayIndex, action.TargetAction.DayPart, action.ActionName, action.CommandResult, action.TargetAction.IgnoreDM);
+                }
+                else ActionAfterEdit = new TargetActionData(actionAfterEdit.TargetAction.DayIndex, actionAfterEdit.TargetAction.DayPart, actionAfterEdit.Command, actionAfterEdit.TargetAction.IgnoreDM);
+            }
+
         }
     }
     public class EditHistory

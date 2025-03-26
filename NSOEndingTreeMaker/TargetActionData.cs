@@ -45,9 +45,9 @@ namespace NSOEndingTreeMaker
             CommandResult = command;
         }
 
-        public TargetActionData(int dayIndex, int dayPart, string action, CommandAction command = null)
+        public TargetActionData(int dayIndex, int dayPart, string action, CommandAction command = null, bool ignoreDM = false)
         {
-            TargetAction = new TargetAction_Stub(dayIndex, dayPart, ActionType.None);
+            TargetAction = new TargetAction_Stub(dayIndex, dayPart, ActionType.None, ignoreDM);
             ActionName = action;
             CommandResult = command;
         }
