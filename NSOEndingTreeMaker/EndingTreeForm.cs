@@ -222,6 +222,7 @@ namespace NSOEndingTreeMaker
         private void DeleteSelectedEndingData()
         {
             DeletingEndings = true;
+            bool remove = false;
             var selectedEndings = EndingListView.SelectedIndices;
             if (selectedEndings.Count == 0)
             {
@@ -259,14 +260,20 @@ namespace NSOEndingTreeMaker
                         }
                         if (!checkIfValid)
                         {
-                            var confirmAgain = MessageBox.Show($"Are you really sure? \n\nOne or more future ending branches relies on only this branch for their Starting Days.\n\nEnding Branch To Delete: Branch {j + 1} \nEnding To Get: {NSODataManager.EndingNames[CurrentEndingTree.EndingsList[index].EndingBranch.EndingToGet]}", "Confirm Again", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                            var confirmAgain = MessageBox.Show($"Are you really sure? \n\nOne or more future ending branches relies on only this branch for their Starting Days.\n\nEnding Branch To Delete: Branch {index + 1} \nEnding To Get: {NSODataManager.EndingNames[CurrentEndingTree.EndingsList[index].EndingBranch.EndingToGet]}", "Confirm Again", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                             if (confirmAgain == DialogResult.No)
                             {
                                 ResetSelectedEnding();
                                 return;
                             }
+                            else
+                            {
+                                remove = true;
+                                break;
+                            }
                         }
                     }
+                    if (remove) break;
                 }
                 CurrentEndingTree.EndingsList.RemoveAt(index);
                 EndingListView.Items.RemoveAt(index);
