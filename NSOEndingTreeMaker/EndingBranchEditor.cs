@@ -1367,7 +1367,7 @@ namespace NSOEndingTreeMaker
                     var newAction = MainForm.SetStartingAction(UnsavedEndingBranchData, false, index - 1);
                     if (newAction.Followers == 0)
                     {
-                        var caution = MessageBox.Show("This day either does not exist in the branch list, or is currently inaccessible based on the previous branches. Do you still want to set the starting day to this day?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                        var caution = MessageBox.Show("This day either does not exist in the branch list, or is currently inaccessible based on the previous branches. Do you still want to set the starting day to this day?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
                         if (caution == DialogResult.No)
                         {
                             UnsavedEndingBranchData.EndingBranch.StartingDay = pastStartingDay;
