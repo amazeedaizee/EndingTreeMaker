@@ -1103,6 +1103,8 @@ namespace NSOEndingTreeMaker
             StreamTopic_Label.Visible = false;
             StreamTopic_Dropdown.Visible = false;
             TargetActionButton.Enabled = false;
+            if (!Properties.Settings.Default.ExperimentMode)
+                ParentAction_Dropdown.Items.Remove("...");
             SetImportedBaseBranchData();
         }
 
