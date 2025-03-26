@@ -54,11 +54,17 @@ namespace NSOEndingTreeMaker
 
         private void CustomActionOK_Click(object sender, System.EventArgs e)
         {
+            if (!Properties.Settings.Default.ExperimentMode)
+            {
+                MessageBox.Show("To do this action, you must be in Experiment Mode.", "No Experiments", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             if (string.IsNullOrWhiteSpace(ActionNameTB.Text))
             {
                 MessageBox.Show("Action must have a name!", "Name Required", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
 
             SaveAction();
             branchWindow.TargetActionButtonOnClick(sender, e);
