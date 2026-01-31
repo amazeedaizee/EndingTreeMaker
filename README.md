@@ -1,4 +1,4 @@
-
+### [A small update on my mods](https://gist.github.com/amazeedaizee/b065103e312e6339ddce15854445dc27)
 # EndingTreeMaker
 
 ![image](https://github.com/amazeedaizee/EndingTreeMaker/assets/131136866/adf4b72a-ddae-422f-9526-40d4936cd275)
@@ -52,6 +52,12 @@ With that being said, **Blazing Hell** (which can be achieved from a random noon
 If you have any issues, questions or concerns about the program, you can open up an issue on the Issues page.
 
 **Is this program being flagged as a virus?** See [HERE](https://github.com/amazeedaizee/EndingTreeMaker/issues/1) for more details.
+
+## Disclosure
+
+This program was unfortunately created using Visual Studio 2022 with Intellicode (Ai-powered autocomplete)
+
+[More info](https://gist.github.com/amazeedaizee/b065103e312e6339ddce15854445dc27)
 
 ## Other
 
