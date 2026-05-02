@@ -575,6 +575,8 @@ namespace NSOEndingTreeMaker
                 return false;
             if (action.TargetAction.DayIndex == 10)
                 return false;
+            if (action.TargetAction.DayIndex == 14)
+                return false;
             if (action.TargetAction.DayIndex == 17)
                 return false;
             if (action.TargetAction.DayIndex == 22)
