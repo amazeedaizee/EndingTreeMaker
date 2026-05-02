@@ -904,6 +904,7 @@ namespace NSOEndingTreeMaker
                 var pastAction = ActionList[lastIndex];
                 if (ParentAction_Dropdown.SelectedIndex != 0) return;
                 CmdType stream = CmdType.Error;
+                if (StreamTopic_Dropdown.SelectedIndex == NSODataManager.StreamTopicList.IndexOf(AlphaType.Darkness) && StreamLevelNumeric.Value > 2) StreamLevelNumeric.Value = 2;
                 if (ParentAction_Dropdown.SelectedIndex == 0 && !(StreamTopic_Dropdown.SelectedIndex == NSODataManager.StreamTopicList.IndexOf(AlphaType.Imbouron) && StreamLevelNumeric.Value == 6))
                     stream = (CmdType)Enum.Parse(typeof(CmdType), $"{NSODataManager.StreamTopicList[StreamTopic_Dropdown.SelectedIndex]}_{StreamLevelNumeric.Value}");
                 var streamIdea = UnsavedEndingBranchData.StreamIdeaList.FirstOrDefault(i => i.Idea == stream);
@@ -914,7 +915,7 @@ namespace NSOEndingTreeMaker
                     if (pastAction.Command != CmdType.DarknessS1 && stream == CmdType.Darkness_1)
                     {
                         StreamIdea_Label.Text = $"Can't stream this.";
-                        TargetActionButton.Enabled = false;
+                       TargetActionButton.Enabled = Properties.Settings.Default.ExperimentMode;
                     }
                     else if (pastAction.Command == CmdType.DarknessS1 && stream == CmdType.Darkness_1)
                     {
@@ -924,7 +925,7 @@ namespace NSOEndingTreeMaker
                     if (pastAction.Command != CmdType.DarknessS2 && stream == CmdType.Darkness_2)
                     {
                         StreamIdea_Label.Text = $"Can't stream this.";
-                        TargetActionButton.Enabled = false;
+                         TargetActionButton.Enabled = Properties.Settings.Default.ExperimentMode;
                     }
                     else if (pastAction.Command == CmdType.DarknessS2 && stream == CmdType.Darkness_2)
                     {
@@ -1023,7 +1024,7 @@ namespace NSOEndingTreeMaker
                     if (!b.isStressed.isEventing || !(ideaAction.TargetAction.DayIndex == b.isStressed.DayIndex && ideaAction.TargetAction.DayPart == 0))
                     {
                         StreamIdea_Label.Text = $"Cannot do this action yet.";
-                        TargetActionButton.Enabled = false;
+                        if (!Properties.Settings.Default.ExperimentMode) TargetActionButton.Enabled = false;
                     }
                     else StreamIdea_Label.Text = $"She's stressed.";
                 }
@@ -1032,7 +1033,7 @@ namespace NSOEndingTreeMaker
                     if (!b.isReallyStressed.isEventing || !(ideaAction.TargetAction.DayIndex == b.isReallyStressed.DayIndex && ideaAction.TargetAction.DayPart == 0))
                     {
                         StreamIdea_Label.Text = $"Cannot do this action yet.";
-                        TargetActionButton.Enabled = false;
+                        if (!Properties.Settings.Default.ExperimentMode) TargetActionButton.Enabled = false;
                     }
                     else StreamIdea_Label.Text = $"You've really done it now.";
                 }
@@ -1041,7 +1042,7 @@ namespace NSOEndingTreeMaker
                     if (!b.isReallyLove.isEventing || !(ideaAction.TargetAction.DayIndex == b.isReallyLove.DayIndex && ideaAction.TargetAction.DayPart == 0))
                     {
                         StreamIdea_Label.Text = $"Cannot do this action yet.";
-                        TargetActionButton.Enabled = false;
+                        if (!Properties.Settings.Default.ExperimentMode) TargetActionButton.Enabled = false;
                     }
                     else StreamIdea_Label.Text = $"Aww, she really loves you!";
                 }
@@ -1050,7 +1051,7 @@ namespace NSOEndingTreeMaker
                     if (!b.isVideo.isEventing || !(ideaAction.TargetAction.DayIndex == b.isVideo.DayIndex && ideaAction.TargetAction.DayPart == 0))
                     {
                         StreamIdea_Label.Text = $"Cannot do this action yet.";
-                        TargetActionButton.Enabled = false;
+                        if (!Properties.Settings.Default.ExperimentMode) TargetActionButton.Enabled = false;
                     }
                     else StreamIdea_Label.Text = $"Music video unlocked!";
                 }
