@@ -59,6 +59,30 @@ namespace NSOEndingTreeMaker
             this.tinfoil = c.tinfoil;
             this.daypart = c.daypart;
         }
+        public static bool operator ==(CommandAction left, CommandAction right)
+        {
+            if (left.Equals(right)) return true;
+            if (left.id != right.id) return false;
+            if (left.name != right.name) return false;
+            if (left.followers != right.followers) return false;
+            if (left.stress != right.stress) return false;
+            if (left.affection != right.affection) return false;
+            if (left.darkness != right.darkness) return false;
+            if (left.impact != right.impact) return false;
+            if (left.experience != right.experience) return false;
+            if (left.streamstreak != right.streamstreak) return false;
+            if (left.prebonus != right.prebonus) return false;
+            if (left.gamer != right.gamer) return false;
+            if (left.movie != right.movie) return false;
+            if (left.communication != right.communication) return false;
+            if (left.tinfoil != right.tinfoil) return false;
+            if (left.daypart != right.daypart) return false;
+            return true;
+        }
+        public static bool operator !=(CommandAction left, CommandAction right)
+        {
+            return !(left == right);
+        }
     }
     public class NSOCommandManager
     {
@@ -463,7 +487,7 @@ namespace NSOEndingTreeMaker
         public static int CalculateFollowers(TargetActionData pastAction, TargetActionData presentAction)
         {
             presentAction.StreamStreak = pastAction.StreamStreak + presentAction.CommandResult.streamstreak;
-            if (presentAction.Command == (CmdType)1000 && presentAction.TargetAction.Action != ActionType.Haishin)
+            if (presentAction.Command == (CmdType)1000 && presentAction.TargetAction.Action != ActionType.Haishin && presentAction.TargetAction.Action != ActionType.InternetPoketter)
                 return presentAction.CommandResult.followers;
             return (int)Math.Ceiling((float)((float)(presentAction.CommandResult.followers * 1f) * Math.Min((float)(Math.Log10(pastAction.Followers) * 25f), Math.Floor(pastAction.Followers / 100d)) * calculateStreamStreak() * calculatePreBonus() * calculateGame() * calculateMovie() * calculateImpact() * calculateExper() * calculateComm() * calculateTinfoil()));
 
