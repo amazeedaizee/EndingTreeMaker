@@ -34,9 +34,12 @@ namespace NSOEndingTreeMaker
         {
             var t = action.TargetAction;
             TargetAction = new TargetAction_Stub(t.DayIndex, t.DayPart, t.Action, t.IgnoreDM);
+            TargetAction.Stream = t.Stream;
             ActionName = action.ActionName;
             Command = action.Command;
-            CommandResult = NSOCommandManager.CmdTypeToCommand(Command);
+            if (Command == (CmdType)1000)
+                CommandResult = action.CommandResult;
+            else CommandResult = NSOCommandManager.CmdTypeToCommand(Command);
         }
         public TargetActionData(TargetAction_Stub TargetAction, string action, CommandAction command = null)
         {

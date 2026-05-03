@@ -521,6 +521,7 @@ namespace NSOEndingTreeMaker
                     switch (Action_Dropdown.SelectedIndex)
                     {
                         case -1:
+                            TargetActionButton.Enabled = false;
                             break;
                         case 0:
                             return CmdType.EntameGame;
@@ -540,6 +541,7 @@ namespace NSOEndingTreeMaker
                     switch (Action_Dropdown.SelectedIndex)
                     {
                         case -1:
+                            TargetActionButton.Enabled = false;
                             break;
                         case 0:
                             if (DayPart_Dropdown.SelectedIndex != 0)
@@ -569,6 +571,7 @@ namespace NSOEndingTreeMaker
                     switch (Action_Dropdown.SelectedIndex)
                     {
                         case -1:
+                            TargetActionButton.Enabled = false;
                             break;
                         case 0:
                             return CmdType.OkusuriDaypassModerate;
@@ -629,6 +632,7 @@ namespace NSOEndingTreeMaker
                     switch (Action_Dropdown.SelectedIndex)
                     {
                         case -1:
+                            TargetActionButton.Enabled = false;
                             break;
                         case 0:
                             if (pastAction.Followers < 10000 && pastAction.Darkness < 20)
@@ -655,11 +659,17 @@ namespace NSOEndingTreeMaker
                     }
                     break;
                 case 5:
-                    if (Action_Dropdown.SelectedIndex == -1) break;
+                    if (Action_Dropdown.SelectedIndex == -1) {
+
+                        TargetActionButton.Enabled = false; break; }
                     return NSODataManager.OutsideList[Action_Dropdown.SelectedIndex];
 
                 case 6:
-                    if (Action_Dropdown.SelectedIndex == -1) break;
+                    if (Action_Dropdown.SelectedIndex == -1)
+                    {
+
+                        TargetActionButton.Enabled = false; break;
+                    }
                     return NSODataManager.DarknessList[Action_Dropdown.SelectedIndex];
             }
             return CmdType.None;
@@ -816,7 +826,7 @@ namespace NSOEndingTreeMaker
             }
             try
             {
-                var isCustom = SelectedAction?.Command == (CmdType)1000 && Action_Dropdown.SelectedIndex == -1;
+                var isCustom = SelectedAction?.Command == (CmdType)1000;
                 var branch = UnsavedEndingBranchData;
                 TargetActionData pastAction = null;
                 if (MainForm.CurrentEndingTree.isDay2Exp && SelectedAction.TargetAction.DayIndex == 2 && SelectedAction.TargetAction.DayPart == -1)
@@ -849,8 +859,8 @@ namespace NSOEndingTreeMaker
                 }
                 else if (isCustom)
                 {
-                    followerAction.TargetAction.Action = ActionType.Haishin;
                     followerAction.CommandResult = command;
+                    followerAction.Command = (CmdType)1000;
                 }
                 ;
                 int followerCalc = ParentAction_Dropdown.SelectedIndex == 0 || followerAction.TargetAction.Action == ActionType.InternetPoketter || isCustom ? NSOCommandManager.CalculateFollowers(pastAction, followerAction) : 0;
@@ -989,11 +999,11 @@ namespace NSOEndingTreeMaker
             void SetStreamIdeaPreview(TargetActionData pastAction)
             {
                 if (ParentAction_Dropdown.SelectedIndex == 0) return;
-                if (SelectedAction?.Command == (CmdType)1000 && Action_Dropdown.SelectedIndex == -1)
-                {
-                    TargetActionButton.Enabled = false;
-                    return;
-                }
+                //if (SelectedAction?.Command == (CmdType)1000 && Action_Dropdown.SelectedIndex == -1)
+                //{
+                //    TargetActionButton.Enabled = false;
+                //    return;
+                //}
 
 
                 TargetActionButton.Enabled = true;
@@ -1184,16 +1194,26 @@ namespace NSOEndingTreeMaker
 
             void ChangeSelectedAction()
             {
+                if (customActWindow == null && SelectedAction.Command == (CmdType)1000 && ParentAction_Dropdown.SelectedIndex == -1) { 
+                    MakeCustomAction();
+                    return;
+                }
                 TargetActionData actionToUndo = null;
                 if (SelectedAction.Command == (CmdType)1000)
+                {
                     actionToUndo = new TargetActionData(SelectedAction.TargetAction.DayIndex, SelectedAction.TargetAction.DayPart, SelectedAction.ActionName, SelectedAction.CommandResult, SelectedAction.TargetAction.IgnoreDM);
+                    actionToUndo.TargetAction.Action = SelectedAction.TargetAction.Action;
+                    actionToUndo.TargetAction.Stream = SelectedAction.TargetAction.Stream;
+                    actionToUndo.Command = (CmdType)1000;
+                }
                 else actionToUndo = new TargetActionData(SelectedAction.TargetAction.DayIndex, SelectedAction.TargetAction.DayPart, SelectedAction.Command, SelectedAction.TargetAction.IgnoreDM);
                 if (customActWindow != null)
                 {
                     SelectedAction.ActionName = customActWindow.action.ActionName;
                     SelectedAction.CommandResult = new(customActWindow.action.CommandResult);
                     SelectedAction.TargetAction.Action = customActWindow.action.TargetAction.Action;
-                    SelectedAction.TargetAction.Stream = AlphaType.none;
+                    SelectedAction.TargetAction.Stream = customActWindow.action.TargetAction.Stream;
+                    SelectedAction.TargetAction.IgnoreDM = customActWindow.action.TargetAction.IgnoreDM;
                     SelectedAction.Command = (CmdType)1000;
                 }
                 else
@@ -1217,10 +1237,17 @@ namespace NSOEndingTreeMaker
                     moveSelected = new TargetActionData(SelectedAction.TargetAction.DayIndex, SelectedAction.TargetAction.DayPart, SelectedAction.ActionName, SelectedAction.CommandResult, SelectedAction.TargetAction.IgnoreDM);
                     moveSelected.Command = (CmdType)1000;
                     moveSelected.TargetAction.Action = SelectedAction.TargetAction.Action;
+                    moveSelected.TargetAction.Stream = SelectedAction.TargetAction.Stream;
                 }
                 else moveSelected = new TargetActionData(SelectedAction.TargetAction.DayIndex, SelectedAction.TargetAction.DayPart, SelectedAction.Command, SelectedAction.TargetAction.IgnoreDM);
                 int index = ActionList.IndexOf(SelectedAction);
                 if (!(moveSelected.TargetAction.DayIndex == actionToUndo.TargetAction.DayIndex && moveSelected.TargetAction.DayPart == actionToUndo.TargetAction.DayPart && moveSelected.Command == actionToUndo.Command && moveSelected.TargetAction.IgnoreDM == actionToUndo.TargetAction.IgnoreDM))
+                {
+                    isChanged = true;
+                    EditHistory.undoActions.Add(new() { new(EditType.Edit, index, actionToUndo, moveSelected) });
+                    EditHistory.redoActions.Clear();
+                }
+                else if (moveSelected.Command == (CmdType)1000 && actionToUndo.Command == (CmdType)1000 && (moveSelected.TargetAction.Action != actionToUndo.TargetAction.Action || moveSelected.TargetAction.Stream != actionToUndo.TargetAction.Stream || moveSelected.CommandResult != actionToUndo.CommandResult))
                 {
                     isChanged = true;
                     EditHistory.undoActions.Add(new() { new(EditType.Edit, index, actionToUndo, moveSelected) });
@@ -1594,9 +1621,7 @@ namespace NSOEndingTreeMaker
             if (ParentAction_Dropdown.SelectedIndex == 7)
             {
                 MakeCustomAction(true);
-                if (SelectedAction != null)
-                    ParentAction_Dropdown.SelectedIndex = NSODataManager.ParentActionIndex(SelectedAction.TargetAction.Action);
-                else ParentAction_Dropdown.SelectedIndex = NewActionParentIndex;
+                ParentAction_Dropdown.SelectedIndex = -1;
                 return;
             }
             ChangeActionOptionsByParent();
@@ -1610,6 +1635,13 @@ namespace NSOEndingTreeMaker
             {
                 if (ParentAction_Dropdown.SelectedIndex != 7)
                     NewActionParentIndex = ParentAction_Dropdown.SelectedIndex;
+            }
+            else if (SelectedAction.Command == (CmdType)1000)
+            {
+                IgnoreDMCheck.Enabled = ParentAction_Dropdown.SelectedIndex > -1;
+                if (ParentAction_Dropdown.SelectedIndex > -1)
+                    TargetActionButton.Text = "Save Action";
+                else TargetActionButton.Text = "Edit Custom";
             }
             SetStatChangePreview();
 
@@ -1735,9 +1767,17 @@ namespace NSOEndingTreeMaker
                 SetDayMinimum();
                 DayIndexNumeric.Value = SelectedAction.TargetAction.DayIndex;
                 DayPart_Dropdown.SelectedIndex = SelectedAction.TargetAction.DayPart;
-                TargetActionButton.Text = "Save Action";
-                if (SelectedAction.Command == (CmdType)1000) ParentAction_Dropdown.SelectedIndex = -1;
-                else ParentAction_Dropdown.SelectedIndex = NSODataManager.ParentActionIndex(SelectedAction.TargetAction.Action);
+                if (SelectedAction.Command == (CmdType)1000 && ParentAction_Dropdown.SelectedIndex == -1)
+                {
+                    ParentAction_Dropdown.SelectedIndex = -1;
+                    IgnoreDMCheck.Enabled = false;
+                    TargetActionButton.Text = "Edit Custom";
+                }
+                else { 
+                    ParentAction_Dropdown.SelectedIndex = NSODataManager.ParentActionIndex(SelectedAction.TargetAction.Action);
+                    IgnoreDMCheck.Enabled = true;
+                    TargetActionButton.Text = "Save Action";
+                }
                 if (ParentAction_Dropdown.SelectedIndex != 0)
                 {
                     MakeActionOrStreamDropdownVisible(false);
@@ -1776,7 +1816,8 @@ namespace NSOEndingTreeMaker
 
                 }
                 IgnoreDMCheck.Checked = SelectedAction.TargetAction.IgnoreDM;
-                DisableSubmitIfActionNull();
+             
+                    DisableSubmitIfActionNull();
                 ForceMandatoryEvents();
                 SetStatChangePreview();
             }
@@ -1843,7 +1884,7 @@ namespace NSOEndingTreeMaker
 
         private void DisableSubmitIfActionNull()
         {
-            if (ParentAction_Dropdown.SelectedIndex == -1)
+            if (ParentAction_Dropdown.SelectedIndex == -1 && (SelectedAction == null || !(SelectedAction.Command == (CmdType)1000 || SelectedAction.Command == CmdType.None)))
                 TargetActionButton.Enabled = false;
             else if (Action_Dropdown.SelectedIndex == -1 && ParentAction_Dropdown.SelectedIndex > 0)
                 TargetActionButton.Enabled = false;
@@ -2194,6 +2235,8 @@ namespace NSOEndingTreeMaker
                 var newAct = new TargetActionData(copiedAction.TargetAction.DayIndex, copiedAction.TargetAction.DayPart, copiedAction.Command, copiedAction.TargetAction.IgnoreDM);
                 if (newAct.Command == (CmdType)1000)
                 {
+                    newAct.TargetAction.Action = copiedAction.TargetAction.Action;
+                    newAct.TargetAction.Stream = copiedAction.TargetAction.Stream;
                     newAct.CommandResult = new(copiedAction.CommandResult);
                 }
                 copiedActions.Add(newAct);
@@ -2301,7 +2344,12 @@ namespace NSOEndingTreeMaker
                         break;
                     }
                     TargetActionData targetActionData = new TargetActionData(latestDay, latestDayPart, pasteList[i].Command, pasteList[i].TargetAction.IgnoreDM);
-                    if (pasteList[i].Command == (CmdType)1000) targetActionData.CommandResult = new(pasteList[i].CommandResult);
+                    if (pasteList[i].Command == (CmdType)1000) {
+
+                        targetActionData.TargetAction.Action = pasteList[i].TargetAction.Action;
+                        targetActionData.TargetAction.Stream = pasteList[i].TargetAction.Stream;
+                        targetActionData.CommandResult = new(pasteList[i].CommandResult); 
+                    }
                     var undoObj = new ActionHistoryObj(EditType.Add, ActionList.Count, targetActionData);
                     listForUndoHistory.Add(undoObj);
                     AddActionVisualData(targetActionData, true);

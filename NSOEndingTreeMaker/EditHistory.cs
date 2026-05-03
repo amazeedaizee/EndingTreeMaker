@@ -22,13 +22,20 @@ namespace NSOEndingTreeMaker
             if (action.Command == (CmdType)1000)
             {
                 Action = new TargetActionData(action.TargetAction.DayIndex, action.TargetAction.DayPart, action.ActionName, action.CommandResult, action.TargetAction.IgnoreDM);
+                Action.TargetAction.Action = action.TargetAction.Action;
+                Action.TargetAction.Stream = action.TargetAction.Stream;
+                Action.Command = (CmdType)1000;
+
             }
             else Action = new TargetActionData(action.TargetAction.DayIndex, action.TargetAction.DayPart, action.Command, action.TargetAction.IgnoreDM);
             if (actionAfterEdit != null)
             {
                 if (actionAfterEdit.Command == (CmdType)1000)
                 {
-                    ActionAfterEdit = new TargetActionData(action.TargetAction.DayIndex, action.TargetAction.DayPart, action.ActionName, action.CommandResult, action.TargetAction.IgnoreDM);
+                    ActionAfterEdit = new TargetActionData(actionAfterEdit.TargetAction.DayIndex, actionAfterEdit.TargetAction.DayPart, actionAfterEdit.ActionName, actionAfterEdit.CommandResult, actionAfterEdit.TargetAction.IgnoreDM);
+                    ActionAfterEdit.TargetAction.Action = actionAfterEdit.TargetAction.Action;
+                    ActionAfterEdit.TargetAction.Stream = actionAfterEdit.TargetAction.Stream;
+                    ActionAfterEdit.Command = (CmdType)1000;
                 }
                 else ActionAfterEdit = new TargetActionData(actionAfterEdit.TargetAction.DayIndex, actionAfterEdit.TargetAction.DayPart, actionAfterEdit.Command, actionAfterEdit.TargetAction.IgnoreDM);
             }
