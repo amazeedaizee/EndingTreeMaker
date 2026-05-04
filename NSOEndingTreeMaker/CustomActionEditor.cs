@@ -85,6 +85,7 @@ namespace NSOEndingTreeMaker
 
         }
 
+
         private void ChangeActionOptionsByParent()
         {
             var actionOptions = Action_Dropdown.Items;
@@ -155,9 +156,11 @@ namespace NSOEndingTreeMaker
                     actionOptions.Add("Toyosu");
                     actionOptions.Add("Ichigaya");
                     actionOptions.Add("Hospital");
-                    actionOptions.Add("Ame's Parents");
-                    actionOptions.Add("Music Video");
-                    actionOptions.Add("Galactic Rail");
+                    break;
+                case 6:
+                    Action_Dropdown.Enabled = false;
+                    Action_Dropdown.SelectedText = "";
+                    ImportCmdButton.Enabled = true;
                     break;
                 default:
                     Action_Dropdown.Enabled = false;
@@ -193,6 +196,27 @@ namespace NSOEndingTreeMaker
             branchWindow.TargetActionButtonOnClick(sender, e);
         }
 
+        public void SetCustomStatChanges(CommandAction cmd)
+        {
+            if (cmd == null) return;
+            SetCustomStatChanges(cmd.followers, cmd.stress, cmd.affection, cmd.darkness, cmd.impact, cmd.experience, cmd.streamstreak, cmd.prebonus, cmd.gamer, cmd.movie, cmd.communication, cmd.tinfoil, cmd.daypart);
+        }
+        public void SetCustomStatChanges(int followers, int stress, int affection, int darkness, int impact, int experience, int streamstreak, int prebonus, int gamer, int movie, int communication, int tinfoil, int daypart)
+        {
+            FollowersNumUD.Value =followers;
+            StressNumUD.Value = stress;
+            AffectionNumUD.Value = affection;
+            DarknessNumUD.Value =darkness;
+            ImpactNumUD.Value = impact;
+            ExperienceNumUD.Value = experience;
+            StreakNumUD.Value = streamstreak;
+            AlertBonusCheck.Checked = prebonus > 0;
+            GameNumUD.Value = gamer;
+            MovieNumUD.Value = movie;
+            CommNumUD.Value = communication;
+            RabbitHoleNumUD.Value = tinfoil;
+            DayPassNumUD.Value = daypart;
+        }
         private void CustomActionCancel_Click(object sender, System.EventArgs e)
         {
             branchWindow.customActWindow = null;
@@ -258,7 +282,13 @@ namespace NSOEndingTreeMaker
 
                 }
             }
-
+            else
+            {
+                ParentAction_Dropdown.SelectedIndex = 7;
+                Action_Dropdown.Enabled = false;
+                Action_Dropdown.SelectedText = "";
+                ImportCmdButton.Enabled = false;
+            }
         }
 
         private void label9_Click(object sender, System.EventArgs e)
@@ -274,16 +304,71 @@ namespace NSOEndingTreeMaker
         private void ParentAction_Dropdown_SelectedIndexChanged(object sender, System.EventArgs e)
         {
             ChangeActionOptionsByParent();
+            if (ParentAction_Dropdown.SelectedIndex == 0 || ParentAction_Dropdown.SelectedIndex == 4)
+            {
+                FollowerLabel.Text = "Followers Multiplier";
+            }
+            else
+            {
+                FollowerLabel.Text = "Followers Increase";
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
-        {
 
+        {
+            var act = ActionType.None;
+            var topic = AlphaType.none;
+            switch (ParentAction_Dropdown.SelectedIndex)
+            {
+                case 0:
+                    act = ActionType.Haishin;
+                    topic = NSODataManager.StreamTopicList[Action_Dropdown.SelectedIndex];
+                    break;
+                case 1:
+                    act = NSODataManager.HangOutActionList[Action_Dropdown.SelectedIndex];
+                    break;
+                case 2:
+                    act = NSODataManager.SleepActionList[Action_Dropdown.SelectedIndex];
+                    break;
+                case 3:
+                    act = NSODataManager.DrugActionList[Action_Dropdown.SelectedIndex];
+                    break;
+                case 4:
+                    act = NSODataManager.InternetActionList[Action_Dropdown.SelectedIndex];
+                    break;
+                case 5:
+                    ActionType outType = (ActionType)Enum.Parse(typeof(ActionType), NSODataManager.OutsideList[Action_Dropdown.SelectedIndex].ToString());
+                    act = outType;
+                    break;
+                case 6:
+                    act = ActionType.Darkness;
+                    break;
+                default:
+                    act = ActionType.None;
+                    break;
+
+            }
+            ActionImporter actWin = new ActionImporter(this, act, topic);
+            actWin.ShowDialog();
+            ChangeActionOptionsByParent();
         }
 
         private void IgnoreDMCheck_CheckedChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void Action_Dropdown_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ParentAction_Dropdown.SelectedIndex == 4 && Action_Dropdown.SelectedIndex == 0)
+            {
+                FollowerLabel.Text = "Followers Multiplier";
+            }
+            else
+            {
+                FollowerLabel.Text = "Followers Increase";
+            }
         }
     }
 }

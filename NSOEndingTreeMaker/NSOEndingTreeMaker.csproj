@@ -76,6 +76,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActionImporter.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ActionImporter.Designer.cs">
+      <DependentUpon>ActionImporter.cs</DependentUpon>
+    </Compile>
     <Compile Include="AddEndingBranch.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -135,6 +141,9 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TargetActionData.cs" />
+    <EmbeddedResource Include="ActionImporter.resx">
+      <DependentUpon>ActionImporter.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="AddEndingBranch.resx">
       <DependentUpon>AddEndingBranch.cs</DependentUpon>
     </EmbeddedResource>

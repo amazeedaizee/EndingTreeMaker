@@ -312,6 +312,11 @@
             // DarknessNumUD
             // 
             this.DarknessNumUD.Location = new System.Drawing.Point(140, 113);
+            this.DarknessNumUD.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
             this.DarknessNumUD.Name = "DarknessNumUD";
             this.DarknessNumUD.Size = new System.Drawing.Size(120, 20);
             this.DarknessNumUD.TabIndex = 0;
@@ -319,6 +324,11 @@
             // AffectionNumUD
             // 
             this.AffectionNumUD.Location = new System.Drawing.Point(408, 87);
+            this.AffectionNumUD.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
             this.AffectionNumUD.Name = "AffectionNumUD";
             this.AffectionNumUD.Size = new System.Drawing.Size(120, 20);
             this.AffectionNumUD.TabIndex = 0;
@@ -326,6 +336,11 @@
             // StressNumUD
             // 
             this.StressNumUD.Location = new System.Drawing.Point(140, 87);
+            this.StressNumUD.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
             this.StressNumUD.Name = "StressNumUD";
             this.StressNumUD.Size = new System.Drawing.Size(120, 20);
             this.StressNumUD.TabIndex = 0;
@@ -379,6 +394,7 @@
             this.Action_Dropdown.Name = "Action_Dropdown";
             this.Action_Dropdown.Size = new System.Drawing.Size(224, 21);
             this.Action_Dropdown.TabIndex = 6;
+            this.Action_Dropdown.SelectedIndexChanged += new System.EventHandler(this.Action_Dropdown_SelectedIndexChanged);
             // 
             // label15
             // 

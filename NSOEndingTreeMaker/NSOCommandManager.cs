@@ -1,5 +1,7 @@
 ﻿using ngov3;
 using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace NSOEndingTreeMaker
 {
@@ -62,6 +64,8 @@ namespace NSOEndingTreeMaker
         public static bool operator ==(CommandAction left, CommandAction right)
         {
             if (left.Equals(right)) return true;
+            if (Equals(left, null) && !Equals(right, null)) return false;
+            if (!Equals(left, null) && Equals(right, null)) return false;
             if (left.id != right.id) return false;
             if (left.name != right.name) return false;
             if (left.followers != right.followers) return false;
@@ -222,6 +226,112 @@ namespace NSOEndingTreeMaker
 
         public static CommandAction streamDarkOne = new CommandAction("Stream", "Darkness 1", 10, 0, 0, 10, 0, 0, 1, 0, 0, 0, 0, 0, 1);
         public static CommandAction streamDarkTwo = new CommandAction("Stream", "Darkness 2", 10, 0, 0, 10, 0, 0, 1, 0, 0, 0, 0, 0, 1);
+
+        public static List<CommandAction> ActionTypeToCommands(ActionType type)
+        {
+            return type switch
+            {
+                ActionType.SleepToTwilight => new List<CommandAction> { sleepDusk },
+                ActionType.SleepToNight => new List<CommandAction> { sleepNightOne , sleepNightTwo},
+                ActionType.SleepToTomorrow => new List<CommandAction> { sleepTomOne, sleepTomTwo, sleepTomThree },
+                ActionType.OdekakeNakano => new List<CommandAction> { goOutBase},
+                ActionType.OdekakeHarajuku => new List<CommandAction> { goOutBase },
+                ActionType.OdekakeAkihabara => new List<CommandAction> { goOutBase },
+                ActionType.OdekakeShibuya => new List<CommandAction> { goOutBase },
+                ActionType.OdekakeIkebukuro => new List<CommandAction> { goOutBase },
+                ActionType.OdekakeUeno => new List<CommandAction> { goOutBase },
+                ActionType.OdekakeJinbocho => new List<CommandAction> { goOutBase },
+                ActionType.OdekakeShimokitazawa => new List<CommandAction> { goOutBase },
+                ActionType.OdekakeKichijoji => new List<CommandAction> { goOutBase },
+                ActionType.OdekakeGisneyland => new List<CommandAction> { goOutBase },
+                ActionType.OdekakeHikarigaokaPark => new List<CommandAction> { goOutBase },
+                ActionType.OdekakeAsakusa => new List<CommandAction> { goOutBase },
+                ActionType.OdekakeShinjuku => new List<CommandAction> { goOutBase },
+                ActionType.OdekakeToyosu => new List<CommandAction> { goOutBase },
+                ActionType.OdekakeOdaiba => new List<CommandAction> { goOutBase },
+                ActionType.OdekakeIchigaya => new List<CommandAction> { goOutBase },
+                ActionType.OdekakeZikka => new List<CommandAction> { goOutBase },
+                ActionType.OdekakeHospital => new List<CommandAction> {goOutHospital },
+                ActionType.PlayIchatuku => new List<CommandAction> { hangoutTalk, hangoutCuddle, hangoutPity },
+                ActionType.PlayMakeLove => new List<CommandAction> { hangoutLove, hangoutHighLove },
+                ActionType.OkusuriDaypassModerate => new List<CommandAction> {depazNormal },
+                ActionType.OkusuriDaypassOverdose => new List<CommandAction> {depazODOne, depazODTwo, depazODThree, depazODFour },
+                ActionType.OkusuriPuronModerate => new List<CommandAction> {dylsemNormal },
+                ActionType.OkusuriPuronOverdose => new List<CommandAction> {dylsemODOne, dylsemODTwo, dylsemODThree },
+                ActionType.OkusuriHipuronModerate => new List<CommandAction> {embianNormal },
+                ActionType.OkusuriHiPuronOverdose => new List<CommandAction> {embianODOne,embianODTwo },
+                ActionType.OkusuriHappa => new List<CommandAction> {weedOne,weedTwo },
+                ActionType.OkusuriPsyche => new List<CommandAction> { paperOne },
+                ActionType.Darkness => new List<CommandAction> { darknessOne,darknessTwo},
+                ActionType.EntameGame => new List<CommandAction> { hangoutPlay},
+                ActionType.InternetYoutube => new List<CommandAction> { videoWatch},
+                ActionType.InternetPoketter => new List<CommandAction> {tweetOne, tweetTwo,venttweetOne,venttweetThree, tweetThree },
+                ActionType.Internet2ch => new List<CommandAction> { anonOne,anonTwo,anonThree},
+                ActionType.InternetDeai => new List<CommandAction> { dinderDate},
+                ActionType.InternetPoketterEgosa => new List<CommandAction> {vanitySearch },
+                _ => new List<CommandAction> { }
+            };
+        }
+
+        public static List<CommandAction> StreamTopicToCommands(AlphaType type)
+        {
+            return type switch
+            {
+                AlphaType.Angel => new List<CommandAction>()
+                    {
+                        streamAngelOne, streamAngelTwo, streamAngelThree, streamAngelFour, streamAngelFive, streamAngelSix
+                    },
+                AlphaType.ASMR => new List<CommandAction>()
+                    {
+                        streamASMROne, streamASMRTwo, streamASMRThree, streamASMRFour, streamASMRFive
+                    },
+                AlphaType.Darkness => new List<CommandAction>()
+                    {
+                        streamDarkOne, streamDarkTwo
+                    },
+                AlphaType.Gamejikkyou => new List<CommandAction>()
+                    {
+                        streamGameOne, streamGameTwo, streamGameThree, streamGameFour, streamGameFive
+                    },
+                AlphaType.Hnahaisin => new List<CommandAction>()
+                    {
+                        streamSexyOne, streamSexyTwo, streamSexyThree, streamSexyFour, streamSexyFive
+                    },
+                AlphaType.Imbouron => new List<CommandAction>()
+                    {
+                        streamConspireOne, streamConspireTwo, streamConspireThree, streamConspireFour, streamConspireFive
+                    },
+                AlphaType.Kaidan => new List<CommandAction>()
+                    {
+                        streamNetloreOne, streamNetloreTwo, streamNetloreThree, streamNetloreFour, streamNetloreFive
+                    },
+                AlphaType.Kaisetu => new List<CommandAction>()
+                    {
+                        streamPodcastOne, streamPodcastTwo, streamPodcastThree, streamPodcastFour, streamPodcastFive
+                    },
+                AlphaType.Otakutalk => new List<CommandAction>()
+                    {
+                        streamNerdOne, streamNerdTwo, streamNerdThree, streamNerdFour, streamNerdFive
+                    },
+                AlphaType.PR => new List<CommandAction>()
+                    {
+                        streamAdOne, streamAdTwo, streamAdThree, streamAdFour, streamAdFive
+                    },
+                AlphaType.Taiken => new List<CommandAction>()
+                    {
+                        streamStuffOne, streamStuffTwo, streamStuffThree, streamStuffFour, streamStuffFive
+                    },
+                AlphaType.Yamihaishin => new List<CommandAction>()
+                    {
+                        streamBreakOne, streamBreakTwo, streamBreakThree, streamBreakFour, streamBreakFive
+                    },
+                AlphaType.Zatudan => new List<CommandAction>()
+                    {
+                        streamChatOne, streamChatTwo, streamChatThree, streamChatFour, streamChatFive
+                    },
+                _ => new List<CommandAction>(),
+            };
+        }
 
         public static CommandAction CmdTypeToCommand(CmdType cmd)
         {
