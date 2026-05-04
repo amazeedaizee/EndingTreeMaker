@@ -483,6 +483,41 @@ namespace NSOEndingTreeMaker
             return ActionType.None;
         }
 
+        public static string StreamTopicName(AlphaType streamTopic)
+        {
+            switch (streamTopic)
+            {
+                case AlphaType.Zatudan:
+                    return "Chat & Chill";
+                case AlphaType.Gamejikkyou:
+                    return "Letsplay";
+                case AlphaType.Otakutalk:
+                    return "Nerd Talk";
+                case AlphaType.Imbouron:
+                    return "Conspiracy Theories";
+                case AlphaType.Kaidan:
+                    return "Netlore";
+                case AlphaType.ASMR:
+                    return "ASMR";
+                case AlphaType.Hnahaisin:
+                    return "Sexy Stream";
+                case AlphaType.Kaisetu:
+                    return "Angel Explains";
+                case AlphaType.Taiken:
+                    return "KAngel Tries Stuff";
+                case AlphaType.Yamihaishin:
+                    return "Breakdown Stream";
+                case AlphaType.PR:
+                    return "Sponsorships";
+                case AlphaType.Angel:
+                    return "Internet Angel";
+                case AlphaType.Darkness:
+                    return "Darkness";
+                default:
+                    return "";
+            }
+        }
+
         public static string CmdName(CmdType cmd)
         {
             string cmdName = cmd.ToString();
@@ -490,37 +525,7 @@ namespace NSOEndingTreeMaker
             {
                 AlphaType streamTopic = (AlphaType)Enum.Parse(typeof(AlphaType), cmdName.ToString().Split('_')[0]);
                 int streamLevel = int.Parse(cmdName.ToString().Split('_')[1]);
-                switch (streamTopic)
-                {
-                    case AlphaType.Zatudan:
-                        return "Chat & Chill " + streamLevel.ToString();
-                    case AlphaType.Gamejikkyou:
-                        return "Letsplay " + streamLevel.ToString();
-                    case AlphaType.Otakutalk:
-                        return "Nerd Talk " + streamLevel.ToString();
-                    case AlphaType.Imbouron:
-                        return "Conspiracy Theories " + streamLevel.ToString();
-                    case AlphaType.Kaidan:
-                        return "Netlore " + streamLevel.ToString();
-                    case AlphaType.ASMR:
-                        return "ASMR " + streamLevel.ToString();
-                    case AlphaType.Hnahaisin:
-                        return "Sexy Stream " + streamLevel.ToString();
-                    case AlphaType.Kaisetu:
-                        return "Angel Explains " + streamLevel.ToString();
-                    case AlphaType.Taiken:
-                        return "KAngel Tries Stuff " + streamLevel.ToString();
-                    case AlphaType.Yamihaishin:
-                        return "Breakdown Stream " + streamLevel.ToString();
-                    case AlphaType.PR:
-                        return "Sponsorships " + streamLevel.ToString();
-                    case AlphaType.Angel:
-                        return "Internet Angel " + streamLevel.ToString();
-                    case AlphaType.Darkness:
-                        return "Darkness " + streamLevel.ToString();
-                    default:
-                        return "";
-                }
+                return StreamTopicName(streamTopic) + " " + streamLevel.ToString();
             }
             switch (cmd)
             {
@@ -617,6 +622,98 @@ namespace NSOEndingTreeMaker
                     return "Conspiracy Theories 6";
                 case (CmdType)200:
                     return "Beach";
+                default: break;
+            }
+            if (cmdName.Contains("Odekake"))
+            {
+                return cmdName.Remove(0, 7);
+            }
+            return "";
+        }
+
+        public static string ActionName(ActionType cmd)
+        {
+            string cmdName = cmd.ToString();
+            if (cmdName.Contains('_'))
+            {
+                AlphaType streamTopic = (AlphaType)Enum.Parse(typeof(AlphaType), cmdName.ToString().Split('_')[0]);
+                int streamLevel = int.Parse(cmdName.ToString().Split('_')[1]);
+                switch (streamTopic)
+                {
+                    case AlphaType.Zatudan:
+                        return "Chat & Chill " + streamLevel.ToString();
+                    case AlphaType.Gamejikkyou:
+                        return "Letsplay " + streamLevel.ToString();
+                    case AlphaType.Otakutalk:
+                        return "Nerd Talk " + streamLevel.ToString();
+                    case AlphaType.Imbouron:
+                        return "Conspiracy Theories " + streamLevel.ToString();
+                    case AlphaType.Kaidan:
+                        return "Netlore " + streamLevel.ToString();
+                    case AlphaType.ASMR:
+                        return "ASMR " + streamLevel.ToString();
+                    case AlphaType.Hnahaisin:
+                        return "Sexy Stream " + streamLevel.ToString();
+                    case AlphaType.Kaisetu:
+                        return "Angel Explains " + streamLevel.ToString();
+                    case AlphaType.Taiken:
+                        return "KAngel Tries Stuff " + streamLevel.ToString();
+                    case AlphaType.Yamihaishin:
+                        return "Breakdown Stream " + streamLevel.ToString();
+                    case AlphaType.PR:
+                        return "Sponsorships " + streamLevel.ToString();
+                    case AlphaType.Angel:
+                        return "Internet Angel " + streamLevel.ToString();
+                    case AlphaType.Darkness:
+                        return "Darkness " + streamLevel.ToString();
+                    default:
+                        return "";
+                }
+            }
+            switch (cmd)
+            {
+                case ActionType.EntameGame:
+                    return "Play Game";
+                case ActionType.PlayIchatuku:
+                    return "Spend Time Together";
+                case ActionType.PlayMakeLove:
+                    return "***";
+                case ActionType.SleepToTwilight:
+                    return "Sleep To Dusk";
+                case ActionType.SleepToNight:
+                    return "Sleep To Night";
+                case ActionType.SleepToTomorrow:
+                    return "Sleep To Tomorrow";
+                case ActionType.OkusuriDaypassModerate:
+                    return "Prescription (normal dose)";
+                case ActionType.OkusuriDaypassOverdose:
+                    return "Prescription GO!";
+                case ActionType.OkusuriPuronModerate:
+                    return "OTC (normal dose)";
+                case ActionType.OkusuriPuronOverdose:
+                    return "OTC GO!";
+                case ActionType.OkusuriHipuronModerate:
+                    return "Sleeping Pills (normal dose)";
+                case ActionType.OkusuriHiPuronOverdose:
+                    return "Sleeping Pills GO! (strongest)";
+                case ActionType.OkusuriHappa:
+                    return "Magic Grass GO!";
+                case ActionType.OkusuriPsyche:
+                    return "Magic Paper GO!";
+                case ActionType.InternetPoketter:
+                    return "Social Media";
+                case ActionType.InternetYoutube:
+                    return "Video Streaming";
+                case ActionType.Internet2ch:
+                    return "/st/";
+                case ActionType.InternetDeai:
+                    return "Dinder";
+                case ActionType.OdekakeGinga:
+                    return "Galactic Rail";
+                case ActionType.OdekakeZikka:
+                    return "Ame's Parents";
+                case ActionType.Darkness:
+                    return "Darkness";
                 default: break;
             }
             if (cmdName.Contains("Odekake"))
