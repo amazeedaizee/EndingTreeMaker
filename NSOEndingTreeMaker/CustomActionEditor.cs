@@ -166,7 +166,7 @@ namespace NSOEndingTreeMaker
                     break;
 
             }
-            if (ParentAction_Dropdown.SelectedIndex >= 0 && ParentAction_Dropdown.SelectedIndex < 7)
+            if (ParentAction_Dropdown.SelectedIndex >= 0 && ParentAction_Dropdown.SelectedIndex < 6)
             {
                 Action_Dropdown.Enabled = true;
                 Action_Dropdown.SelectedIndex = 0;
