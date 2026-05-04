@@ -50,6 +50,7 @@ namespace NSOEndingTreeMaker
             action = new(new(_dayIndex, _dayPart, ActionType.None, branchWindow.IgnoreDMCheck.Checked), name, command);
             action.Command = (CmdType)1000;
             action.TargetAction.Stream = AlphaType.none;
+
             action.TargetAction.IgnoreDM = IgnoreDMCheck.Checked;
             switch (ParentAction_Dropdown.SelectedIndex)
             {
@@ -75,6 +76,9 @@ namespace NSOEndingTreeMaker
                     break;
                 case 6:
                     action.TargetAction.Action = ActionType.Darkness;
+                    break;
+                case 8:
+                    action.TargetAction.Action = ActionType.EntameTVzzzzz; // dud for Info (PreserveStreak)
                     break;
                 default:
                     action.TargetAction.Action = ActionType.None;
@@ -245,6 +249,7 @@ namespace NSOEndingTreeMaker
                 Action_Dropdown.Enabled = action.TargetAction.Action != ActionType.Haishin;
                 ParentAction_Dropdown.SelectedIndex = NSODataManager.ParentActionIndex(action.TargetAction.Action);
                 if (action.TargetAction.Action == ActionType.None) ParentAction_Dropdown.SelectedIndex = 7;
+                else if (action.TargetAction.Action == ActionType.EntameTVzzzzz) ParentAction_Dropdown.SelectedIndex = 8;
 
                 ChangeActionOptionsByParent();
                 switch (ParentAction_Dropdown.SelectedIndex)

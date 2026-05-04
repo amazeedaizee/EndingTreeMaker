@@ -418,7 +418,8 @@
             "Internet",
             "Go Out",
             "Darkness",
-            "Info"});
+            "Info",
+            "Info (Streak Preserved)"});
             this.ParentAction_Dropdown.Location = new System.Drawing.Point(16, 89);
             this.ParentAction_Dropdown.Name = "ParentAction_Dropdown";
             this.ParentAction_Dropdown.Size = new System.Drawing.Size(275, 21);

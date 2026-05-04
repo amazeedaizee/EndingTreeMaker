@@ -101,6 +101,10 @@ namespace NSOEndingTreeMaker
                     {
                         name = "INFO";
                     }
+                    else if (action.TargetAction.Action == ActionType.EntameTVzzzzz)
+                    {
+                        name = "INFO (Preserve Streak)";
+                    }
                     item.SubItems[2].Text += $" [{name}]";
                         
                         
