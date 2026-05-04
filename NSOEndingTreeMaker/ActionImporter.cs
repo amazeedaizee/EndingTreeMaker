@@ -54,7 +54,10 @@ namespace NSOEndingTreeMaker
                 }
                 else CommandList.Items.Add(c.name);
             }
-            if (commands.Count > 0) selected = commands[0];
+            if (commands.Count > 0) {
+                selected = commands[0];
+                CommandList.SelectedIndex = 0;
+                    };
         }
 
         private void CommandList_SelectedIndexChanged(object sender, EventArgs e)

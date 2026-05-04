@@ -390,6 +390,7 @@
             this.Controls.Add(this.CommandList);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ActionImporter";
+            this.ShowIcon = false;
             this.Text = "Action Importer";
             this.Load += new System.EventHandler(this.ActionImporter_Load);
             this.groupBox1.ResumeLayout(false);
