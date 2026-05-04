@@ -91,7 +91,22 @@ namespace NSOEndingTreeMaker
             item.SubItems[0].Text = action.TargetAction.DayIndex.ToString();
             item.SubItems[1].Text = NSODataManager.DayPartNames[action.TargetAction.DayPart];
             item.SubItems[2].Text = action.ActionName;
-            if (action.MilestoneIdea != CmdType.None)
+            if (action.Command == (CmdType)1000)
+            {
+                if (action.TargetAction.Stream != AlphaType.none)
+                    item.SubItems[2].Text += $" [{NSODataManager.StreamTopicName(action.TargetAction.Stream)}]";
+                else {
+                    var name = NSODataManager.ActionName(action.TargetAction.Action);
+                    if (action.TargetAction.Action == ActionType.None)
+                    {
+                        name = "INFO";
+                    }
+                    item.SubItems[2].Text += $" [{name}]";
+                        
+                        
+                        };
+            }
+                if (action.MilestoneIdea != CmdType.None)
             {
                 item.SubItems[1].Text += "*";
                 item.ToolTipText = $"Achieved {NSODataManager.CmdName(action.MilestoneIdea)} at the start of this day.";
