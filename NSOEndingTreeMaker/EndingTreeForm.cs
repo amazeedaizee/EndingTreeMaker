@@ -476,7 +476,7 @@ namespace NSOEndingTreeMaker
                 if (endings.Count > 0)
                 {
                     isValidated = false;
-                    errorMsg = $"Custom Events are not allowed except in Experimental Mode. \n\nList of branches that contain Custom Events:\n{string.Join("\n", endings)}";
+                    errorMsg = $"Custom Events can only be used in Experimental Mode. \n\nList of branches that contain Custom Events:\n{string.Join("\n", endings)}";
                 }
             }
             else
@@ -492,7 +492,7 @@ namespace NSOEndingTreeMaker
                 if (customs.Count > 0)
                 {
                     isValidated = false;
-                    errorMsg = $"Custom Events are not allowed except in Experimental Mode. \n\nList of actions that contain Custom Events:\n{string.Join("\n", customs)}";
+                    errorMsg = $"Custom Events can only be used in Experimental Mode. \n\nList of actions that contain Custom Events:\n{string.Join("\n", customs)}";
                 }
                 ;
             }
@@ -538,7 +538,7 @@ namespace NSOEndingTreeMaker
             return (isValidated, hasAnyFutureStartDays, errorMsg);
         }
 
-        private bool ValidateEndingTree()
+        private bool ValidateEndingTree(bool forceOpen = false)
         {
 
             var errorList = SetEndingListViewData();
@@ -546,7 +546,7 @@ namespace NSOEndingTreeMaker
             {
                 bool isConfirm;
                 CurrentEndingTree.isBroken = true;
-                if (Properties.Settings.Default.ExperimentMode) return true;
+                if (!forceOpen && Properties.Settings.Default.ExperimentMode) return true;
                 BranchErrorDetails errorDetails = new BranchErrorDetails(errorList, false);
                 errorDetails.ErrorIntro.Text = "Branches in this tree contains validation errors. Are you sure you want to proceed?";
                 isConfirm = errorDetails.ShowDialog() == DialogResult.Yes ? true : false;
@@ -1350,6 +1350,11 @@ namespace NSOEndingTreeMaker
                 e.Effect = DragDropEffects.Copy;
             else
                 e.Effect = DragDropEffects.None;
+        }
+
+        private void UnvalidBranches_Label_Click(object sender, EventArgs e)
+        {
+            ValidateEndingTree(true);
         }
     }
 }

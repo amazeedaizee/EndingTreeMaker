@@ -677,12 +677,14 @@
             // UnvalidBranches_Label
             // 
             this.UnvalidBranches_Label.AutoSize = true;
+            this.UnvalidBranches_Label.Cursor = System.Windows.Forms.Cursors.Hand;
             this.UnvalidBranches_Label.Location = new System.Drawing.Point(14, 479);
             this.UnvalidBranches_Label.Name = "UnvalidBranches_Label";
             this.UnvalidBranches_Label.Size = new System.Drawing.Size(195, 13);
             this.UnvalidBranches_Label.TabIndex = 11;
             this.UnvalidBranches_Label.Text = "Unvalidated Ending Branches Detected";
             this.UnvalidBranches_Label.VisibleChanged += new System.EventHandler(this.UnvalidBranch_LabelToggle);
+            this.UnvalidBranches_Label.Click += new System.EventHandler(this.UnvalidBranches_Label_Click);
             // 
             // EndingTreeForm
             // 
