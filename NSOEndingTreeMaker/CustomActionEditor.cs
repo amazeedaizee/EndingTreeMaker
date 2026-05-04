@@ -244,7 +244,8 @@ namespace NSOEndingTreeMaker
                 IgnoreDMCheck.Checked = action.TargetAction.IgnoreDM;
                 Action_Dropdown.Enabled = action.TargetAction.Action != ActionType.Haishin;
                 ParentAction_Dropdown.SelectedIndex = NSODataManager.ParentActionIndex(action.TargetAction.Action);
-               
+                if (action.TargetAction.Action == ActionType.None) ParentAction_Dropdown.SelectedIndex = 7;
+
                 ChangeActionOptionsByParent();
                 switch (ParentAction_Dropdown.SelectedIndex)
                 {
