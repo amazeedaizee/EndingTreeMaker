@@ -573,9 +573,9 @@ namespace NSOEndingTreeMaker
             }
             if (action.TargetAction.DayPart + action.CommandResult.daypart < 3)
                 return false;
-            if (action.TargetAction.DayIndex == 10)
+            if (action.TargetAction.DayIndex == 8 && action.Followers < 10000)
                 return false;
-            if (action.TargetAction.DayIndex == 14)
+            if (action.TargetAction.DayIndex == 10)
                 return false;
             if (action.TargetAction.DayIndex == 17)
                 return false;
