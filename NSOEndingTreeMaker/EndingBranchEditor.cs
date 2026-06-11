@@ -357,17 +357,17 @@ namespace NSOEndingTreeMaker
             if (branch.is150M.isEventing)
             {
                 ExtraMilestones_Label.Text = "🧡 🤍 🤍";
-                ExtraMilestoneTooltipText += $"Achieved 150 Million Followers on Day {branch.is150M.DayIndex - 1}!\n";
+                ExtraMilestoneTooltipText += $"Achieved 1.5 Million Followers on Day {branch.is150M.DayIndex - 1}!\n";
             }
             if (branch.is300M.isEventing)
             {
                 ExtraMilestones_Label.Text = "🧡 🧡 🤍";
-                ExtraMilestoneTooltipText += $"Achieved 300 Million Followers on Day {branch.is300M.DayIndex - 1}!\n";
+                ExtraMilestoneTooltipText += $"Achieved 3 Million Followers on Day {branch.is300M.DayIndex - 1}!\n";
             }
             if (branch.is500M.isEventing)
             {
                 ExtraMilestones_Label.Text = "🧡 🧡 🧡";
-                ExtraMilestoneTooltipText += $"Achieved 500 Million Followers on Day {branch.is500M.DayIndex - 1}!\n";
+                ExtraMilestoneTooltipText += $"Achieved 5 Million Followers on Day {branch.is500M.DayIndex - 1}!\n";
             }
             ExtraMilestoneTooltip.SetToolTip(ExtraMilestones_Label, ExtraMilestoneTooltipText);
 
