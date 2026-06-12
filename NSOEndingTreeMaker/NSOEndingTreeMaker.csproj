@@ -103,6 +103,7 @@
     <Compile Include="BranchErrorDetails.Designer.cs">
       <DependentUpon>BranchErrorDetails.cs</DependentUpon>
     </Compile>
+    <Compile Include="GameLocation.cs" />
     <Compile Include="PlayLogViewer.cs">
       <SubType>Form</SubType>
     </Compile>

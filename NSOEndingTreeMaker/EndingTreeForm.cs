@@ -53,16 +53,7 @@ namespace NSOEndingTreeMaker
         }
         private string InitializeValidGamePath()
         {
-            string gamePath;
-            if (Environment.Is64BitOperatingSystem)
-            {
-                gamePath = (string)RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 1451940", false).GetValue("InstallLocation");
-            }
-            else
-            {
-                gamePath = (string)RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 1451940", false).GetValue("InstallLocation");
-            }
-            return gamePath;
+            return GameLocation.InitializeValidGamePath();
         }
 
         private string InitializeValidSteamPath()

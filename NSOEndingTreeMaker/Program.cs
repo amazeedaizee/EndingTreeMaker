@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -14,6 +15,10 @@ namespace NSOEndingTreeMaker
         static void Main()
         {
             var appDomain = AppDomain.CurrentDomain;
+            if (string.IsNullOrEmpty(Properties.Settings.Default.GameDirectory))
+            {
+                CheckGamePath();
+            }
             appDomain.AssemblyResolve += OnAssemblyResolve;
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -24,22 +29,51 @@ namespace NSOEndingTreeMaker
         {
             string requestedAssemblyName = args.Name.Split(',')[0];
             string gamePath;
-            if (Environment.Is64BitOperatingSystem)
-            {
-                gamePath = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64).OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 1451940", false).GetValue("InstallLocation") + "\\Windose_Data\\Managed\\";
-            }
-            else
-            {
-                gamePath = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Steam App 1451940", false).GetValue("InstallLocation") + "\\Windose_Data\\Managed\\";
-            }
             try
             {
-                return Assembly.LoadFrom(gamePath + requestedAssemblyName + ".dll");
+                if (requestedAssemblyName == "Assembly-CSharp")
+                {
+                    gamePath = GameLocation.InitializeValidGamePath();
+                    return Assembly.LoadFrom(gamePath + @"\Windose_Data\Managed\" + requestedAssemblyName + ".dll");
+                }
+
+                return Assembly.LoadFrom(Path.Combine(Directory.GetCurrentDirectory(), "Assemblies", requestedAssemblyName + ".dll"));
             }
             catch
             {
                 return null;
             }
         }
+        static void CheckGamePath()
+        {
+            DialogResult msg;
+            string gamePath = GameLocation.InitializeValidGamePath();
+            if ((gamePath == null && string.IsNullOrEmpty(Properties.Settings.Default.GameDirectory)) || !Directory.Exists(gamePath))
+            {
+                do
+                {
+                    msg = MessageBox.Show("To continue, please open the folder containing the game executable. (NEEDY GIRL OVERDOSE)", "", MessageBoxButtons.OKCancel);
+                    if (msg == DialogResult.Cancel)
+                        Environment.Exit(0);
+                } while ((gamePath = OpenGamePath()) == null);
+                Properties.Settings.Default.GameDirectory = gamePath;
+                Properties.Settings.Default.Save();
+            }
+        }
+        static string OpenGamePath()
+        {
+            var openNsoStream = new FolderBrowserDialog();
+            openNsoStream.RootFolder = Environment.SpecialFolder.MyComputer;
+            if (openNsoStream.ShowDialog() == DialogResult.OK)
+            {
+                if (!File.Exists(openNsoStream.SelectedPath + @"\Windose_Data\Managed\Assembly-CSharp.dll"))
+                {
+                    return null;
+                }
+                return openNsoStream.SelectedPath;
+            }
+            return null;
+        }
     }
+    
 }
